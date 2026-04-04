@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gacha</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="device-shell">
+    <div class="device-top">RETRO PHONE GAME</div>
+    <div class="screen-frame">
+      <div class="statusbar">
+        <div class="status-left"><span class="signal">◢◣◢</span><span>GACHA</span></div>
+        <div class="status-center" id="clockText">--:--</div>
+        <div class="status-right"><span class="battery">[||||]</span></div>
+      </div>
+      <div class="screen-bg"></div>
+      <div class="shell">
+        <header class="hero">
+          <div>
+            <p class="eyebrow">カード入手</p>
+            <h1>CHARACTER GACHA</h1>
+            <p class="subcopy">新しい仲間を獲得できます</p>
+          </div>
+          <div class="badge"><a href="/" style="text-decoration:none;color:inherit;">← 戻る</a></div>
+        </header>
+        <main class="grid">
+          <section class="panel">
+            <div class="panel-head between">
+              <h2>ガチャ</h2>
+              <div id="gachaCoinsText" class="battle-mini-status">COIN: --</div>
+            </div>
+            <div class="portrait boss-portrait" style="min-height:140px;">
+              <div class="portrait-label">GACHA</div>
+              <div id="gachaResultInitials" class="portrait-initials">??</div>
+            </div>
+            <div class="actions-row" style="margin-top:12px;">
+              <button id="drawGachaBtn">1回引く</button>
+              <button id="reloadGachaBtn" class="secondary">情報再読込</button>
+            </div>
+            <div id="gachaResultBox" class="result-box muted">まだ引いていません。</div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>最近の結果</h2></div>
+            <div id="gachaHistory" class="list-box"><div class="list-item">結果はここに表示されます。</div></div>
+          </section>
+        </main>
+      </div>
+    </div>
+    <div class="device-bottom"><div class="keypad-row"><span>◀</span><span>決定</span><span>▶</span></div></div>
+  </div>
+  <script src="/static/js/gacha.js"></script>
+</body>
+</html>

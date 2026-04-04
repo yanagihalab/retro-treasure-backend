@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkpoint</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+</head>
+<body>
+  <div class="device-shell">
+    <div class="device-top">RETRO PHONE GAME</div>
+
+    <div class="screen-frame">
+      <div class="statusbar">
+        <div>◢◣◢ CHECKPOINT</div>
+        <div id="clockText">--:--</div>
+        <div>[||||]</div>
+      </div>
+
+      <div class="shell">
+        <header class="hero">
+          <div>
+            <p class="eyebrow">現地ノード風チェックポイント</p>
+            <h1>CHECKPOINT NODE</h1>
+            <p class="subcopy">QR1 / QR2 / QR3 を入力して報酬を獲得</p>
+          </div>
+          <div class="badge">
+            <a href="/" style="text-decoration:none;color:inherit;">← 戻る</a>
+          </div>
+        </header>
+
+        <main class="grid">
+          <section class="panel">
+            <div class="panel-head between">
+              <h2>チェックポイント入力</h2>
+              <div id="cpStatusMini" class="battle-mini-status">読込中...</div>
+            </div>
+
+            <div class="stack">
+              <label>
+                QRテキスト
+                <input id="qrTextInput" type="text" placeholder="QR1 / QR2 / QR3" />
+              </label>
+              <div class="actions-row tight-actions">
+                <button id="claimCheckpointBtn">報酬を受け取る</button>
+                <button id="reloadCheckpointBtn" class="secondary">情報再読込</button>
+              </div>
+            </div>
+
+            <div id="checkpointResult" class="result-box muted">まだ受け取っていません。</div>
+          </section>
+
+          <section class="double-grid">
+            <section class="panel">
+              <div class="panel-head"><h2>報酬モデル</h2></div>
+              <div class="list-box">
+                <div class="list-item">
+                  <strong>チェックポイント到達記録</strong>
+                  <div class="meta">初回到達日時・最終到達日時・到達回数を記録します。</div>
+                </div>
+                <div class="list-item">
+                  <strong>初回通過報酬</strong>
+                  <div class="meta">初回のみ COIN / EXP / ガチャ券 / 挑戦権を獲得します。</div>
+                </div>
+                <div class="list-item">
+                  <strong>イベント限定報酬</strong>
+                  <div class="meta">イベント有効中は各地点で限定ボーナスを1回獲得できます。</div>
+                </div>
+                <div class="list-item">
+                  <strong>ボス挑戦権やガチャチケット</strong>
+                  <div class="meta">QR2 はガチャ券、QR3 はボス挑戦権モデルを持ちます。</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head"><h2>所持カウンタ</h2></div>
+              <div class="status-grid">
+                <div class="stat"><span>ガチャ券</span><strong id="gachaTicketCount">0</strong></div>
+                <div class="stat"><span>挑戦権</span><strong id="bossTicketCount">0</strong></div>
+              </div>
+            </section>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head between">
+              <h2>MAP</h2>
+              <div class="meta">一覧クリックでピンを強調</div>
+            </div>
+            <div id="checkpointMap" class="leaflet-map"></div>
+            <div id="checkpointMapLegend" class="meta" style="margin-top:8px;">
+              ピンを押すと入力欄に QR を入れます。
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><h2>チェックポイント一覧</h2></div>
+            <div id="checkpointMasterList" class="list-box muted">読み込み中...</div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><h2>到達履歴</h2></div>
+            <div id="checkpointHistoryList" class="list-box muted">読み込み中...</div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="device-bottom">
+      <div class="keypad-row"><span>◀</span><span>決定</span><span>▶</span></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/js/checkpoint.js"></script>
+</body>
+</html>

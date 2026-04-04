@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cards</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="device-shell battle-device">
+    <div class="device-top">RETRO PHONE GAME</div>
+    <div class="screen-frame battle-screen">
+      <div class="statusbar"><div>◢◣◢ CARDS</div><div id="clockText">--:--</div><div>[||||]</div></div>
+      <div class="shell battle-shell">
+        <header class="hero battle-hero">
+          <div><p class="eyebrow">カード管理</p><h1>CARDS / GACHA</h1><p class="subcopy">属性・強化・編成・ガチャ</p></div>
+          <a class="ghost-link" href="/">← 戻る</a>
+        </header>
+        <main class="grid">
+          <section class="panel">
+            <div class="panel-head between"><h2>プレイヤー情報</h2><button id="reloadCardsBtn" class="secondary">更新</button></div>
+            <div class="status-grid"><div class="stat"><span>COIN</span><strong id="playerCoins">0</strong></div><div class="stat"><span>ガチャ価格</span><strong>200</strong></div></div>
+            <div class="actions-row"><button id="drawGachaBtn">キャラガチャ</button></div>
+            <div id="gachaResult" class="result-box muted">ここにガチャ結果が表示されます。</div>
+          </section>
+          <section class="panel">
+            <div class="panel-head between"><h2>6枚デッキ編成</h2><button id="saveDeckBtn">デッキ保存</button></div>
+            <div class="meta">所有カードから6枚を選んで編成します。1番目がリーダーです。</div>
+            <div id="deckEditors" class="deck-edit-grid"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>所有カード一覧</h2></div>
+            <div id="cardCollection" class="list-box muted">読み込み中...</div>
+          </section>
+        </main>
+      </div>
+    </div>
+    <div class="device-bottom"><div class="keypad-row"><span>◀</span><span>決定</span><span>▶</span></div></div>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/js/cards.js"></script>
+</body>
+</html>

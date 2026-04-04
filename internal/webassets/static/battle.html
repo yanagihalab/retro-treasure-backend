@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boss Battle</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="device-shell battle-device">
+    <div class="device-top">RETRO PHONE GAME</div>
+    <div class="screen-frame battle-screen">
+      <div class="statusbar">
+        <div class="status-left"><span class="signal">◢◣◢</span><span>BATTLE</span></div>
+        <div class="status-center" id="clockText">--:--</div>
+        <div class="status-right"><span class="battery">[||||]</span></div>
+      </div>
+      <div class="screen-bg"></div>
+      <div class="shell battle-shell">
+        <header class="hero battle-hero">
+          <div>
+            <p class="eyebrow">自動対戦モード</p>
+            <h1>BOSS BATTLE</h1>
+            <p class="subcopy">属性相性 / 6枚デッキ / 再挑戦 popup</p>
+          </div>
+          <div class="badge"><a href="/" style="text-decoration:none;color:inherit;">← 戻る</a></div>
+        </header>
+        <main class="grid">
+          <section class="panel battle-panel">
+            <div class="panel-head between">
+              <h2>バトルフィールド</h2>
+              <div class="battle-mini-status" id="battleStatusText">待機中...</div>
+            </div>
+            <div class="battlefield battleflow-vertical">
+              <section class="battle-section reward-section">
+                <div class="battle-section-title">勝利報酬</div>
+                <div class="reward-card-frame">
+                  <div class="portrait card-portrait">
+                    <div class="portrait-label">CARD</div>
+                    <div id="rewardCardInitials" class="portrait-initials">??</div>
+                  </div>
+                  <div>
+                    <h3 id="rewardCardName">？？？</h3>
+                    <p class="meta">勝てば新カードを獲得できます。</p>
+                  </div>
+                </div>
+              </section>
+              <section class="battle-section boss-section">
+                <div class="battle-section-title">ボス</div>
+                <div id="bossUnit" class="boss-unit">
+                  <div id="bossPortrait" class="portrait boss-portrait battlefield-boss-portrait">
+                    <div class="portrait-label">BOSS</div>
+                    <div id="bossInitials" class="portrait-initials">GO</div>
+                  </div>
+                  <div class="unit-name" id="bossName">遺跡の番人ゴーレム</div>
+                  <div class="unit-desc" id="bossDescription">古代遺跡の奥で眠っていた石の守護者。</div>
+                  <div class="element-badge element-none" id="bossElementBadge">無</div>
+                  <div class="hp-block battlefield-hp">
+                    <div class="hp-label">BOSS HP <span id="bossHpText">0 / 0</span></div>
+                    <div class="hp-bar"><div id="bossHpBar" class="hp-fill boss-fill" style="width:0%"></div></div>
+                  </div>
+                </div>
+              </section>
+              <section class="battle-section vs-section"><div class="vs-badge">VS</div></section>
+              <section class="battle-section deck-section">
+                <div class="battle-section-title">デッキ</div>
+                <div class="deck-grid battlefield-deck-grid" id="deckList"></div>
+              </section>
+              <section class="battle-section action-section">
+                <div class="battle-actions vertical-actions">
+                  <button id="startAutoBattleBtn">AUTO BATTLE 開始</button>
+                  <button id="startLoseTestBtn" class="ghost">敗北テスト</button>
+                  <button id="reloadBattleInfoBtn" class="secondary">情報再読込</button>
+                </div>
+              </section>
+              <section class="battle-section log-section">
+                <div class="battle-section-title">ログ</div>
+                <div id="battleLog" class="battle-log-box"><div class="list-item">戦闘を開始してください。</div></div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+      <div id="prepOverlay" class="prep-overlay hidden">
+        <div class="prep-popup">
+          <div id="prepText">AUTO BATTLE 準備中...</div>
+          <div class="loading-dots" style="margin-top:10px;"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <div id="defeatOverlay" class="defeat-overlay hidden">
+        <div class="defeat-popup">
+          <div class="defeat-title">全滅…</div>
+          <div class="defeat-subtitle">デッキは力尽きた</div>
+          <div class="defeat-actions">
+            <button id="retryDefeatBtn">再挑戦</button>
+            <button id="closeDefeatPopupBtn" class="secondary">閉じる</button>
+          </div>
+        </div>
+      </div>
+      <div id="victoryOverlay" class="defeat-overlay hidden">
+        <div class="defeat-popup">
+          <div class="defeat-title victory-title">勝利！</div>
+          <div class="defeat-subtitle">ボスを撃破した</div>
+          <div class="defeat-actions">
+            <button id="retryVictoryBtn">もう一戦</button>
+            <button id="closeVictoryPopupBtn" class="secondary">閉じる</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="device-bottom"><div class="keypad-row"><span>◀</span><span>決定</span><span>▶</span></div></div>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/js/battle.js"></script>
+</body>
+</html>

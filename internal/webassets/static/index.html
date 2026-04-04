@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Treasure Land</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="device-shell">
+    <div class="device-top">RETRO PHONE GAME</div>
+    <div class="screen-frame">
+      <div class="statusbar">
+        <div>◢◣◢ GREE+</div>
+        <div id="clockText">--:--</div>
+        <div>[||||]</div>
+      </div>
+      <div class="shell">
+        <header class="hero">
+          <div>
+            <p class="eyebrow">ガラケー探索ソシャゲ風</p>
+            <h1>Treasure Land</h1>
+            <p class="subcopy">探索・収集・6枚デッキAUTO BATTLE</p>
+          </div>
+          <div id="authBadge" class="badge hidden">未ログイン</div>
+        </header>
+        <main class="grid">
+          <section id="authView" class="panel auth-panel">
+            <div class="tabs">
+              <button class="tab active" data-tab="login">ログイン</button>
+              <button class="tab" data-tab="register">新規登録</button>
+            </div>
+            <div class="tab-body" data-tab-body="login">
+              <form id="loginForm" class="stack">
+                <label>ユーザー名<input type="text" name="username" required minlength="3" maxlength="20" /></label>
+                <label>パスワード<input type="password" name="password" required minlength="8" maxlength="72" /></label>
+                <button type="submit">ログイン</button>
+              </form>
+            </div>
+            <div class="tab-body hidden" data-tab-body="register">
+              <form id="registerForm" class="stack">
+                <label>ユーザー名<input type="text" name="username" required minlength="3" maxlength="20" /></label>
+                <label>パスワード<input type="password" name="password" required minlength="8" maxlength="72" /></label>
+                <button type="submit">登録して始める</button>
+              </form>
+            </div>
+            <div class="divider">または</div>
+            <button id="quickStartBtn" class="secondary">かんたん開始</button>
+          </section>
+          <section id="gameView" class="hidden">
+            <section class="panel">
+              <div class="panel-head between"><h2>マイページ</h2><button id="logoutBtn" class="ghost">ログアウト</button></div>
+              <div class="status-grid">
+                <div class="stat"><span>名前</span><strong id="playerName">-</strong></div>
+                <div class="stat"><span>Lv</span><strong id="playerLevel">1</strong></div>
+                <div class="stat"><span>EXP</span><strong id="playerExp">0</strong></div>
+                <div class="stat"><span>スタミナ</span><strong id="playerStamina">∞</strong></div>
+                <div class="stat"><span>コイン</span><strong id="playerCoins">100</strong></div>
+                <div class="stat"><span>総探索回数</span><strong id="playerExplorations">0</strong></div>
+              </div>
+              <div class="actions-row wide-actions">
+                <button id="refreshBtn" class="secondary">情報更新</button>
+                <button id="claimBonusBtn">ログインボーナス受取</button>
+                <a class="button-link" href="/static/battle.html">対戦専用画面へ</a>
+                <a class="button-link secondary-link" href="/static/cards.html">カード管理へ</a>
+                <a class="button-link" href="/static/gacha.html">ガチャへ</a>
+                <a class="button-link secondary-link" href="/static/checkpoint.html">チェックポイントへ</a>
+              </div>
+            </section>
+            <section class="panel">
+              <div class="panel-head"><h2>探索</h2></div>
+              <div class="retro-subhead">エリアを選択してください</div>
+              <div id="areasList" class="card-grid"></div>
+              <div id="exploreSequence" class="sequence-box muted"><div>待機中...</div></div>
+              <div id="exploreResult" class="result-box muted">まだ探索していません。</div>
+            </section>
+            <section class="double-grid">
+              <section class="panel"><div class="panel-head between"><h2>6枚デッキ</h2><a class="ghost-link" href="/static/cards.html">編成/強化</a></div><div id="deckPreview" class="deck-mini-grid muted">読み込み中...</div></section>
+              <section class="panel"><div class="panel-head between"><h2>固定ボス</h2><a class="ghost-link" href="/static/battle.html">バトルへ</a></div><div id="bossPreview" class="boss-preview muted">読み込み中...</div></section>
+            </section>
+            <section class="double-grid">
+              <section class="panel"><div class="panel-head between"><h2>所持品</h2><button id="reloadInventoryBtn" class="ghost">再読込</button></div><div id="inventoryList" class="list-box muted">読み込み中...</div></section>
+              <section class="panel"><div class="panel-head between"><h2>図鑑</h2><button id="reloadEncyclopediaBtn" class="ghost">再読込</button></div><p id="encyclopediaRate" class="completion">達成率: -</p><div id="encyclopediaList" class="list-box muted">読み込み中...</div></section>
+            </section>
+            <section class="panel"><div class="panel-head between"><h2>お知らせ</h2><button id="reloadNoticesBtn" class="ghost">再読込</button></div><div id="noticesList" class="list-box muted">読み込み中...</div></section>
+          </section>
+        </main>
+      </div>
+      <div id="loadingOverlay" class="loading-overlay hidden"><div class="loading-box"><div class="loading-title">通信中...</div><div class="loading-dots"><span></span><span></span><span></span></div></div></div>
+    </div>
+    <div class="device-bottom"><div class="keypad-row"><span>◀</span><span>決定</span><span>▶</span></div></div>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
