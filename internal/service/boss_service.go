@@ -39,6 +39,16 @@ type defenseSkillResult struct {
 	Evaded            bool
 }
 
+type bossAttackOutcome struct {
+	Move              bossAttackMove
+	TargetIdx         int
+	Damage            int
+	DefenseSkill      defenseSkillResult
+	SupportTargetName string
+	SupportTargetSlot int
+	TargetKO          bool
+}
+
 const enduranceTargetTurns = 5
 
 func (s *BossService) GetBoss(userID int64, bossID int64) (model.BossInfoResponse, error) {
@@ -62,123 +72,258 @@ func (s *BossService) AutoBattle(userID int64, bossID int64) (model.AutoBattleRe
 	if bossID <= 0 {
 		bossID = 1
 	}
+
 	boss, err := s.repo.GetBoss(bossID)
 	if err != nil {
 		return model.AutoBattleResponse{}, err
 	}
+
 	deckView, err := s.repo.ListDeckCards(userID)
 	if err != nil {
 		return model.AutoBattleResponse{}, err
 	}
+
+	deck := buildBattleDeck(deckView)
+	initialDeck := battleDeckSnapshot(deck)
+	bossHP := boss.MaxHP
+
+	survivedTurns, logs := runEnduranceBattle(boss, deck, bossHP)
+	boss.CurrentHP = &bossHP
+
+	resp := model.AutoBattleResponse{
+		BattleTitle:   "ENDURANCE BATTLE",
+		BattleMode:    "endurance",
+		TargetTurns:   enduranceTargetTurns,
+		SurvivedTurns: survivedTurns,
+		Boss:          boss,
+		InitialDeck:   initialDeck,
+		Deck:          battleDeckSnapshot(deck),
+		Logs:          logs,
+	}
+
+	if survivedTurns >= enduranceTargetTurns {
+		s.applyEnduranceWinReward(userID, boss, &resp)
+	} else {
+		s.applyEnduranceLoseReward(userID, boss, &resp)
+	}
+
+	return resp, nil
+}
+
+func buildBattleDeck(deckView []model.DeckCardView) []battleCardState {
 	deck := make([]battleCardState, 0, len(deckView))
 	for _, dc := range deckView {
-		deck = append(deck, battleCardState{Card: dc.Card, DeckSlot: dc.DeckSlot, CurrentHP: dc.Card.MaxHP})
+		deck = append(deck, battleCardState{
+			Card:      dc.Card,
+			DeckSlot:  dc.DeckSlot,
+			CurrentHP: dc.Card.MaxHP,
+		})
 	}
-	initialDeck := make([]model.BattleDeckCardState, 0, len(deck))
+	return deck
+}
+
+func battleDeckSnapshot(deck []battleCardState) []model.BattleDeckCardState {
+	snapshot := make([]model.BattleDeckCardState, 0, len(deck))
 	for _, dc := range deck {
-		initialDeck = append(initialDeck, model.BattleDeckCardState{Card: dc.Card, DeckSlot: dc.DeckSlot, CurrentHP: dc.CurrentHP, MaxHP: dc.Card.MaxHP})
+		snapshot = append(snapshot, model.BattleDeckCardState{
+			Card:       dc.Card,
+			DeckSlot:   dc.DeckSlot,
+			CurrentHP:  dc.CurrentHP,
+			MaxHP:      dc.Card.MaxHP,
+			KnockedOut: dc.CurrentHP <= 0,
+		})
 	}
-	bossHP := boss.MaxHP
+	return snapshot
+}
+
+func runEnduranceBattle(boss model.Boss, deck []battleCardState, bossHP int) (int, []model.BattleLogEntry) {
 	logs := make([]model.BattleLogEntry, 0, 64)
 	survivedTurns := 0
+
 	for round := 1; round <= enduranceTargetTurns && anyAlive(deck); round++ {
-		logs = append(logs, model.BattleLogEntry{
-			Round:   round,
-			Action:  "turn_start",
-			Message: fmt.Sprintf("耐久 %d / %d ターン目。%s の猛攻に備えろ！", round, enduranceTargetTurns, boss.Name),
-			BossHP:  bossHP,
-		})
+		logs = append(logs, enduranceTurnStartLog(round, boss, bossHP))
+
 		for hit := 1; hit <= enduranceBossAttackCount(boss, round); hit++ {
-			targetIdx := randomAliveIndex(deck)
-			if targetIdx < 0 {
+			outcome, ok := resolveBossAttack(boss, deck, round, hit)
+			if !ok {
 				break
 			}
-			move := selectBossAttackMove(boss, round, hit)
-			rawBossDmg := calcEnduranceBossDamage(boss, deck[targetIdx].Card, round) + move.PowerBonus
-			defenseSkill := triggerDefenseSkill(deck, targetIdx, boss, rawBossDmg)
-			bossDmg := max(0, rawBossDmg-defenseSkill.DamageReduced)
-			deck[targetIdx].CurrentHP -= bossDmg
-			if deck[targetIdx].CurrentHP < 0 {
-				deck[targetIdx].CurrentHP = 0
-			}
-			if defenseSkill.EffectType == "revive" && deck[targetIdx].CurrentHP == 0 {
-				deck[targetIdx].CurrentHP = max(1, int(math.Round(float64(deck[targetIdx].Card.MaxHP)*0.32)))
-				defenseSkill.Revived = true
-			}
-			if defenseSkill.Tier == "advantage" && deck[targetIdx].CurrentHP == 0 {
-				deck[targetIdx].CurrentHP = 1
-				defenseSkill.Revived = true
-			}
-			if defenseSkill.HealAmount > 0 {
-				deck[targetIdx].CurrentHP = min(deck[targetIdx].Card.MaxHP, deck[targetIdx].CurrentHP+defenseSkill.HealAmount)
-			}
-			supportTargetName := ""
-			supportTargetSlot := 0
-			if defenseSkill.SupportTargetIdx >= 0 && defenseSkill.SupportTargetIdx < len(deck) && defenseSkill.SupportHealAmount > 0 {
-				supportTarget := &deck[defenseSkill.SupportTargetIdx]
-				beforeHeal := supportTarget.CurrentHP
-				supportTarget.CurrentHP = min(supportTarget.Card.MaxHP, supportTarget.CurrentHP+defenseSkill.SupportHealAmount)
-				defenseSkill.SupportHealAmount = supportTarget.CurrentHP - beforeHeal
-				if defenseSkill.SupportHealAmount > 0 {
-					supportTargetName = supportTarget.Card.Name
-					supportTargetSlot = supportTarget.DeckSlot - 1
-				}
-			}
-			logs = append(logs, model.BattleLogEntry{Round: round, ActorType: "boss", ActorName: boss.Name, TargetName: deck[targetIdx].Card.Name, Action: "endurance_smash", SkillName: move.Name, EffectType: move.EffectType, DefenseSkillName: defenseSkill.Name, DefenseSkillTier: defenseSkill.Tier, DefenseEffectType: defenseSkill.EffectType, DamageReduced: defenseSkill.DamageReduced, HealAmount: defenseSkill.HealAmount, SupportTargetName: supportTargetName, SupportTargetSlot: supportTargetSlot, SupportHealAmount: defenseSkill.SupportHealAmount, Revived: defenseSkill.Revived, Evaded: defenseSkill.Evaded, Damage: bossDmg, TargetHP: deck[targetIdx].CurrentHP, TargetMaxHP: deck[targetIdx].Card.MaxHP, TargetSlot: deck[targetIdx].DeckSlot - 1, CardHPAfter: deck[targetIdx].CurrentHP, BossHP: bossHP, Message: enduranceBossAttackMessage(boss.Name, move.Name, defenseSkill, round, hit, deck[targetIdx].Card.Name, bossDmg, supportTargetName), TargetKO: deck[targetIdx].CurrentHP == 0})
+
+			logs = append(logs, enduranceAttackLog(round, hit, boss, deck[outcome.TargetIdx], bossHP, outcome))
 			if !anyAlive(deck) {
 				break
 			}
 		}
+
 		if !anyAlive(deck) {
 			break
 		}
 		survivedTurns = round
 	}
-	respDeck := make([]model.BattleDeckCardState, 0, len(deck))
-	for _, dc := range deck {
-		respDeck = append(respDeck, model.BattleDeckCardState{Card: dc.Card, DeckSlot: dc.DeckSlot, CurrentHP: dc.CurrentHP, MaxHP: dc.Card.MaxHP, KnockedOut: dc.CurrentHP <= 0})
+
+	return survivedTurns, logs
+}
+
+func enduranceTurnStartLog(round int, boss model.Boss, bossHP int) model.BattleLogEntry {
+	return model.BattleLogEntry{
+		Round:   round,
+		Action:  "turn_start",
+		Message: fmt.Sprintf("耐久 %d / %d ターン目。%s の猛攻に備えろ！", round, enduranceTargetTurns, boss.Name),
+		BossHP:  bossHP,
 	}
-	boss.CurrentHP = &bossHP
-	resp := model.AutoBattleResponse{BattleTitle: "ENDURANCE BATTLE", BattleMode: "endurance", TargetTurns: enduranceTargetTurns, SurvivedTurns: survivedTurns, Boss: boss, InitialDeck: initialDeck, Deck: respDeck, Logs: logs}
-	if survivedTurns >= enduranceTargetTurns {
-		resp.Result = "win"
-		resp.Reward.Exp = boss.RewardExp
-		resp.Reward.Coins = boss.RewardCoins
-		resp.Summary = fmt.Sprintf("%s の猛攻を %d ターン耐え切った！ EXP %d / COIN %d を獲得！", boss.Name, enduranceTargetTurns, boss.RewardExp, boss.RewardCoins)
-		status, _ := s.repo.GetPlayerStatus(userID)
-		status.Exp += boss.RewardExp
-		status.Coins += boss.RewardCoins
-		for status.Exp >= requiredExpForLevel(status.Level+1) {
-			status.Level++
-		}
-		_ = s.repo.SavePlayerStatus(status)
-		dropRate := bossDropRate(boss)
-		resp.Reward.BossDropRate = dropRate
-		if randInt(100) < dropRate {
-			if reward, duplicate, ok := s.pickBossDropCard(userID, boss); ok {
-				resp.Reward.BossDropCard = &reward
-				resp.Reward.RewardCard = &reward
-				resp.Reward.BossDropDuplicate = duplicate
-				resp.Reward.BossDropOccurred = true
-				if duplicate {
-					resp.Reward.BossDropMessage = fmt.Sprintf("ボスドロップ: %s が重複し、カードが強化された。", reward.Name)
-				} else {
-					resp.Reward.BossDropMessage = fmt.Sprintf("ボスドロップ: %s を獲得！", reward.Name)
-				}
-				resp.Summary += " " + resp.Reward.BossDropMessage
-			}
-		} else {
-			resp.Reward.BossDropMessage = fmt.Sprintf("ボスドロップ判定: 失敗（%d%%）", dropRate)
-		}
+}
+
+func resolveBossAttack(boss model.Boss, deck []battleCardState, round int, hit int) (bossAttackOutcome, bool) {
+	targetIdx := randomAliveIndex(deck)
+	if targetIdx < 0 {
+		return bossAttackOutcome{}, false
+	}
+
+	move := selectBossAttackMove(boss, round, hit)
+	rawDamage := calcEnduranceBossDamage(boss, deck[targetIdx].Card, round) + move.PowerBonus
+	defenseSkill := triggerDefenseSkill(deck, targetIdx, boss, rawDamage)
+	damage := max(0, rawDamage-defenseSkill.DamageReduced)
+
+	applyDamageAndSelfRecovery(&deck[targetIdx], damage, &defenseSkill)
+	supportTargetName, supportTargetSlot := applySupportRecovery(deck, &defenseSkill)
+
+	return bossAttackOutcome{
+		Move:              move,
+		TargetIdx:         targetIdx,
+		Damage:            damage,
+		DefenseSkill:      defenseSkill,
+		SupportTargetName: supportTargetName,
+		SupportTargetSlot: supportTargetSlot,
+		TargetKO:          deck[targetIdx].CurrentHP == 0,
+	}, true
+}
+
+func applyDamageAndSelfRecovery(target *battleCardState, damage int, defenseSkill *defenseSkillResult) {
+	target.CurrentHP = max(0, target.CurrentHP-damage)
+
+	if defenseSkill.EffectType == "revive" && target.CurrentHP == 0 {
+		target.CurrentHP = max(1, int(math.Round(float64(target.Card.MaxHP)*0.32)))
+		defenseSkill.Revived = true
+	}
+	if defenseSkill.Tier == "advantage" && target.CurrentHP == 0 {
+		target.CurrentHP = 1
+		defenseSkill.Revived = true
+	}
+	if defenseSkill.HealAmount > 0 {
+		target.CurrentHP = min(target.Card.MaxHP, target.CurrentHP+defenseSkill.HealAmount)
+	}
+}
+
+func applySupportRecovery(deck []battleCardState, defenseSkill *defenseSkillResult) (string, int) {
+	if defenseSkill.SupportTargetIdx < 0 ||
+		defenseSkill.SupportTargetIdx >= len(deck) ||
+		defenseSkill.SupportHealAmount <= 0 {
+		return "", 0
+	}
+
+	supportTarget := &deck[defenseSkill.SupportTargetIdx]
+	beforeHeal := supportTarget.CurrentHP
+	supportTarget.CurrentHP = min(supportTarget.Card.MaxHP, supportTarget.CurrentHP+defenseSkill.SupportHealAmount)
+	defenseSkill.SupportHealAmount = supportTarget.CurrentHP - beforeHeal
+	if defenseSkill.SupportHealAmount <= 0 {
+		return "", 0
+	}
+
+	return supportTarget.Card.Name, supportTarget.DeckSlot - 1
+}
+
+func enduranceAttackLog(round int, hit int, boss model.Boss, target battleCardState, bossHP int, outcome bossAttackOutcome) model.BattleLogEntry {
+	defenseSkill := outcome.DefenseSkill
+
+	return model.BattleLogEntry{
+		Round:             round,
+		ActorType:         "boss",
+		ActorName:         boss.Name,
+		TargetName:        target.Card.Name,
+		Action:            "endurance_smash",
+		SkillName:         outcome.Move.Name,
+		EffectType:        outcome.Move.EffectType,
+		DefenseSkillName:  defenseSkill.Name,
+		DefenseSkillTier:  defenseSkill.Tier,
+		DefenseEffectType: defenseSkill.EffectType,
+		DamageReduced:     defenseSkill.DamageReduced,
+		HealAmount:        defenseSkill.HealAmount,
+		SupportTargetName: outcome.SupportTargetName,
+		SupportTargetSlot: outcome.SupportTargetSlot,
+		SupportHealAmount: defenseSkill.SupportHealAmount,
+		Revived:           defenseSkill.Revived,
+		Evaded:            defenseSkill.Evaded,
+		Damage:            outcome.Damage,
+		TargetHP:          target.CurrentHP,
+		TargetMaxHP:       target.Card.MaxHP,
+		TargetSlot:        target.DeckSlot - 1,
+		CardHPAfter:       target.CurrentHP,
+		BossHP:            bossHP,
+		Message: enduranceBossAttackMessage(
+			boss.Name,
+			outcome.Move.Name,
+			defenseSkill,
+			round,
+			hit,
+			target.Card.Name,
+			outcome.Damage,
+			outcome.SupportTargetName,
+		),
+		TargetKO: outcome.TargetKO,
+	}
+}
+
+func (s *BossService) applyEnduranceWinReward(userID int64, boss model.Boss, resp *model.AutoBattleResponse) {
+	resp.Result = "win"
+	resp.Reward.Exp = boss.RewardExp
+	resp.Reward.Coins = boss.RewardCoins
+	resp.Summary = fmt.Sprintf("%s の猛攻を %d ターン耐え切った！ EXP %d / COIN %d を獲得！", boss.Name, enduranceTargetTurns, boss.RewardExp, boss.RewardCoins)
+
+	status, _ := s.repo.GetPlayerStatus(userID)
+	status.Exp += boss.RewardExp
+	status.Coins += boss.RewardCoins
+	for status.Exp >= requiredExpForLevel(status.Level+1) {
+		status.Level++
+	}
+	_ = s.repo.SavePlayerStatus(status)
+
+	s.applyBossDropReward(userID, boss, resp)
+}
+
+func (s *BossService) applyBossDropReward(userID int64, boss model.Boss, resp *model.AutoBattleResponse) {
+	dropRate := bossDropRate(boss)
+	resp.Reward.BossDropRate = dropRate
+
+	if randInt(100) >= dropRate {
+		resp.Reward.BossDropMessage = fmt.Sprintf("ボスドロップ判定: 失敗（%d%%）", dropRate)
+		return
+	}
+
+	reward, duplicate, ok := s.pickBossDropCard(userID, boss)
+	if !ok {
+		return
+	}
+
+	resp.Reward.BossDropCard = &reward
+	resp.Reward.RewardCard = &reward
+	resp.Reward.BossDropDuplicate = duplicate
+	resp.Reward.BossDropOccurred = true
+	if duplicate {
+		resp.Reward.BossDropMessage = fmt.Sprintf("ボスドロップ: %s が重複し、カードが強化された。", reward.Name)
 	} else {
-		resp.Result = "lose"
-		resp.Reward.Coins = 20
-		resp.Summary = fmt.Sprintf("%s の猛攻に %d / %d ターンで敗北... しかし COIN %d を持ち帰った。", boss.Name, survivedTurns, enduranceTargetTurns, resp.Reward.Coins)
-		status, _ := s.repo.GetPlayerStatus(userID)
-		status.Coins += resp.Reward.Coins
-		_ = s.repo.SavePlayerStatus(status)
+		resp.Reward.BossDropMessage = fmt.Sprintf("ボスドロップ: %s を獲得！", reward.Name)
 	}
-	return resp, nil
+	resp.Summary += " " + resp.Reward.BossDropMessage
+}
+
+func (s *BossService) applyEnduranceLoseReward(userID int64, boss model.Boss, resp *model.AutoBattleResponse) {
+	resp.Result = "lose"
+	resp.Reward.Coins = 20
+	resp.Summary = fmt.Sprintf("%s の猛攻に %d / %d ターンで敗北... しかし COIN %d を持ち帰った。", boss.Name, resp.SurvivedTurns, enduranceTargetTurns, resp.Reward.Coins)
+
+	status, _ := s.repo.GetPlayerStatus(userID)
+	status.Coins += resp.Reward.Coins
+	_ = s.repo.SavePlayerStatus(status)
 }
 
 func calcDamage(card model.CharacterCard, boss model.Boss) int {

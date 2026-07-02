@@ -6,12 +6,21 @@
 
   function buildDynamicStage() {
     document.title = "";
-    document.documentElement.classList.add("js-premium-stage", "js-no-page-title", "js-smart-game-ui", "js-landscape-game-ui");
+    document.documentElement.classList.add(
+      "js-premium-stage",
+      "js-no-page-title",
+      "js-smart-game-ui",
+      "js-landscape-game-ui",
+    );
 
-    document.querySelectorAll(".hero h1, body:not(.battle-only) main > .panel > .panel-head h2, body.special-battle .battle-panel .panel-head h2").forEach((title) => {
-      title.classList.add("js-hidden-page-title");
-      title.setAttribute("aria-hidden", "true");
-    });
+    document
+      .querySelectorAll(
+        ".hero h1, body:not(.battle-only) main > .panel > .panel-head h2, body.special-battle .battle-panel .panel-head h2",
+      )
+      .forEach((title) => {
+        title.classList.add("js-hidden-page-title");
+        title.setAttribute("aria-hidden", "true");
+      });
 
     if (!document.querySelector(".js-stage-effects")) {
       const effects = document.createElement("div");
@@ -68,15 +77,20 @@
       dock.className = "js-bottom-dock";
       dock.setAttribute("aria-label", "クイックメニュー");
       dock.innerHTML = dockItems
-        .map(([key, href, label]) => `<a class="${key === current ? "active" : ""}" href="${href}"><span>${label}</span></a>`)
+        .map(
+          ([key, href, label]) =>
+            `<a class="${key === current ? "active" : ""}" href="${href}"><span>${label}</span></a>`,
+        )
         .join("");
       document.body.appendChild(dock);
     }
 
-    document.querySelectorAll(".home-tile, .panel, .boss-unit, .deck-card").forEach((node, index) => {
-      node.style.setProperty("--js-order", index % 12);
-      node.classList.add("js-polished-surface");
-    });
+    document
+      .querySelectorAll(".home-tile, .panel, .boss-unit, .deck-card")
+      .forEach((node, index) => {
+        node.style.setProperty("--js-order", index % 12);
+        node.classList.add("js-polished-surface");
+      });
 
     document.querySelectorAll(".home-tile").forEach((tile, index) => {
       tile.style.setProperty("--tile-hue", String((index * 31) % 360));
@@ -94,16 +108,22 @@
   }
 
   function normalizeText(value) {
-    return String(value || "").replace(/\s+/g, "").trim().toUpperCase();
+    return String(value || "")
+      .replace(/\s+/g, "")
+      .trim()
+      .toUpperCase();
   }
 
   const generatedIconMap = {
     home: "/static/img/ui/icon-home.png?v=relic-boss-drops-deck-icons-20260630",
-    player: "/static/img/ui/icon-player.png?v=relic-boss-drops-deck-icons-20260630",
+    player:
+      "/static/img/ui/icon-player.png?v=relic-boss-drops-deck-icons-20260630",
     deck: "/static/img/ui/icon-deck.png?v=relic-boss-drops-deck-icons-20260630",
     boss: "/static/img/ui/icon-boss.png?v=relic-boss-drops-deck-icons-20260630",
-    checkpoint: "/static/img/ui/icon-checkpoint.png?v=relic-boss-drops-deck-icons-20260630",
-    gacha: "/static/img/ui/icon-gacha.png?v=relic-boss-drops-deck-icons-20260630",
+    checkpoint:
+      "/static/img/ui/icon-checkpoint.png?v=relic-boss-drops-deck-icons-20260630",
+    gacha:
+      "/static/img/ui/icon-gacha.png?v=relic-boss-drops-deck-icons-20260630",
   };
 
   function iconForElement(element) {
@@ -111,20 +131,70 @@
     const href = element.getAttribute("href") || "";
     const route = href.split("?")[0];
 
-    if (element.classList.contains("page-back") || text.includes("戻る")) return "<";
-    if (route.endsWith("/index.html") || route === "/" || text.includes("HOME") || text.includes("ホーム")) return "home";
-    if (route.endsWith("/mypage.html") || text.includes("PLAYER") || text.includes("マイページ")) return "player";
-    if (route.endsWith("/deck.html") || text.includes("DECK") || text.includes("デッキ")) return "deck";
-    if (route.endsWith("/boss.html") || text.includes("BOSS") || text.includes("ボス")) return "boss";
-    if (route.endsWith("/checkpoint.html") || text.includes("NODE") || text.includes("チェック")) return "checkpoint";
-    if (route.endsWith("/gacha.html") || text.includes("GACHA") || text.includes("ガチャ")) return "gacha";
-    if (route.endsWith("/cards.html") || route.endsWith("/encyclopedia.html") || text.includes("CARD") || text.includes("カード") || text.includes("図鑑")) return "deck";
+    if (element.classList.contains("page-back") || text.includes("戻る"))
+      return "<";
+    if (
+      route.endsWith("/index.html") ||
+      route === "/" ||
+      text.includes("HOME") ||
+      text.includes("ホーム")
+    )
+      return "home";
+    if (
+      route.endsWith("/mypage.html") ||
+      text.includes("PLAYER") ||
+      text.includes("マイページ")
+    )
+      return "player";
+    if (
+      route.endsWith("/deck.html") ||
+      text.includes("DECK") ||
+      text.includes("デッキ")
+    )
+      return "deck";
+    if (
+      route.endsWith("/boss.html") ||
+      text.includes("BOSS") ||
+      text.includes("ボス")
+    )
+      return "boss";
+    if (
+      route.endsWith("/checkpoint.html") ||
+      text.includes("NODE") ||
+      text.includes("チェック")
+    )
+      return "checkpoint";
+    if (
+      route.endsWith("/gacha.html") ||
+      text.includes("GACHA") ||
+      text.includes("ガチャ")
+    )
+      return "gacha";
+    if (
+      route.endsWith("/cards.html") ||
+      route.endsWith("/encyclopedia.html") ||
+      text.includes("CARD") ||
+      text.includes("カード") ||
+      text.includes("図鑑")
+    )
+      return "deck";
     if (text.includes("ログイン")) return "IN";
     if (text.includes("ログアウト") || text.includes("LOGOUT")) return "X";
     if (text.includes("新規") || text.includes("登録")) return "+";
     if (text.includes("かんたん")) return ">>";
-    if (text.includes("開始") || text.includes("START") || text.includes("READY")) return ">";
-    if (text.includes("再読込") || text.includes("更新") || text.includes("SYNC") || text.includes("REFRESH")) return "R";
+    if (
+      text.includes("開始") ||
+      text.includes("START") ||
+      text.includes("READY")
+    )
+      return ">";
+    if (
+      text.includes("再読込") ||
+      text.includes("更新") ||
+      text.includes("SYNC") ||
+      text.includes("REFRESH")
+    )
+      return "R";
     if (text.includes("保存")) return "OK";
     if (text.includes("強化")) return "UP";
     if (text.includes("報酬") || text.includes("DAILY")) return "!";
@@ -140,7 +210,10 @@
     iconNode.className = "game-btn-icon";
     iconNode.setAttribute("aria-hidden", "true");
     if (generatedIconMap[icon]) {
-      iconNode.style.setProperty("--game-icon-image", `url("${generatedIconMap[icon]}")`);
+      iconNode.style.setProperty(
+        "--game-icon-image",
+        `url("${generatedIconMap[icon]}")`,
+      );
       iconNode.classList.add("generated-game-icon");
     } else {
       iconNode.textContent = icon;
@@ -155,7 +228,10 @@
     iconNode.className = "tile-icon";
     iconNode.setAttribute("aria-hidden", "true");
     if (generatedIconMap[icon]) {
-      iconNode.style.setProperty("--game-icon-image", `url("${generatedIconMap[icon]}")`);
+      iconNode.style.setProperty(
+        "--game-icon-image",
+        `url("${generatedIconMap[icon]}")`,
+      );
       iconNode.classList.add("generated-game-icon");
     } else {
       iconNode.textContent = icon;
@@ -165,9 +241,13 @@
   }
 
   function decorateGameIcons(root = document) {
-    root.querySelectorAll("button, .ghost-link, .button-link, .page-tab, .js-bottom-dock a").forEach((element) => {
-      addButtonIcon(element, iconForElement(element));
-    });
+    root
+      .querySelectorAll(
+        "button, .ghost-link, .button-link, .page-tab, .js-bottom-dock a",
+      )
+      .forEach((element) => {
+        addButtonIcon(element, iconForElement(element));
+      });
     root.querySelectorAll(".home-tile").forEach((tile) => {
       addTileIcon(tile, iconForElement(tile));
     });
@@ -180,8 +260,13 @@
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType !== 1) return;
-          if (node.matches?.("button, .ghost-link, .button-link, .page-tab, .js-bottom-dock a, .home-tile")) {
-            if (node.classList.contains("home-tile")) addTileIcon(node, iconForElement(node));
+          if (
+            node.matches?.(
+              "button, .ghost-link, .button-link, .page-tab, .js-bottom-dock a, .home-tile",
+            )
+          ) {
+            if (node.classList.contains("home-tile"))
+              addTileIcon(node, iconForElement(node));
             else addButtonIcon(node, iconForElement(node));
           }
           decorateGameIcons(node);
@@ -190,14 +275,19 @@
     });
     observer.observe(document.body, { childList: true, subtree: true });
     window.decorateGameIcons = decorateGameIcons;
-    requestAnimationFrame(() => document.documentElement.classList.remove("is-app-loading"));
+    requestAnimationFrame(() =>
+      document.documentElement.classList.remove("is-app-loading"),
+    );
   });
 
   window.gameTransition = {
     enter() {
       document.documentElement.classList.remove("is-app-leaving");
       document.documentElement.classList.add("is-app-entering");
-      window.setTimeout(() => document.documentElement.classList.remove("is-app-entering"), 420);
+      window.setTimeout(
+        () => document.documentElement.classList.remove("is-app-entering"),
+        420,
+      );
     },
     leave(callback) {
       document.documentElement.classList.add("is-app-leaving");

@@ -1,77 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RELIC RAID</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=relic-boss-drops-deck-icons-20260630" />
-</head>
-<body data-page="home">
-  <div class="device-shell">
-    <div class="device-top">RELIC RAID</div>
-    <div class="screen-frame">
-      <div class="statusbar">
-        <div>◢◣◢ GREMOBA+</div>
-        <div id="clockText">--:--</div>
-        <div>[||||]</div>
-      </div>
-      <div class="shell">
-        <header class="hero">
-          <div>
-            <p class="eyebrow">探索コレクションRPG</p>
-            <h1>RELIC RAID</h1>
-            <p class="subcopy">探索・収集・6枚デッキAUTO BATTLE</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RELIC RAID</title>
+    <link
+      rel="stylesheet"
+      href="/static/css/style.css?v=relic-boss-drops-deck-icons-20260630"
+    />
+  </head>
+  <body data-page="home">
+    <div class="device-shell">
+      <div class="device-top">RELIC RAID</div>
+      <div class="screen-frame">
+        <div class="statusbar">
+          <div>◢◣◢ GREMOBA+</div>
+          <div id="clockText">--:--</div>
+          <div>[||||]</div>
+        </div>
+        <div class="shell">
+          <header class="hero">
+            <div>
+              <p class="eyebrow">探索コレクションRPG</p>
+              <h1>RELIC RAID</h1>
+              <p class="subcopy">探索・収集・6枚デッキAUTO BATTLE</p>
+            </div>
+            <div id="authBadge" class="badge hidden">未ログイン</div>
+          </header>
+          <main class="grid">
+            <section id="authView" class="panel auth-panel">
+              <div class="tabs">
+                <button class="tab active" data-tab="login">ログイン</button>
+                <button class="tab" data-tab="register">新規登録</button>
+              </div>
+              <div class="tab-body" data-tab-body="login">
+                <form id="loginForm" class="stack">
+                  <label
+                    >ユーザー名<input
+                      type="text"
+                      name="username"
+                      required
+                      minlength="3"
+                      maxlength="20"
+                  /></label>
+                  <label
+                    >パスワード<input
+                      type="password"
+                      name="password"
+                      required
+                      minlength="8"
+                      maxlength="72"
+                  /></label>
+                  <button type="submit">ログイン</button>
+                </form>
+              </div>
+              <div class="tab-body hidden" data-tab-body="register">
+                <form id="registerForm" class="stack">
+                  <label
+                    >ユーザー名<input
+                      type="text"
+                      name="username"
+                      required
+                      minlength="3"
+                      maxlength="20"
+                  /></label>
+                  <label
+                    >パスワード<input
+                      type="password"
+                      name="password"
+                      required
+                      minlength="8"
+                      maxlength="72"
+                  /></label>
+                  <button type="submit">登録して始める</button>
+                </form>
+              </div>
+              <div class="divider">または</div>
+              <button id="quickStartBtn" class="secondary">かんたん開始</button>
+            </section>
+            <section id="gameView" class="hidden">
+              <div class="page-view active" data-page="home">
+                <section class="panel">
+                  <div class="panel-head between">
+                    <h2>ホーム</h2>
+                    <button id="logoutBtn" class="ghost">ログアウト</button>
+                  </div>
+                  <div class="retro-subhead">メニュー</div>
+                  <div class="home-tile-grid">
+                    <a class="home-tile" href="/static/mypage.html"
+                      ><span>マイページ</span
+                      ><small>ステータスとボーナス</small></a
+                    >
+                    <a class="home-tile" href="/static/deck.html"
+                      ><span>デッキ</span><small>6枚編成を確認</small></a
+                    >
+                    <a class="home-tile" href="/static/boss.html"
+                      ><span>ボス</span><small>挑戦する相手を選択</small></a
+                    >
+                    <a class="home-tile" href="/static/cards.html"
+                      ><span>カード管理</span><small>編成と強化</small></a
+                    >
+                    <a class="home-tile" href="/static/gacha.html"
+                      ><span>ガチャ</span><small>カード獲得</small></a
+                    >
+                    <a class="home-tile" href="/static/checkpoint.html"
+                      ><span>チェックポイント</span
+                      ><small>QR報酬とルート</small></a
+                    >
+                    <a class="home-tile" href="/static/encyclopedia.html"
+                      ><span>カード図鑑</span><small>全カードを確認</small></a
+                    >
+                  </div>
+                </section>
+              </div>
+            </section>
+          </main>
+        </div>
+        <div id="loadingOverlay" class="loading-overlay hidden">
+          <div class="loading-box">
+            <div class="loading-title">通信中...</div>
+            <div class="loading-dots">
+              <span></span><span></span><span></span>
+            </div>
           </div>
-          <div id="authBadge" class="badge hidden">未ログイン</div>
-        </header>
-        <main class="grid">
-          <section id="authView" class="panel auth-panel">
-            <div class="tabs">
-              <button class="tab active" data-tab="login">ログイン</button>
-              <button class="tab" data-tab="register">新規登録</button>
-            </div>
-            <div class="tab-body" data-tab-body="login">
-              <form id="loginForm" class="stack">
-                <label>ユーザー名<input type="text" name="username" required minlength="3" maxlength="20" /></label>
-                <label>パスワード<input type="password" name="password" required minlength="8" maxlength="72" /></label>
-                <button type="submit">ログイン</button>
-              </form>
-            </div>
-            <div class="tab-body hidden" data-tab-body="register">
-              <form id="registerForm" class="stack">
-                <label>ユーザー名<input type="text" name="username" required minlength="3" maxlength="20" /></label>
-                <label>パスワード<input type="password" name="password" required minlength="8" maxlength="72" /></label>
-                <button type="submit">登録して始める</button>
-              </form>
-            </div>
-            <div class="divider">または</div>
-            <button id="quickStartBtn" class="secondary">かんたん開始</button>
-          </section>
-          <section id="gameView" class="hidden">
-            <div class="page-view active" data-page="home">
-              <section class="panel">
-                <div class="panel-head between"><h2>ホーム</h2><button id="logoutBtn" class="ghost">ログアウト</button></div>
-                <div class="retro-subhead">メニュー</div>
-                <div class="home-tile-grid">
-                  <a class="home-tile" href="/static/mypage.html"><span>マイページ</span><small>ステータスとボーナス</small></a>
-                  <a class="home-tile" href="/static/deck.html"><span>デッキ</span><small>6枚編成を確認</small></a>
-                  <a class="home-tile" href="/static/boss.html"><span>ボス</span><small>挑戦する相手を選択</small></a>
-                  <a class="home-tile" href="/static/cards.html"><span>カード管理</span><small>編成と強化</small></a>
-                  <a class="home-tile" href="/static/gacha.html"><span>ガチャ</span><small>カード獲得</small></a>
-                  <a class="home-tile" href="/static/checkpoint.html"><span>チェックポイント</span><small>QR報酬とルート</small></a>
-                  <a class="home-tile" href="/static/encyclopedia.html"><span>カード図鑑</span><small>全カードを確認</small></a>
-                </div>
-              </section>
-            </div>
-          </section>
-        </main>
+        </div>
       </div>
-      <div id="loadingOverlay" class="loading-overlay hidden"><div class="loading-box"><div class="loading-title">通信中...</div><div class="loading-dots"><span></span><span></span><span></span></div></div></div>
+      <div class="device-bottom">
+        <div class="keypad-row">
+          <span>◀</span><span>決定</span><span>▶</span>
+        </div>
+      </div>
     </div>
-    <div class="device-bottom"><div class="keypad-row"><span>◀</span><span>決定</span><span>▶</span></div></div>
-  </div>
-  <div id="toast" class="toast hidden"></div>
-  <script src="/static/js/transitions.js?v=relic-boss-drops-deck-icons-20260630"></script>
-  <script src="/static/js/app.js?v=relic-boss-drops-deck-icons-20260630"></script>
-</body>
+    <div id="toast" class="toast hidden"></div>
+    <script src="/static/js/transitions.js?v=relic-boss-drops-deck-icons-20260630"></script>
+    <script src="/static/js/app.js?v=relic-boss-drops-deck-icons-20260630"></script>
+  </body>
 </html>

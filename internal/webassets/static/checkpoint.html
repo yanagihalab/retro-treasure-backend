@@ -1,105 +1,147 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RELIC RAID - Checkpoint</title>
-  <link rel="stylesheet" href="/static/vendor/leaflet.css?v=relic-boss-drops-deck-icons-20260630" />
-  <link rel="stylesheet" href="/static/css/style.css?v=relic-boss-drops-deck-icons-20260630" />
-</head>
-<body data-page="checkpoint">
-  <div class="device-shell">
-    <div class="device-top">RELIC RAID</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RELIC RAID - Checkpoint</title>
+    <link
+      rel="stylesheet"
+      href="/static/vendor/leaflet.css?v=relic-boss-drops-deck-icons-20260630"
+    />
+    <link
+      rel="stylesheet"
+      href="/static/css/style.css?v=relic-boss-drops-deck-icons-20260630"
+    />
+  </head>
+  <body data-page="checkpoint">
+    <div class="device-shell">
+      <div class="device-top">RELIC RAID</div>
 
-    <div class="screen-frame">
-      <div class="statusbar">
-        <div>◢◣◢ CHECKPOINT</div>
-        <div id="clockText">--:--</div>
-        <div>[||||]</div>
-      </div>
+      <div class="screen-frame">
+        <div class="statusbar">
+          <div>◢◣◢ CHECKPOINT</div>
+          <div id="clockText">--:--</div>
+          <div>[||||]</div>
+        </div>
 
-      <div class="shell">
-        <a class="page-back" href="/static/index.html" aria-label="戻る">＜</a>
-        <header class="hero">
-          <div>
-            <p class="eyebrow">フィールドレリック回収</p>
-            <h1>RELIC NODE</h1>
-            <p class="subcopy">QR1〜QR24 を入力して、地点報酬とイベント報酬を獲得</p>
-          </div>
-        </header>
+        <div class="shell">
+          <a class="page-back" href="/static/index.html" aria-label="戻る"
+            >＜</a
+          >
+          <header class="hero">
+            <div>
+              <p class="eyebrow">フィールドレリック回収</p>
+              <h1>RELIC NODE</h1>
+              <p class="subcopy">
+                QR1〜QR24 を入力して、地点報酬とイベント報酬を獲得
+              </p>
+            </div>
+          </header>
 
-        <main class="grid">
-          <section class="panel checkpoint-map-panel">
-            <div class="panel-head between">
-              <h2>MAP</h2>
-              <div class="meta">一覧クリックでピンを強調</div>
-            </div>
-            <div id="checkpointMap" class="leaflet-map"></div>
-            <div class="checkpoint-map-summary">
-              <span>ROUTE STATUS</span>
-              <strong id="checkpointMapSummary">読込中...</strong>
-            </div>
-            <div class="checkpoint-map-route-dock">
-              <div class="checkpoint-map-route-title">QR NODE</div>
-              <div class="checkpoint-route-grid" id="checkpointRouteGrid"></div>
-            </div>
-            <div id="checkpointMapLegend" class="meta" style="margin-top:8px;">
-              ピンを押すと入力欄に QR を入れます。
-            </div>
-          </section>
-
-          <section class="panel checkpoint-action-panel">
-            <div class="panel-head between">
-              <h2>チェックポイント入力</h2>
-              <div id="cpStatusMini" class="battle-mini-status">読込中...</div>
-            </div>
-
-            <div class="stack">
-              <label>
-                QRテキスト
-                <input id="qrTextInput" type="text" placeholder="QR1 / QR2 / ... / QR24" />
-              </label>
-              <div class="actions-row tight-actions">
-                <button id="claimCheckpointBtn" type="button">報酬を受け取る</button>
-                <button id="reloadCheckpointBtn" class="secondary" type="button">情報再読込</button>
+          <main class="grid">
+            <section class="panel checkpoint-map-panel">
+              <div class="panel-head between">
+                <h2>MAP</h2>
+                <div class="meta">一覧クリックでピンを強調</div>
               </div>
-            </div>
+              <div id="checkpointMap" class="leaflet-map"></div>
+              <div class="checkpoint-map-summary">
+                <span>ROUTE STATUS</span>
+                <strong id="checkpointMapSummary">読込中...</strong>
+              </div>
+              <div class="checkpoint-map-route-dock">
+                <div class="checkpoint-map-route-title">QR NODE</div>
+                <div
+                  class="checkpoint-route-grid"
+                  id="checkpointRouteGrid"
+                ></div>
+              </div>
+              <div
+                id="checkpointMapLegend"
+                class="meta"
+                style="margin-top: 8px"
+              >
+                ピンを押すと入力欄に QR を入れます。
+              </div>
+            </section>
 
-            <div id="checkpointResult" class="result-box muted">まだ受け取っていません。</div>
-          </section>
+            <section class="panel checkpoint-action-panel">
+              <div class="panel-head between">
+                <h2>チェックポイント入力</h2>
+                <div id="cpStatusMini" class="battle-mini-status">
+                  読込中...
+                </div>
+              </div>
 
-          <section class="panel checkpoint-detail-panel">
-            <div class="panel-head between">
-              <h2>選択中ノード</h2>
-              <div class="meta" id="selectedCheckpointCode">未選択</div>
-            </div>
-            <div id="selectedCheckpointDetail" class="checkpoint-detail-box muted">
-              マップまたは一覧からチェックポイントを選択してください。
-            </div>
-          </section>
+              <div class="stack">
+                <label>
+                  QRテキスト
+                  <input
+                    id="qrTextInput"
+                    type="text"
+                    placeholder="QR1 / QR2 / ... / QR24"
+                  />
+                </label>
+                <div class="actions-row tight-actions">
+                  <button id="claimCheckpointBtn" type="button">
+                    報酬を受け取る
+                  </button>
+                  <button
+                    id="reloadCheckpointBtn"
+                    class="secondary"
+                    type="button"
+                  >
+                    情報再読込
+                  </button>
+                </div>
+              </div>
 
-          <section class="panel checkpoint-master-panel">
-            <div class="panel-head"><h2>チェックポイント一覧</h2></div>
-            <div id="checkpointMasterList" class="list-box muted">読み込み中...</div>
-          </section>
+              <div id="checkpointResult" class="result-box muted">
+                まだ受け取っていません。
+              </div>
+            </section>
 
-          <section class="panel checkpoint-history-panel">
-            <div class="panel-head"><h2>到達履歴</h2></div>
-            <div id="checkpointHistoryList" class="list-box muted">読み込み中...</div>
-          </section>
-        </main>
+            <section class="panel checkpoint-detail-panel">
+              <div class="panel-head between">
+                <h2>選択中ノード</h2>
+                <div class="meta" id="selectedCheckpointCode">未選択</div>
+              </div>
+              <div
+                id="selectedCheckpointDetail"
+                class="checkpoint-detail-box muted"
+              >
+                マップまたは一覧からチェックポイントを選択してください。
+              </div>
+            </section>
+
+            <section class="panel checkpoint-master-panel">
+              <div class="panel-head"><h2>チェックポイント一覧</h2></div>
+              <div id="checkpointMasterList" class="list-box muted">
+                読み込み中...
+              </div>
+            </section>
+
+            <section class="panel checkpoint-history-panel">
+              <div class="panel-head"><h2>到達履歴</h2></div>
+              <div id="checkpointHistoryList" class="list-box muted">
+                読み込み中...
+              </div>
+            </section>
+          </main>
+        </div>
+      </div>
+
+      <div class="device-bottom">
+        <div class="keypad-row">
+          <span>◀</span><span>決定</span><span>▶</span>
+        </div>
       </div>
     </div>
 
-    <div class="device-bottom">
-      <div class="keypad-row"><span>◀</span><span>決定</span><span>▶</span></div>
-    </div>
-  </div>
+    <div id="toast" class="toast hidden"></div>
 
-  <div id="toast" class="toast hidden"></div>
-
-  <script src="/static/vendor/leaflet.js?v=relic-boss-drops-deck-icons-20260630"></script>
-  <script src="/static/js/transitions.js?v=relic-boss-drops-deck-icons-20260630"></script>
-  <script src="/static/js/checkpoint.js?v=relic-boss-drops-deck-icons-20260630"></script>
-</body>
+    <script src="/static/vendor/leaflet.js?v=relic-boss-drops-deck-icons-20260630"></script>
+    <script src="/static/js/transitions.js?v=relic-boss-drops-deck-icons-20260630"></script>
+    <script src="/static/js/checkpoint.js?v=relic-boss-drops-deck-icons-20260630"></script>
+  </body>
 </html>

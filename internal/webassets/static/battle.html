@@ -1,115 +1,237 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Boss Battle</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=relic-boss-drops-deck-icons-20260630" />
-</head>
-<body class="battle-only special-battle">
-  <div class="device-shell battle-device">
-    <div class="screen-frame battle-screen">
-      <div class="shell battle-shell">
-        <a class="page-back" href="/static/index.html" aria-label="戻る">＜</a>
-        <main class="grid">
-          <section class="panel battle-panel">
-            <div class="panel-head between">
-              <h2>RAID BOSS</h2>
-              <div class="battle-mini-status" id="battleStatusText">耐久戦 待機中...</div>
-            </div>
-            <div class="battlefield battleflow-vertical">
-              <section class="battle-section boss-section">
-                <div class="battle-section-title">ボス</div>
-                <div id="bossUnit" class="boss-unit">
-                  <div id="bossPortrait" class="portrait boss-portrait battlefield-boss-portrait">
-                    <div class="portrait-label">BOSS</div>
-                    <img id="bossInitials" class="boss-battle-image" src="/static/img/bosses/golem.png?v=relic-boss-drops-deck-icons-20260630" alt="遺跡の番人ゴーレム" />
-                  </div>
-                  <div class="unit-name" id="bossName">遺跡の番人ゴーレム</div>
-                  <div class="unit-desc" id="bossDescription">古代遺跡の奥で眠っていた石の守護者。</div>
-                  <div class="element-badge element-none" id="bossElementBadge">無</div>
-                  <div class="hp-block battlefield-hp">
-                    <div class="hp-label">BOSS HP <span id="bossHpText">0 / 0</span></div>
-                    <div class="hp-bar"><div id="bossHpBar" class="hp-fill boss-fill" style="width:0%"></div></div>
-                  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boss Battle</title>
+    <link
+      rel="stylesheet"
+      href="/static/css/style.css?v=relic-boss-drops-deck-icons-20260630"
+    />
+  </head>
+  <body class="battle-only special-battle">
+    <div class="device-shell battle-device">
+      <div class="screen-frame battle-screen">
+        <div class="shell battle-shell">
+          <a class="page-back" href="/static/index.html" aria-label="戻る"
+            >＜</a
+          >
+          <main class="grid">
+            <section class="panel battle-panel">
+              <div class="panel-head between">
+                <h2>RAID BOSS</h2>
+                <div class="battle-mini-status" id="battleStatusText">
+                  耐久戦 待機中...
                 </div>
-              </section>
-              <section class="battle-section vs-section"><div class="vs-badge">VS</div></section>
-              <section class="battle-section deck-section">
-                <div class="battle-section-title">デッキ</div>
-                <div class="deck-grid battlefield-deck-grid" id="deckList">
-                  <article class="deck-card battle-image-card element-fire" aria-label="カード HP 100 / 100">
-                    <img class="card-portrait-image battle-card-image" src="/static/img/cards/card-01.png?v=relic-boss-drops-deck-icons-20260630" alt="カード" loading="lazy" />
-                    <div class="hp-bar battle-card-hp" aria-hidden="true"><div class="hp-fill card-fill" style="width:100%"></div></div>
-                  </article>
-                  <article class="deck-card battle-image-card element-water" aria-label="カード HP 100 / 100">
-                    <img class="card-portrait-image battle-card-image" src="/static/img/cards/card-02.png?v=relic-boss-drops-deck-icons-20260630" alt="カード" loading="lazy" />
-                    <div class="hp-bar battle-card-hp" aria-hidden="true"><div class="hp-fill card-fill" style="width:100%"></div></div>
-                  </article>
-                  <article class="deck-card battle-image-card element-earth" aria-label="カード HP 100 / 100">
-                    <img class="card-portrait-image battle-card-image" src="/static/img/cards/card-03.png?v=relic-boss-drops-deck-icons-20260630" alt="カード" loading="lazy" />
-                    <div class="hp-bar battle-card-hp" aria-hidden="true"><div class="hp-fill card-fill" style="width:100%"></div></div>
-                  </article>
-                  <article class="deck-card battle-image-card element-light" aria-label="カード HP 100 / 100">
-                    <img class="card-portrait-image battle-card-image" src="/static/img/cards/card-04.png?v=relic-boss-drops-deck-icons-20260630" alt="カード" loading="lazy" />
-                    <div class="hp-bar battle-card-hp" aria-hidden="true"><div class="hp-fill card-fill" style="width:100%"></div></div>
-                  </article>
-                  <article class="deck-card battle-image-card element-dark" aria-label="カード HP 100 / 100">
-                    <img class="card-portrait-image battle-card-image" src="/static/img/cards/card-05.png?v=relic-boss-drops-deck-icons-20260630" alt="カード" loading="lazy" />
-                    <div class="hp-bar battle-card-hp" aria-hidden="true"><div class="hp-fill card-fill" style="width:100%"></div></div>
-                  </article>
-                  <article class="deck-card battle-image-card element-wood" aria-label="カード HP 100 / 100">
-                    <img class="card-portrait-image battle-card-image" src="/static/img/cards/card-06.png?v=relic-boss-drops-deck-icons-20260630" alt="カード" loading="lazy" />
-                    <div class="hp-bar battle-card-hp" aria-hidden="true"><div class="hp-fill card-fill" style="width:100%"></div></div>
-                  </article>
-                </div>
-              </section>
-              <section class="battle-section log-section">
-                <div class="battle-section-title">ログ</div>
-                <div id="battleLog" class="battle-log-box"><div class="list-item">戦闘を開始してください。</div></div>
-              </section>
-            </div>
-          </section>
-        </main>
-      </div>
-      <div id="prepOverlay" class="prep-overlay hidden">
-        <div class="prep-popup">
-          <div id="prepText">AUTO BATTLE 準備中...</div>
-          <div class="loading-dots" style="margin-top:10px;"><span></span><span></span><span></span></div>
+              </div>
+              <div class="battlefield battleflow-vertical">
+                <section class="battle-section boss-section">
+                  <div class="battle-section-title">ボス</div>
+                  <div id="bossUnit" class="boss-unit">
+                    <div
+                      id="bossPortrait"
+                      class="portrait boss-portrait battlefield-boss-portrait"
+                    >
+                      <div class="portrait-label">BOSS</div>
+                      <img
+                        id="bossInitials"
+                        class="boss-battle-image"
+                        src="/static/img/bosses/golem.png?v=relic-boss-drops-deck-icons-20260630"
+                        alt="遺跡の番人ゴーレム"
+                      />
+                    </div>
+                    <div class="unit-name" id="bossName">
+                      遺跡の番人ゴーレム
+                    </div>
+                    <div class="unit-desc" id="bossDescription">
+                      古代遺跡の奥で眠っていた石の守護者。
+                    </div>
+                    <div
+                      class="element-badge element-none"
+                      id="bossElementBadge"
+                    >
+                      無
+                    </div>
+                    <div class="hp-block battlefield-hp">
+                      <div class="hp-label">
+                        BOSS HP <span id="bossHpText">0 / 0</span>
+                      </div>
+                      <div class="hp-bar">
+                        <div
+                          id="bossHpBar"
+                          class="hp-fill boss-fill"
+                          style="width: 0%"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <section class="battle-section vs-section">
+                  <div class="vs-badge">VS</div>
+                </section>
+                <section class="battle-section deck-section">
+                  <div class="battle-section-title">デッキ</div>
+                  <div class="deck-grid battlefield-deck-grid" id="deckList">
+                    <article
+                      class="deck-card battle-image-card element-fire"
+                      aria-label="カード HP 100 / 100"
+                    >
+                      <img
+                        class="card-portrait-image battle-card-image"
+                        src="/static/img/cards/card-01.png?v=relic-boss-drops-deck-icons-20260630"
+                        alt="カード"
+                        loading="lazy"
+                      />
+                      <div class="hp-bar battle-card-hp" aria-hidden="true">
+                        <div
+                          class="hp-fill card-fill"
+                          style="width: 100%"
+                        ></div>
+                      </div>
+                    </article>
+                    <article
+                      class="deck-card battle-image-card element-water"
+                      aria-label="カード HP 100 / 100"
+                    >
+                      <img
+                        class="card-portrait-image battle-card-image"
+                        src="/static/img/cards/card-02.png?v=relic-boss-drops-deck-icons-20260630"
+                        alt="カード"
+                        loading="lazy"
+                      />
+                      <div class="hp-bar battle-card-hp" aria-hidden="true">
+                        <div
+                          class="hp-fill card-fill"
+                          style="width: 100%"
+                        ></div>
+                      </div>
+                    </article>
+                    <article
+                      class="deck-card battle-image-card element-earth"
+                      aria-label="カード HP 100 / 100"
+                    >
+                      <img
+                        class="card-portrait-image battle-card-image"
+                        src="/static/img/cards/card-03.png?v=relic-boss-drops-deck-icons-20260630"
+                        alt="カード"
+                        loading="lazy"
+                      />
+                      <div class="hp-bar battle-card-hp" aria-hidden="true">
+                        <div
+                          class="hp-fill card-fill"
+                          style="width: 100%"
+                        ></div>
+                      </div>
+                    </article>
+                    <article
+                      class="deck-card battle-image-card element-light"
+                      aria-label="カード HP 100 / 100"
+                    >
+                      <img
+                        class="card-portrait-image battle-card-image"
+                        src="/static/img/cards/card-04.png?v=relic-boss-drops-deck-icons-20260630"
+                        alt="カード"
+                        loading="lazy"
+                      />
+                      <div class="hp-bar battle-card-hp" aria-hidden="true">
+                        <div
+                          class="hp-fill card-fill"
+                          style="width: 100%"
+                        ></div>
+                      </div>
+                    </article>
+                    <article
+                      class="deck-card battle-image-card element-dark"
+                      aria-label="カード HP 100 / 100"
+                    >
+                      <img
+                        class="card-portrait-image battle-card-image"
+                        src="/static/img/cards/card-05.png?v=relic-boss-drops-deck-icons-20260630"
+                        alt="カード"
+                        loading="lazy"
+                      />
+                      <div class="hp-bar battle-card-hp" aria-hidden="true">
+                        <div
+                          class="hp-fill card-fill"
+                          style="width: 100%"
+                        ></div>
+                      </div>
+                    </article>
+                    <article
+                      class="deck-card battle-image-card element-wood"
+                      aria-label="カード HP 100 / 100"
+                    >
+                      <img
+                        class="card-portrait-image battle-card-image"
+                        src="/static/img/cards/card-06.png?v=relic-boss-drops-deck-icons-20260630"
+                        alt="カード"
+                        loading="lazy"
+                      />
+                      <div class="hp-bar battle-card-hp" aria-hidden="true">
+                        <div
+                          class="hp-fill card-fill"
+                          style="width: 100%"
+                        ></div>
+                      </div>
+                    </article>
+                  </div>
+                </section>
+                <section class="battle-section log-section">
+                  <div class="battle-section-title">ログ</div>
+                  <div id="battleLog" class="battle-log-box">
+                    <div class="list-item">戦闘を開始してください。</div>
+                  </div>
+                </section>
+              </div>
+            </section>
+          </main>
         </div>
-      </div>
-      <div id="startBattleOverlay" class="battle-start-overlay">
-        <button id="startAutoBattleBtn" class="battle-start-button" type="button">
-          <span class="battle-start-kicker">READY</span>
-          <span class="battle-start-main">耐久戦 開始</span>
-        </button>
-      </div>
-      <div id="defeatOverlay" class="defeat-overlay hidden">
-        <div class="defeat-popup">
-          <div class="defeat-title">全滅…</div>
-          <div class="defeat-subtitle">デッキは力尽きた</div>
-          <div class="defeat-actions">
-            <button id="retryDefeatBtn">再挑戦</button>
-            <button id="deckDefeatBtn" class="secondary">デッキ編成へ</button>
-            <button id="bossDefeatBtn" class="secondary">ボス選択へ</button>
+        <div id="prepOverlay" class="prep-overlay hidden">
+          <div class="prep-popup">
+            <div id="prepText">AUTO BATTLE 準備中...</div>
+            <div class="loading-dots" style="margin-top: 10px">
+              <span></span><span></span><span></span>
+            </div>
           </div>
         </div>
-      </div>
-      <div id="victoryOverlay" class="defeat-overlay hidden">
-        <div class="defeat-popup">
-          <div class="defeat-title victory-title">耐久成功！</div>
-          <div class="defeat-subtitle">規定ターンを耐え切った</div>
-          <div class="defeat-actions">
-            <button id="retryVictoryBtn">もう一戦</button>
-            <button id="bossVictoryBtn" class="secondary">ボス選択へ</button>
-            <button id="cardsVictoryBtn" class="secondary">カード管理へ</button>
+        <div id="startBattleOverlay" class="battle-start-overlay">
+          <button
+            id="startAutoBattleBtn"
+            class="battle-start-button"
+            type="button"
+          >
+            <span class="battle-start-kicker">READY</span>
+            <span class="battle-start-main">耐久戦 開始</span>
+          </button>
+        </div>
+        <div id="defeatOverlay" class="defeat-overlay hidden">
+          <div class="defeat-popup">
+            <div class="defeat-title">全滅…</div>
+            <div class="defeat-subtitle">デッキは力尽きた</div>
+            <div class="defeat-actions">
+              <button id="retryDefeatBtn">再挑戦</button>
+              <button id="deckDefeatBtn" class="secondary">デッキ編成へ</button>
+              <button id="bossDefeatBtn" class="secondary">ボス選択へ</button>
+            </div>
+          </div>
+        </div>
+        <div id="victoryOverlay" class="defeat-overlay hidden">
+          <div class="defeat-popup">
+            <div class="defeat-title victory-title">耐久成功！</div>
+            <div class="defeat-subtitle">規定ターンを耐え切った</div>
+            <div class="defeat-actions">
+              <button id="retryVictoryBtn">もう一戦</button>
+              <button id="bossVictoryBtn" class="secondary">ボス選択へ</button>
+              <button id="cardsVictoryBtn" class="secondary">
+                カード管理へ
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div id="toast" class="toast hidden"></div>
-  <script src="/static/js/transitions.js?v=relic-boss-drops-deck-icons-20260630"></script>
-  <script src="/static/js/battle.js?v=relic-boss-drops-deck-icons-20260630"></script>
-</body>
+    <div id="toast" class="toast hidden"></div>
+    <script src="/static/js/transitions.js?v=relic-boss-drops-deck-icons-20260630"></script>
+    <script src="/static/js/battle.js?v=relic-boss-drops-deck-icons-20260630"></script>
+  </body>
 </html>

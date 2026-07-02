@@ -75,7 +75,9 @@ function elementLabel(element) {
       body: "体",
       wood: "木",
       none: "無",
-    }[element || "none"] || element || "無"
+    }[element || "none"] ||
+    element ||
+    "無"
   );
 }
 
@@ -98,7 +100,25 @@ function bossImageUrl(bossID = 1) {
 }
 
 function bossEffectLabel(effect) {
-  return ({ tentacle: "触腕", abyss: "深淵", fire: "火", storm: "風", holy: "光", void: "闇", quake: "地震", venom: "毒", ice: "氷", fang: "牙", spike: "棘", cosmic: "星辰", water: "水" })[effect] || effect || "特殊";
+  return (
+    {
+      tentacle: "触腕",
+      abyss: "深淵",
+      fire: "火",
+      storm: "風",
+      holy: "光",
+      void: "闇",
+      quake: "地震",
+      venom: "毒",
+      ice: "氷",
+      fang: "牙",
+      spike: "棘",
+      cosmic: "星辰",
+      water: "水",
+    }[effect] ||
+    effect ||
+    "特殊"
+  );
 }
 
 function skillGraphicHTML(kind = "none") {
@@ -107,7 +127,9 @@ function skillGraphicHTML(kind = "none") {
 }
 
 function bossHintList(items = [], renderer = (item) => escapeHTML(item)) {
-  return items.length ? items.map((item) => `<li>${renderer(item)}</li>`).join("") : "<li>情報解析中</li>";
+  return items.length
+    ? items.map((item) => `<li>${renderer(item)}</li>`).join("")
+    : "<li>情報解析中</li>";
 }
 
 function setLoading(show) {
@@ -116,7 +138,10 @@ function setLoading(show) {
 
 function isAndroidAppWebView() {
   const params = new URLSearchParams(location.search);
-  return /RelicRaidAndroid/i.test(navigator.userAgent) || params.get("android_app") === "1";
+  return (
+    /RelicRaidAndroid/i.test(navigator.userAgent) ||
+    params.get("android_app") === "1"
+  );
 }
 
 function createAndroidCredentialPair() {
@@ -166,7 +191,9 @@ async function api(path, options = {}) {
 
   const res = await fetch(path, { ...options, headers });
   const contentType = res.headers.get("content-type") || "";
-  const data = contentType.includes("application/json") ? await res.json() : await res.text();
+  const data = contentType.includes("application/json")
+    ? await res.json()
+    : await res.text();
 
   if (!res.ok) {
     const message = data?.error || `request failed: ${res.status}`;
@@ -181,7 +208,9 @@ async function api(path, options = {}) {
 }
 
 function activateTab(name) {
-  qsa(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.tab === name));
+  qsa(".tab").forEach((tab) =>
+    tab.classList.toggle("active", tab.dataset.tab === name),
+  );
   qsa("[data-tab-body]").forEach((body) =>
     body.classList.toggle("hidden", body.dataset.tabBody !== name),
   );
@@ -324,7 +353,8 @@ function bindAuthForms() {
 
 function renderAuthState() {
   const ok = Boolean(state.token);
-  const allowMypagePreview = currentPage() === "mypage" && Boolean(qs(".mypage-hud"));
+  const allowMypagePreview =
+    currentPage() === "mypage" && Boolean(qs(".mypage-hud"));
   const authView = qs("#authView");
   const gameView = qs("#gameView");
   authView?.classList.toggle("hidden", ok);
@@ -333,7 +363,9 @@ function renderAuthState() {
   const badge = qs("#authBadge");
   if (!badge) return;
   badge.classList.remove("hidden");
-  badge.textContent = ok ? `ログイン中: ${state.username || "player"}` : "未ログイン";
+  badge.textContent = ok
+    ? `ログイン中: ${state.username || "player"}`
+    : "未ログイン";
 }
 
 function renderPlayer(player) {
@@ -462,7 +494,11 @@ function renderCardArchive() {
     ? entries
         .map((entry) => {
           const card = entry.card || {};
-          const status = entry.obtained ? (entry.in_deck ? `デッキ S${entry.deck_slot}` : "所持済み") : "未所持";
+          const status = entry.obtained
+            ? entry.in_deck
+              ? `デッキ S${entry.deck_slot}`
+              : "所持済み"
+            : "未所持";
           return `
             <article class="card-archive-entry ${entry.obtained ? "owned" : "missing"} element-${card.element || "none"}" data-card-id="${card.id}" role="button" tabindex="0" aria-label="${card.name}を拡大表示">
               <div class="card-archive-art">
@@ -480,30 +516,47 @@ function renderCardArchive() {
         .join("")
     : '<div class="list-item">該当するカードがありません。</div>';
 
-  list.querySelectorAll(".card-archive-entry[data-card-id]").forEach((entryNode) => {
-    entryNode.addEventListener("click", () => openCardPreview(Number(entryNode.dataset.cardId)));
-    entryNode.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        openCardPreview(Number(entryNode.dataset.cardId));
-      }
+  list
+    .querySelectorAll(".card-archive-entry[data-card-id]")
+    .forEach((entryNode) => {
+      entryNode.addEventListener("click", () =>
+        openCardPreview(Number(entryNode.dataset.cardId)),
+      );
+      entryNode.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openCardPreview(Number(entryNode.dataset.cardId));
+        }
+      });
     });
-  });
 }
 
 function archiveEntryByCardID(cardID) {
-  return (state.cardArchiveEntries || []).find((entry) => entry.card?.id === cardID);
+  return (state.cardArchiveEntries || []).find(
+    (entry) => entry.card?.id === cardID,
+  );
 }
 
 function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    (ch) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        ch
+      ],
+  );
 }
 
 function cardSkillHTML(title, skill, tone = "", graphic = "none") {
   if (!skill?.name) return "";
   const rate = Number(skill.trigger_rate || 0);
-  const rateText = rate > 0 && rate < 100 ? `<span class="skill-rate">発動 ${rate}%</span>` : "";
-  const effectText = skill.effect_type ? `<span class="skill-rate">${skillEffectLabel(skill.effect_type)}</span>` : "";
+  const rateText =
+    rate > 0 && rate < 100
+      ? `<span class="skill-rate">発動 ${rate}%</span>`
+      : "";
+  const effectText = skill.effect_type
+    ? `<span class="skill-rate">${skillEffectLabel(skill.effect_type)}</span>`
+    : "";
   return `
     <article class="card-preview-skill ${tone}">
       <div><span class="skill-label">${title}</span><span>${effectText}${rateText}</span></div>
@@ -514,7 +567,16 @@ function cardSkillHTML(title, skill, tone = "", graphic = "none") {
 }
 
 function skillEffectLabel(effect) {
-  return ({ shield: "盾役", heal: "回復補助", mitigate: "軽減", evade: "回避", revive: "蘇生", advantage: "特攻" })[effect] || "防御";
+  return (
+    {
+      shield: "盾役",
+      heal: "回復補助",
+      mitigate: "軽減",
+      evade: "回避",
+      revive: "蘇生",
+      advantage: "特攻",
+    }[effect] || "防御"
+  );
 }
 
 function openCardPreview(cardID) {
@@ -522,9 +584,14 @@ function openCardPreview(cardID) {
   const card = entry?.card || {};
   const overlay = qs("#cardPreviewOverlay");
   if (!overlay || !card.id) return;
-  if (overlay.parentElement !== document.body) document.body.appendChild(overlay);
+  if (overlay.parentElement !== document.body)
+    document.body.appendChild(overlay);
 
-  const status = entry.obtained ? (entry.in_deck ? `デッキ S${entry.deck_slot}` : "所持済み") : "未所持";
+  const status = entry.obtained
+    ? entry.in_deck
+      ? `デッキ S${entry.deck_slot}`
+      : "所持済み"
+    : "未所持";
   const image = qs("#cardPreviewImage");
   if (image) {
     image.src = cardImageUrl(card.id);
@@ -541,8 +608,18 @@ function openCardPreview(cardID) {
   const skills = qs("#cardPreviewSkills");
   if (skills) {
     skills.innerHTML = [
-      cardSkillHTML("固有スキル", card.unique_skill, "unique-skill", card.element || "none"),
-      cardSkillHTML("特攻防御", card.advantage_defense_skill, "advantage-defense", "advantage"),
+      cardSkillHTML(
+        "固有スキル",
+        card.unique_skill,
+        "unique-skill",
+        card.element || "none",
+      ),
+      cardSkillHTML(
+        "特攻防御",
+        card.advantage_defense_skill,
+        "advantage-defense",
+        "advantage",
+      ),
     ].join("");
   }
 
@@ -613,7 +690,11 @@ async function loadBossPreview() {
     )
     .join("");
   root.querySelectorAll(".boss-list-card[data-boss-id]").forEach((node) => {
-    node.addEventListener("click", () => selectBossDetail(Number(node.dataset.bossId)).catch((err) => showToast(err.message, "error")));
+    node.addEventListener("click", () =>
+      selectBossDetail(Number(node.dataset.bossId)).catch((err) =>
+        showToast(err.message, "error"),
+      ),
+    );
   });
   renderBossDetail(Number(data.boss?.id || bosses[0]?.id || 1));
 }
@@ -623,7 +704,9 @@ async function selectBossDetail(bossID) {
     const data = await api(`/api/boss?id=${bossID}`);
     const boss = data.boss;
     if (boss?.id) {
-      const index = (state.bosses || []).findIndex((item) => Number(item.id) === Number(boss.id));
+      const index = (state.bosses || []).findIndex(
+        (item) => Number(item.id) === Number(boss.id),
+      );
       if (index >= 0) state.bosses[index] = boss;
       state.bossDetails[Number(boss.id)] = {
         recommended_deck: data.recommended_deck || [],
@@ -641,9 +724,10 @@ function bossDropPreviewHTML(dropPreview) {
     <section class="boss-drop-panel">
       <div class="boss-strategy-title">ボスドロップ <span>${Number(dropPreview.drop_rate_percent || 0)}%</span></div>
       <div class="boss-drop-list">
-        ${candidates
-          .map(
-            (card) => `
+        ${
+          candidates
+            .map(
+              (card) => `
               <article class="boss-drop-card">
                 <img src="${cardImageUrl(card.id)}" alt="${escapeHTML(card.name)}" loading="lazy" />
                 <div>
@@ -652,8 +736,9 @@ function bossDropPreviewHTML(dropPreview) {
                 </div>
               </article>
             `,
-          )
-          .join("") || `<div class="muted">候補解析中</div>`}
+            )
+            .join("") || `<div class="muted">候補解析中</div>`
+        }
       </div>
     </section>
   `;
@@ -664,9 +749,10 @@ function recommendedDeckHTML(cards = []) {
     <section class="boss-recommend-panel">
       <div class="boss-strategy-title">おすすめデッキ提案</div>
       <div class="boss-recommend-list">
-        ${cards
-          .map(
-            (entry, index) => `
+        ${
+          cards
+            .map(
+              (entry, index) => `
               <article class="boss-recommend-card">
                 <span class="recommend-rank">${index + 1}</span>
                 <img src="${cardImageUrl(entry.card?.id)}" alt="${escapeHTML(entry.card?.name || "カード")}" loading="lazy" />
@@ -676,8 +762,10 @@ function recommendedDeckHTML(cards = []) {
                 </div>
               </article>
             `,
-          )
-          .join("") || `<div class="muted">所持カードから提案できる候補がありません。</div>`}
+            )
+            .join("") ||
+          `<div class="muted">所持カードから提案できる候補がありません。</div>`
+        }
       </div>
     </section>
   `;
@@ -686,12 +774,19 @@ function recommendedDeckHTML(cards = []) {
 function renderBossDetail(bossID) {
   const panel = qs("#bossDetailPanel");
   if (!panel) return;
-  const boss = (state.bosses || []).find((item) => Number(item.id) === Number(bossID));
+  const boss = (state.bosses || []).find(
+    (item) => Number(item.id) === Number(bossID),
+  );
   if (!boss) {
     panel.textContent = "ボス情報を読み込めませんでした。";
     return;
   }
-  qsa(".boss-list-card").forEach((node) => node.classList.toggle("active", Number(node.dataset.bossId) === Number(bossID)));
+  qsa(".boss-list-card").forEach((node) =>
+    node.classList.toggle(
+      "active",
+      Number(node.dataset.bossId) === Number(bossID),
+    ),
+  );
   const moves = boss.attack_moves || [];
   const hint = boss.strategy_hint || {};
   const detail = state.bossDetails?.[Number(bossID)] || {};
@@ -715,9 +810,15 @@ function renderBossDetail(bossID) {
       <article class="boss-strategy-card">
         <div class="boss-strategy-title">有効属性</div>
         <div class="boss-effective-elements">
-          ${(hint.effective_elements || [])
-            .map((element) => `<span class="element-badge element-${element}">${elementLabel(element)}</span>`)
-            .join("") || `<span class="element-badge element-none">解析中</span>`}
+          ${
+            (hint.effective_elements || [])
+              .map(
+                (element) =>
+                  `<span class="element-badge element-${element}">${elementLabel(element)}</span>`,
+              )
+              .join("") ||
+            `<span class="element-badge element-none">解析中</span>`
+          }
         </div>
       </article>
       <article class="boss-strategy-card">
@@ -750,7 +851,10 @@ function renderBossDetail(bossID) {
 async function claimBonus() {
   setLoading(true);
   try {
-    const data = await api("/api/login-bonus/claim", { method: "POST", body: "{}" });
+    const data = await api("/api/login-bonus/claim", {
+      method: "POST",
+      body: "{}",
+    });
     showToast(`ログインボーナス獲得: ${data.reward_value} コイン`, "success");
     await loadPlayer();
   } finally {
@@ -785,7 +889,10 @@ function bindGameActions() {
     if (event.target === event.currentTarget) closeCardPreview();
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !qs("#cardPreviewOverlay")?.classList.contains("hidden")) {
+    if (
+      event.key === "Escape" &&
+      !qs("#cardPreviewOverlay")?.classList.contains("hidden")
+    ) {
       closeCardPreview();
     }
   });
@@ -795,7 +902,10 @@ function bindGameActions() {
   qs("#logoutBtn")?.addEventListener("click", () => {
     clearAuth();
     renderAuthState();
-    if (location.pathname !== "/" && !location.pathname.endsWith("/index.html")) {
+    if (
+      location.pathname !== "/" &&
+      !location.pathname.endsWith("/index.html")
+    ) {
       location.href = "/static/index.html";
     }
     showToast("ログアウトしました");
@@ -805,7 +915,10 @@ function bindGameActions() {
 async function bootstrapGame() {
   if (!state.token) {
     renderAuthState();
-    if (!qs("#authView") && !(currentPage() === "mypage" && qs(".mypage-hud"))) {
+    if (
+      !qs("#authView") &&
+      !(currentPage() === "mypage" && qs(".mypage-hud"))
+    ) {
       location.href = "/static/index.html";
     }
     return;

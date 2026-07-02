@@ -42,14 +42,14 @@ function updateClock() {
     now.toLocaleTimeString("ja-JP", {
       hour: "2-digit",
       minute: "2-digit",
-    })
+    }),
   );
 }
 
 async function api(path, options = {}) {
   const headers = {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${state.token}`,
+    Authorization: `Bearer ${state.token}`,
     ...(options.headers || {}),
   };
 
@@ -79,8 +79,16 @@ function checkpointStatusText(entry) {
 
 function rewardTags(cp) {
   const tags = [];
-  if ((cp.gacha_ticket_reward || 0) > 0 || cp.event_reward_type === "gacha_ticket") tags.push("ガチャ券");
-  if ((cp.boss_ticket_reward || 0) > 0 || cp.event_reward_type === "boss_ticket") tags.push("ボス挑戦権");
+  if (
+    (cp.gacha_ticket_reward || 0) > 0 ||
+    cp.event_reward_type === "gacha_ticket"
+  )
+    tags.push("ガチャ券");
+  if (
+    (cp.boss_ticket_reward || 0) > 0 ||
+    cp.event_reward_type === "boss_ticket"
+  )
+    tags.push("ボス挑戦権");
   if (cp.event_reward_type === "coin") tags.push("COIN強化");
   if (cp.event_reward_type === "exp") tags.push("EXP強化");
   if (cp.is_event_active) tags.push("イベント中");
@@ -89,7 +97,10 @@ function rewardTags(cp) {
 
 function isAndroidAppWebView() {
   const params = new URLSearchParams(location.search);
-  return /RelicRaidAndroid/i.test(navigator.userAgent) || params.get("android_app") === "1";
+  return (
+    /RelicRaidAndroid/i.test(navigator.userAgent) ||
+    params.get("android_app") === "1"
+  );
 }
 
 function setCheckpointAuth(token, userID, username) {
@@ -186,13 +197,16 @@ function renderSelectedCheckpointDetail(cp) {
   if (!cp) {
     if (code) code.textContent = "未選択";
     root.classList.add("muted");
-    root.textContent = "マップまたは一覧からチェックポイントを選択してください。";
+    root.textContent =
+      "マップまたは一覧からチェックポイントを選択してください。";
     return;
   }
 
   const entry = findHistoryEntry(cp.id);
   const rec = entry?.record || {};
-  const tags = rewardTags(cp).map((tag) => `<span>${tag}</span>`).join("");
+  const tags = rewardTags(cp)
+    .map((tag) => `<span>${tag}</span>`)
+    .join("");
   if (code) code.textContent = cp.qr_text;
   root.classList.remove("muted");
   root.innerHTML = `
@@ -275,7 +289,7 @@ function fitMapToCheckpoints() {
   if (!state.map || !state.master.length) return;
 
   const valid = state.master.filter(
-    (cp) => typeof cp.lat === "number" && typeof cp.lng === "number"
+    (cp) => typeof cp.lat === "number" && typeof cp.lng === "number",
   );
 
   if (!valid.length) return;
@@ -313,7 +327,7 @@ function selectCheckpoint(cp, openPopup = true) {
 
 function checkpointPointBounds(checkpoints) {
   const valid = checkpoints.filter(
-    (cp) => typeof cp.lat === "number" && typeof cp.lng === "number"
+    (cp) => typeof cp.lat === "number" && typeof cp.lng === "number",
   );
   if (!valid.length) return null;
 
@@ -329,12 +343,30 @@ function checkpointPointBounds(checkpoints) {
 
 function fallbackPointStyle(cp, bounds, index = 0) {
   const routePositions = [
-    [40, 23], [57, 28], [74, 31], [38, 32],
-    [28, 29], [50, 33], [35, 18], [23, 22],
-    [45, 26], [42, 27], [40, 30], [41, 35],
-    [47, 24], [59, 29], [58, 30], [51, 35],
-    [49, 38], [24, 19], [22, 21], [25, 20],
-    [20, 19], [18, 18], [43, 18], [61, 33],
+    [40, 23],
+    [57, 28],
+    [74, 31],
+    [38, 32],
+    [28, 29],
+    [50, 33],
+    [35, 18],
+    [23, 22],
+    [45, 26],
+    [42, 27],
+    [40, 30],
+    [41, 35],
+    [47, 24],
+    [59, 29],
+    [58, 30],
+    [51, 35],
+    [49, 38],
+    [24, 19],
+    [22, 21],
+    [25, 20],
+    [20, 19],
+    [18, 18],
+    [43, 18],
+    [61, 33],
   ];
   if (routePositions[index]) {
     const [x, y] = routePositions[index];
@@ -363,7 +395,9 @@ function renderFallbackMap() {
   state.map = null;
   state.mapMarkers = {};
   const bounds = checkpointPointBounds(state.master);
-  const active = state.master.find((cp) => cp.id === state.selectedCheckpointId) || state.master[0];
+  const active =
+    state.master.find((cp) => cp.id === state.selectedCheckpointId) ||
+    state.master[0];
 
   mapEl.classList.add("checkpoint-fallback-map");
   mapEl.innerHTML = `
@@ -382,7 +416,7 @@ function renderFallbackMap() {
           >
             <span>${cp.qr_text}</span>
           </button>
-        `
+        `,
       )
       .join("")}
   `;
@@ -418,7 +452,7 @@ function renderMap() {
     state.map = L.map("checkpointMap", {
       zoomControl: true,
       scrollWheelZoom: true,
-    }).setView([36.0205, 138.1300], 13);
+    }).setView([36.0205, 138.13], 13);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
@@ -436,7 +470,10 @@ function renderMap() {
     if (typeof cp.lat !== "number" || typeof cp.lng !== "number") return;
 
     const marker = L.marker([cp.lat, cp.lng], {
-      icon: createCheckpointDivIcon(cp.qr_text, cp.id === state.selectedCheckpointId),
+      icon: createCheckpointDivIcon(
+        cp.qr_text,
+        cp.id === state.selectedCheckpointId,
+      ),
     }).addTo(state.map);
 
     marker.__qrText = cp.qr_text;
@@ -483,7 +520,9 @@ function renderMaster(data) {
           <strong>${cp.name}</strong>
           <span class="checkpoint-list-area">${cp.area}</span>
           <span class="checkpoint-list-reward">COIN ${cp.first_reward_coin} / EXP ${cp.first_reward_exp}</span>
-          <div class="checkpoint-tag-row">${rewardTags(cp).map((tag) => `<span>${tag}</span>`).join("")}</div>
+          <div class="checkpoint-tag-row">${rewardTags(cp)
+            .map((tag) => `<span>${tag}</span>`)
+            .join("")}</div>
         </button>
       `;
     })
@@ -500,7 +539,9 @@ function renderMaster(data) {
 
   renderMap();
   renderRouteSummary();
-  renderSelectedCheckpointDetail(state.master.find((cp) => cp.id === state.selectedCheckpointId));
+  renderSelectedCheckpointDetail(
+    state.master.find((cp) => cp.id === state.selectedCheckpointId),
+  );
 }
 
 function renderHistory(data) {
@@ -509,10 +550,19 @@ function renderHistory(data) {
   setText("#gachaTicketCount", data.gacha_tickets ?? 0);
   setText("#bossTicketCount", data.boss_challenge_tickets ?? 0);
   setText("#cpStatusMini", `地点 ${state.history.length}`);
-  setText("#visitedCheckpointCount", state.history.filter((entry) => (entry.record?.claim_count || 0) > 0).length);
-  setText("#dailyReadyCount", state.history.filter((entry) => entry.can_claim_daily).length);
+  setText(
+    "#visitedCheckpointCount",
+    state.history.filter((entry) => (entry.record?.claim_count || 0) > 0)
+      .length,
+  );
+  setText(
+    "#dailyReadyCount",
+    state.history.filter((entry) => entry.can_claim_daily).length,
+  );
   renderRouteSummary();
-  renderSelectedCheckpointDetail(state.master.find((cp) => cp.id === state.selectedCheckpointId));
+  renderSelectedCheckpointDetail(
+    state.master.find((cp) => cp.id === state.selectedCheckpointId),
+  );
 
   const root = qs("#checkpointHistoryList");
   if (!root) return;
@@ -552,7 +602,9 @@ async function reloadAll() {
       clearCheckpointAuth();
       setText("#cpStatusMini", `地点 ${state.master.length}`);
       const resultBox = qs("#checkpointResult");
-      if (resultBox) resultBox.textContent = "ログインすると報酬受取と到達履歴を利用できます。";
+      if (resultBox)
+        resultBox.textContent =
+          "ログインすると報酬受取と到達履歴を利用できます。";
       return;
     }
     throw err;
@@ -634,7 +686,9 @@ async function init() {
 
   if (!state.token) {
     const resultBox = qs("#checkpointResult");
-    if (resultBox) resultBox.textContent = "ログインすると報酬受取と到達履歴を利用できます。";
+    if (resultBox)
+      resultBox.textContent =
+        "ログインすると報酬受取と到達履歴を利用できます。";
     await reloadAll();
     return;
   }
@@ -642,7 +696,10 @@ async function init() {
   try {
     await reloadAll();
   } catch (err) {
-    if (isAndroidAppWebView() && /invalid token|missing bearer token|unauthorized/i.test(err.message)) {
+    if (
+      isAndroidAppWebView() &&
+      /invalid token|missing bearer token|unauthorized/i.test(err.message)
+    ) {
       try {
         clearCheckpointAuth();
         await autoLoginForAndroidCheckpoint();
