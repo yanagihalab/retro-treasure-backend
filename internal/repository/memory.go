@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"sort"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -376,6 +378,28 @@ func (r *MemoryRepository) ListOwnedCards(userID int64) ([]model.CardCollectionE
 	})
 	return out, nil
 }
+func (r *MemoryRepository) ListCardArchive(userID int64) ([]model.CardArchiveEntry, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	owned := make(map[int64]model.UserCharacterCard, len(r.userCards[userID]))
+	for _, uc := range r.userCards[userID] {
+		owned[uc.CardID] = uc
+	}
+	out := make([]model.CardArchiveEntry, 0, len(r.cards))
+	for _, c := range r.cards {
+		entry := model.CardArchiveEntry{Card: c}
+		if uc, ok := owned[c.ID]; ok {
+			entry.Card = applyCardBonuses(c, uc)
+			entry.Obtained = true
+			entry.InDeck = uc.DeckSlot > 0
+			entry.DeckSlot = uc.DeckSlot
+			entry.UpgradeLevel = uc.Level
+		}
+		out = append(out, entry)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Card.ID < out[j].Card.ID })
+	return out, nil
+}
 func (r *MemoryRepository) UserHasCard(userID, cardID int64) bool {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -539,6 +563,17 @@ func (r *MemoryRepository) GetBoss(bossID int64) (model.Boss, error) {
 	return boss, nil
 }
 
+func (r *MemoryRepository) ListBosses() []model.Boss {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	out := make([]model.Boss, 0, len(r.bosses))
+	for _, boss := range r.bosses {
+		out = append(out, boss)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
+	return out
+}
+
 func (r *MemoryRepository) SeedAreas(areas []model.Area) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -596,7 +631,14 @@ func (r *MemoryRepository) ListCheckpoints() []model.Checkpoint {
 			out = append(out, cp)
 		}
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
+	sort.Slice(out, func(i, j int) bool {
+		left, leftErr := strconv.Atoi(strings.TrimPrefix(out[i].QRText, "QR"))
+		right, rightErr := strconv.Atoi(strings.TrimPrefix(out[j].QRText, "QR"))
+		if leftErr == nil && rightErr == nil {
+			return left < right
+		}
+		return out[i].QRText < out[j].QRText
+	})
 	return out
 }
 

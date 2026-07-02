@@ -36,6 +36,24 @@ func (s *CardService) GetCollection(userID int64) (model.CardCollectionResponse,
 	return model.CardCollectionResponse{Cards: cards}, nil
 }
 
+func (s *CardService) GetArchive(userID int64) (model.CardArchiveResponse, error) {
+	cards, err := s.repo.ListCardArchive(userID)
+	if err != nil {
+		return model.CardArchiveResponse{}, err
+	}
+	obtained := 0
+	for _, entry := range cards {
+		if entry.Obtained {
+			obtained++
+		}
+	}
+	rate := 0.0
+	if len(cards) > 0 {
+		rate = float64(obtained) / float64(len(cards)) * 100
+	}
+	return model.CardArchiveResponse{Cards: cards, Total: len(cards), ObtainedCount: obtained, CompletionRate: rate}, nil
+}
+
 func (s *CardService) Upgrade(userID, cardID int64) (model.UpgradeCardResponse, error) {
 	card, uc, cost, err := s.repo.UpgradeCard(userID, cardID)
 	if err != nil {

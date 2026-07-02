@@ -108,6 +108,28 @@ services:
 
 ---
 
+## Android アプリでの実行
+
+Android Studio で `android/` ディレクトリを開くと、RELIC RAID の WebView アプリとして実行できます。
+
+開発時は先にバックエンドを起動してください。
+
+```bash
+go run ./cmd/server
+```
+
+Android Emulator では初期設定のまま `http://10.0.2.2:8080/static/` を読み込みます。
+
+実機で確認する場合は `android/local.properties.example` を `android/local.properties` にコピーして、Mac の LAN IP を指定してください。
+
+```properties
+GAME_BASE_URL=http://<your-mac-lan-ip>:8080/static/
+```
+
+詳細は `android/README.md` を参照してください。
+
+---
+
 ## 1. 企画概要
 
 ### 1.1 コンセプト

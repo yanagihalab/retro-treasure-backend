@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RELIC RAID - ボス</title>
+  <link rel="stylesheet" href="/static/css/style.css?v=relic-boss-drops-deck-icons-20260630" />
+</head>
+<body data-page="boss">
+  <div class="device-shell">
+    <div class="device-top">RELIC RAID</div>
+    <div class="screen-frame">
+      <div class="statusbar"><div>◢◣◢ GREMOBA+</div><div id="clockText">--:--</div><div>[||||]</div></div>
+      <div class="shell">
+        <a class="page-back" href="/static/index.html" aria-label="戻る">＜</a>
+        <header class="hero">
+          <div><p class="eyebrow">ボス選択</p><h1>Boss</h1><p class="subcopy">挑戦するボスを選ぶ</p></div>
+          <div id="authBadge" class="badge hidden">未ログイン</div>
+        </header>
+        <main class="grid">
+          <section id="gameView">
+            <nav class="app-nav" aria-label="ゲームメニュー">
+              <a class="page-tab" data-route="home" href="/static/index.html">ホーム</a>
+              <a class="page-tab" data-route="mypage" href="/static/mypage.html">マイページ</a>
+              <a class="page-tab" data-route="deck" href="/static/deck.html">デッキ</a>
+              <a class="page-tab active" data-route="boss" href="/static/boss.html">ボス</a>
+            </nav>
+            <div class="page-view active" data-page="boss">
+              <section class="panel">
+                <div class="panel-head between"><h2>ボス選択</h2></div>
+                <div class="boss-select-layout">
+                  <div id="bossPreview" class="boss-preview muted">読み込み中...</div>
+                  <aside id="bossDetailPanel" class="boss-detail-panel muted">ボスを選択してください。</aside>
+                </div>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+      <div id="loadingOverlay" class="loading-overlay hidden"><div class="loading-box"><div class="loading-title">通信中...</div><div class="loading-dots"><span></span><span></span><span></span></div></div></div>
+    </div>
+    <div class="device-bottom"><div class="keypad-row"><span>◀</span><span>決定</span><span>▶</span></div></div>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/js/transitions.js?v=relic-boss-drops-deck-icons-20260630"></script>
+  <script src="/static/js/app.js?v=relic-boss-drops-deck-icons-20260630"></script>
+</body>
+</html>

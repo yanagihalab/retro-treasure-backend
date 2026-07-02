@@ -1,0 +1,31 @@
+plugins {
+    id "com.android.application"
+}
+
+def localProps = new Properties()
+def localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) {
+    localPropsFile.withInputStream { localProps.load(it) }
+}
+
+android {
+    namespace "com.relicraid.app"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.relicraid.app"
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName "0.1.0"
+
+        def gameBaseUrl = project.findProperty("GAME_BASE_URL")
+            ?: localProps.getProperty("GAME_BASE_URL")
+            ?: "http://10.0.2.2:8080/static/"
+        buildConfigField "String", "GAME_BASE_URL", "\"${gameBaseUrl}\""
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+}

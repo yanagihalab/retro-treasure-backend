@@ -3,16 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checkpoint</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <title>RELIC RAID - Checkpoint</title>
+  <link rel="stylesheet" href="/static/vendor/leaflet.css?v=relic-boss-drops-deck-icons-20260630" />
+  <link rel="stylesheet" href="/static/css/style.css?v=relic-boss-drops-deck-icons-20260630" />
 </head>
-<body>
+<body data-page="checkpoint">
   <div class="device-shell">
-    <div class="device-top">RETRO PHONE GAME</div>
+    <div class="device-top">RELIC RAID</div>
 
     <div class="screen-frame">
       <div class="statusbar">
@@ -22,19 +19,36 @@
       </div>
 
       <div class="shell">
+        <a class="page-back" href="/static/index.html" aria-label="戻る">＜</a>
         <header class="hero">
           <div>
-            <p class="eyebrow">現地ノード風チェックポイント</p>
-            <h1>CHECKPOINT NODE</h1>
-            <p class="subcopy">QR1 / QR2 / QR3 を入力して報酬を獲得</p>
-          </div>
-          <div class="badge">
-            <a href="/" style="text-decoration:none;color:inherit;">← 戻る</a>
+            <p class="eyebrow">フィールドレリック回収</p>
+            <h1>RELIC NODE</h1>
+            <p class="subcopy">QR1〜QR24 を入力して、地点報酬とイベント報酬を獲得</p>
           </div>
         </header>
 
         <main class="grid">
-          <section class="panel">
+          <section class="panel checkpoint-map-panel">
+            <div class="panel-head between">
+              <h2>MAP</h2>
+              <div class="meta">一覧クリックでピンを強調</div>
+            </div>
+            <div id="checkpointMap" class="leaflet-map"></div>
+            <div class="checkpoint-map-summary">
+              <span>ROUTE STATUS</span>
+              <strong id="checkpointMapSummary">読込中...</strong>
+            </div>
+            <div class="checkpoint-map-route-dock">
+              <div class="checkpoint-map-route-title">QR NODE</div>
+              <div class="checkpoint-route-grid" id="checkpointRouteGrid"></div>
+            </div>
+            <div id="checkpointMapLegend" class="meta" style="margin-top:8px;">
+              ピンを押すと入力欄に QR を入れます。
+            </div>
+          </section>
+
+          <section class="panel checkpoint-action-panel">
             <div class="panel-head between">
               <h2>チェックポイント入力</h2>
               <div id="cpStatusMini" class="battle-mini-status">読込中...</div>
@@ -43,66 +57,33 @@
             <div class="stack">
               <label>
                 QRテキスト
-                <input id="qrTextInput" type="text" placeholder="QR1 / QR2 / QR3" />
+                <input id="qrTextInput" type="text" placeholder="QR1 / QR2 / ... / QR24" />
               </label>
               <div class="actions-row tight-actions">
-                <button id="claimCheckpointBtn">報酬を受け取る</button>
-                <button id="reloadCheckpointBtn" class="secondary">情報再読込</button>
+                <button id="claimCheckpointBtn" type="button">報酬を受け取る</button>
+                <button id="reloadCheckpointBtn" class="secondary" type="button">情報再読込</button>
               </div>
             </div>
 
             <div id="checkpointResult" class="result-box muted">まだ受け取っていません。</div>
           </section>
 
-          <section class="double-grid">
-            <section class="panel">
-              <div class="panel-head"><h2>報酬モデル</h2></div>
-              <div class="list-box">
-                <div class="list-item">
-                  <strong>チェックポイント到達記録</strong>
-                  <div class="meta">初回到達日時・最終到達日時・到達回数を記録します。</div>
-                </div>
-                <div class="list-item">
-                  <strong>初回通過報酬</strong>
-                  <div class="meta">初回のみ COIN / EXP / ガチャ券 / 挑戦権を獲得します。</div>
-                </div>
-                <div class="list-item">
-                  <strong>イベント限定報酬</strong>
-                  <div class="meta">イベント有効中は各地点で限定ボーナスを1回獲得できます。</div>
-                </div>
-                <div class="list-item">
-                  <strong>ボス挑戦権やガチャチケット</strong>
-                  <div class="meta">QR2 はガチャ券、QR3 はボス挑戦権モデルを持ちます。</div>
-                </div>
-              </div>
-            </section>
-
-            <section class="panel">
-              <div class="panel-head"><h2>所持カウンタ</h2></div>
-              <div class="status-grid">
-                <div class="stat"><span>ガチャ券</span><strong id="gachaTicketCount">0</strong></div>
-                <div class="stat"><span>挑戦権</span><strong id="bossTicketCount">0</strong></div>
-              </div>
-            </section>
-          </section>
-
-          <section class="panel">
+          <section class="panel checkpoint-detail-panel">
             <div class="panel-head between">
-              <h2>MAP</h2>
-              <div class="meta">一覧クリックでピンを強調</div>
+              <h2>選択中ノード</h2>
+              <div class="meta" id="selectedCheckpointCode">未選択</div>
             </div>
-            <div id="checkpointMap" class="leaflet-map"></div>
-            <div id="checkpointMapLegend" class="meta" style="margin-top:8px;">
-              ピンを押すと入力欄に QR を入れます。
+            <div id="selectedCheckpointDetail" class="checkpoint-detail-box muted">
+              マップまたは一覧からチェックポイントを選択してください。
             </div>
           </section>
 
-          <section class="panel">
+          <section class="panel checkpoint-master-panel">
             <div class="panel-head"><h2>チェックポイント一覧</h2></div>
             <div id="checkpointMasterList" class="list-box muted">読み込み中...</div>
           </section>
 
-          <section class="panel">
+          <section class="panel checkpoint-history-panel">
             <div class="panel-head"><h2>到達履歴</h2></div>
             <div id="checkpointHistoryList" class="list-box muted">読み込み中...</div>
           </section>
@@ -117,7 +98,8 @@
 
   <div id="toast" class="toast hidden"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/static/js/checkpoint.js"></script>
+  <script src="/static/vendor/leaflet.js?v=relic-boss-drops-deck-icons-20260630"></script>
+  <script src="/static/js/transitions.js?v=relic-boss-drops-deck-icons-20260630"></script>
+  <script src="/static/js/checkpoint.js?v=relic-boss-drops-deck-icons-20260630"></script>
 </body>
 </html>

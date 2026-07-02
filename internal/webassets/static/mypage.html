@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RELIC RAID - マイページ</title>
+  <link rel="stylesheet" href="/static/css/style.css?v=relic-boss-drops-deck-icons-20260630" />
+</head>
+<body data-page="mypage">
+  <div class="device-shell">
+    <div class="device-top">RELIC RAID</div>
+    <div class="screen-frame">
+      <div class="statusbar"><div>◢◣◢ GREMOBA+</div><div id="clockText">--:--</div><div>[||||]</div></div>
+      <div class="shell mypage-babylon-shell">
+        <canvas id="mypageBabylonCanvas" class="mypage-babylon-canvas" aria-hidden="true"></canvas>
+        <div class="mypage-scene-vignette" aria-hidden="true"></div>
+        <a class="page-back" href="/static/index.html" aria-label="戻る">＜</a>
+        <div id="authBadge" class="badge hidden">未ログイン</div>
+        <main id="gameView" class="mypage-hud">
+          <section class="mypage-command-panel">
+            <div class="mypage-kicker">ADVENTURER PROFILE</div>
+            <div class="mypage-player-name" id="playerName">-</div>
+            <div class="mypage-subline">RELIC RAID / FIELD TERMINAL</div>
+          </section>
+
+          <section class="mypage-status-panel" aria-label="プレイヤーステータス">
+            <div class="mypage-status-orb">
+              <span>Lv</span>
+              <strong id="playerLevel">1</strong>
+            </div>
+            <div class="mypage-stat-list">
+              <div class="mypage-stat"><span>EXP</span><strong id="playerExp">0</strong></div>
+              <div class="mypage-stat"><span>STAMINA</span><strong id="playerStamina">∞</strong></div>
+              <div class="mypage-stat"><span>COIN</span><strong id="playerCoins">100</strong></div>
+              <div class="mypage-stat"><span>EXPLORE</span><strong id="playerExplorations">0</strong></div>
+            </div>
+          </section>
+
+          <nav class="mypage-nav-ring" aria-label="ゲームメニュー">
+            <a class="page-tab" data-route="home" href="/static/index.html">HOME</a>
+            <a class="page-tab active" data-route="mypage" href="/static/mypage.html">PLAYER</a>
+            <a class="page-tab" data-route="deck" href="/static/deck.html">DECK</a>
+            <a class="page-tab" data-route="boss" href="/static/boss.html">BOSS</a>
+          </nav>
+
+          <section class="mypage-actions-panel" aria-label="アクション">
+            <button id="refreshBtn" class="secondary">SYNC STATUS</button>
+            <button id="claimBonusBtn">DAILY REWARD</button>
+            <button id="logoutBtn" class="ghost">LOGOUT</button>
+          </section>
+        </main>
+      </div>
+      <div id="loadingOverlay" class="loading-overlay hidden"><div class="loading-box"><div class="loading-title">通信中...</div><div class="loading-dots"><span></span><span></span><span></span></div></div></div>
+    </div>
+    <div class="device-bottom"><div class="keypad-row"><span>◀</span><span>決定</span><span>▶</span></div></div>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/vendor/babylon.js?v=relic-boss-drops-deck-icons-20260630"></script>
+  <script src="/static/js/transitions.js?v=relic-boss-drops-deck-icons-20260630"></script>
+  <script src="/static/js/app.js?v=relic-boss-drops-deck-icons-20260630"></script>
+  <script src="/static/js/mypage3d.js?v=relic-boss-drops-deck-icons-20260630"></script>
+</body>
+</html>

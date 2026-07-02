@@ -1,0 +1,10 @@
+# Copy this file to local.properties when you want a custom Android SDK path
+# or a real-device backend URL.
+#
+# sdk.dir=/Users/<you>/Library/Android/sdk
+#
+# Emulator default:
+# GAME_BASE_URL=http://10.0.2.2:8080/static/
+#
+# Real Android device on the same Wi-Fi as this Mac:
+# GAME_BASE_URL=http://<your-mac-lan-ip>:8080/static/
