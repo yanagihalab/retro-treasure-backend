@@ -12,7 +12,9 @@ import (
 
 type ExploreHandler struct{ svc *service.ExploreService }
 
-func NewExploreHandler(svc *service.ExploreService) *ExploreHandler { return &ExploreHandler{svc: svc} }
+func NewExploreHandler(svc *service.ExploreService) *ExploreHandler {
+	return &ExploreHandler{svc: svc}
+}
 
 func (h *ExploreHandler) Explore(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())

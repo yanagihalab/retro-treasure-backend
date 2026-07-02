@@ -28,7 +28,10 @@ func (s *ItemService) GetEncyclopedia(userID int64) (EncyclopediaResponse, error
 		return EncyclopediaResponse{}, err
 	}
 	if len(entries) == 0 {
-		return EncyclopediaResponse{CompletionRate: 0, Entries: entries}, nil
+		return EncyclopediaResponse{
+			CompletionRate: 0,
+			Entries:        entries,
+		}, nil
 	}
 	obtained := 0
 	for _, e := range entries {
@@ -37,5 +40,8 @@ func (s *ItemService) GetEncyclopedia(userID int64) (EncyclopediaResponse, error
 		}
 	}
 	rate := float64(obtained) * 100 / float64(len(entries))
-	return EncyclopediaResponse{CompletionRate: rate, Entries: entries}, nil
+	return EncyclopediaResponse{
+		CompletionRate: rate,
+		Entries:        entries,
+	}, nil
 }

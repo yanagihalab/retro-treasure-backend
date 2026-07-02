@@ -9,7 +9,9 @@ import (
 
 type PlayerHandler struct{ svc *service.PlayerService }
 
-func NewPlayerHandler(svc *service.PlayerService) *PlayerHandler { return &PlayerHandler{svc: svc} }
+func NewPlayerHandler(svc *service.PlayerService) *PlayerHandler {
+	return &PlayerHandler{svc: svc}
+}
 
 func (h *PlayerHandler) Me(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())

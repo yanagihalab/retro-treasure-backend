@@ -13,7 +13,9 @@ import (
 
 type BossService struct{ repo *repository.MemoryRepository }
 
-func NewBossService(repo *repository.MemoryRepository) *BossService { return &BossService{repo: repo} }
+func NewBossService(repo *repository.MemoryRepository) *BossService {
+	return &BossService{repo: repo}
+}
 
 type battleCardState struct {
 	Card      model.CharacterCard

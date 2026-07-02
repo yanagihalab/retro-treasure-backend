@@ -10,7 +10,9 @@ import (
 
 type AuthHandler struct{ svc *service.AuthService }
 
-func NewAuthHandler(svc *service.AuthService) *AuthHandler { return &AuthHandler{svc: svc} }
+func NewAuthHandler(svc *service.AuthService) *AuthHandler {
+	return &AuthHandler{svc: svc}
+}
 
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req model.RegisterRequest

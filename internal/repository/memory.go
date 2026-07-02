@@ -691,7 +691,9 @@ func (r *MemoryRepository) AddExp(userID int64, exp int) (model.PlayerStatus, er
 	return st, nil
 }
 
-func expNeededForNextLevel(level int) int { return 10 + (level-1)*10 }
+func expNeededForNextLevel(level int) int {
+	return 10 + (level-1)*10
+}
 
 func (r *MemoryRepository) AddGachaTickets(userID int64, amount int) int {
 	r.mu.Lock()

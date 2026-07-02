@@ -18,6 +18,7 @@ func NewCheckpointHandler(svc *service.CheckpointService) *CheckpointHandler {
 func (h *CheckpointHandler) Master(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, h.svc.GetMaster())
 }
+
 func (h *CheckpointHandler) History(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -26,6 +27,7 @@ func (h *CheckpointHandler) History(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, h.svc.GetHistory(userID))
 }
+
 func (h *CheckpointHandler) Claim(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {

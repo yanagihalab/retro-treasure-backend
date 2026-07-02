@@ -4,8 +4,13 @@ import (
 	"retro-treasure-backend/internal/repository"
 )
 
-type PlayerService struct { repo *repository.MemoryRepository }
-func NewPlayerService(repo *repository.MemoryRepository) *PlayerService { return &PlayerService{repo: repo} }
+type PlayerService struct {
+	repo *repository.MemoryRepository
+}
+
+func NewPlayerService(repo *repository.MemoryRepository) *PlayerService {
+	return &PlayerService{repo: repo}
+}
 
 type PlayerMeResponse struct {
 	UserID            int64  `json:"user_id"`
@@ -23,12 +28,26 @@ type PlayerMeResponse struct {
 
 func (s *PlayerService) GetMe(userID int64) (PlayerMeResponse, error) {
 	user, err := s.repo.GetUserByID(userID)
-	if err != nil { return PlayerMeResponse{}, err }
+	if err != nil {
+		return PlayerMeResponse{}, err
+	}
+
 	status, err := s.repo.GetPlayerStatus(userID)
-	if err != nil { return PlayerMeResponse{}, err }
+	if err != nil {
+		return PlayerMeResponse{}, err
+	}
+
 	return PlayerMeResponse{
-		UserID: user.ID, Username: user.Username, Level: status.Level, Exp: status.Exp,
-		Stamina: status.Stamina, MaxStamina: status.MaxStamina, StaminaDisplay: "∞", StaminaInfinite: true,
-		Coins: status.Coins, Gems: status.Gems, TotalExplorations: status.TotalExplorations,
+		UserID:            user.ID,
+		Username:          user.Username,
+		Level:             status.Level,
+		Exp:               status.Exp,
+		Stamina:           status.Stamina,
+		MaxStamina:        status.MaxStamina,
+		StaminaDisplay:    "∞",
+		StaminaInfinite:   true,
+		Coins:             status.Coins,
+		Gems:              status.Gems,
+		TotalExplorations: status.TotalExplorations,
 	}, nil
 }

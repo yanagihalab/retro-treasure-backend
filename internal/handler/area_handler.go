@@ -8,7 +8,9 @@ import (
 
 type AreaHandler struct{ svc *service.AreaService }
 
-func NewAreaHandler(svc *service.AreaService) *AreaHandler { return &AreaHandler{svc: svc} }
+func NewAreaHandler(svc *service.AreaService) *AreaHandler {
+	return &AreaHandler{svc: svc}
+}
 
 func (h *AreaHandler) List(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, h.svc.ListAreas())

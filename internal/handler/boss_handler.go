@@ -11,7 +11,9 @@ import (
 
 type BossHandler struct{ svc *service.BossService }
 
-func NewBossHandler(svc *service.BossService) *BossHandler { return &BossHandler{svc: svc} }
+func NewBossHandler(svc *service.BossService) *BossHandler {
+	return &BossHandler{svc: svc}
+}
 
 func (h *BossHandler) GetBoss(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())

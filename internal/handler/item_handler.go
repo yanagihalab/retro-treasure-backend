@@ -9,7 +9,9 @@ import (
 
 type ItemHandler struct{ svc *service.ItemService }
 
-func NewItemHandler(svc *service.ItemService) *ItemHandler { return &ItemHandler{svc: svc} }
+func NewItemHandler(svc *service.ItemService) *ItemHandler {
+	return &ItemHandler{svc: svc}
+}
 
 func (h *ItemHandler) Inventory(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())

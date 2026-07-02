@@ -10,7 +10,9 @@ import (
 
 type CardService struct{ repo *repository.MemoryRepository }
 
-func NewCardService(repo *repository.MemoryRepository) *CardService { return &CardService{repo: repo} }
+func NewCardService(repo *repository.MemoryRepository) *CardService {
+	return &CardService{repo: repo}
+}
 
 func (s *CardService) GetMe(userID int64) (model.CardMeResponse, error) {
 	card, _, err := s.repo.GetEquippedCard(userID)
@@ -51,7 +53,12 @@ func (s *CardService) GetArchive(userID int64) (model.CardArchiveResponse, error
 	if len(cards) > 0 {
 		rate = float64(obtained) / float64(len(cards)) * 100
 	}
-	return model.CardArchiveResponse{Cards: cards, Total: len(cards), ObtainedCount: obtained, CompletionRate: rate}, nil
+	return model.CardArchiveResponse{
+		Cards:          cards,
+		Total:          len(cards),
+		ObtainedCount:  obtained,
+		CompletionRate: rate,
+	}, nil
 }
 
 func (s *CardService) Upgrade(userID, cardID int64) (model.UpgradeCardResponse, error) {
@@ -60,7 +67,12 @@ func (s *CardService) Upgrade(userID, cardID int64) (model.UpgradeCardResponse, 
 		return model.UpgradeCardResponse{}, err
 	}
 	status, _ := s.repo.GetPlayerStatus(userID)
-	return model.UpgradeCardResponse{Card: card, User: uc, Cost: cost, PlayerCoins: status.Coins}, nil
+	return model.UpgradeCardResponse{
+		Card:        card,
+		User:        uc,
+		Cost:        cost,
+		PlayerCoins: status.Coins,
+	}, nil
 }
 
 func (s *CardService) UpdateDeck(userID int64, cardIDs []int64) (model.DeckResponse, error) {
@@ -87,7 +99,13 @@ func (s *CardService) Gacha(userID int64) (model.GachaResponse, error) {
 		coins, _ = s.repo.AddCoins(userID, 50)
 		msg = "重複カードだったため強化ボーナス + 返還COIN 50 を獲得しました。"
 	}
-	return model.GachaResponse{SpentCoins: cost, PlayerCoins: coins, Card: card, Duplicate: duplicate, BonusMessage: msg}, nil
+	return model.GachaResponse{
+		SpentCoins:   cost,
+		PlayerCoins:  coins,
+		Card:         card,
+		Duplicate:    duplicate,
+		BonusMessage: msg,
+	}, nil
 }
 
 func weightedPick(pool []model.CharacterCard) model.CharacterCard {

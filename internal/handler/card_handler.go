@@ -11,7 +11,9 @@ import (
 
 type CardHandler struct{ svc *service.CardService }
 
-func NewCardHandler(svc *service.CardService) *CardHandler { return &CardHandler{svc: svc} }
+func NewCardHandler(svc *service.CardService) *CardHandler {
+	return &CardHandler{svc: svc}
+}
 
 func (h *CardHandler) Me(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
@@ -26,6 +28,7 @@ func (h *CardHandler) Me(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, res)
 }
+
 func (h *CardHandler) Deck(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -39,6 +42,7 @@ func (h *CardHandler) Deck(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, res)
 }
+
 func (h *CardHandler) Collection(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -52,6 +56,7 @@ func (h *CardHandler) Collection(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, res)
 }
+
 func (h *CardHandler) Archive(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -65,6 +70,7 @@ func (h *CardHandler) Archive(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, res)
 }
+
 func (h *CardHandler) Upgrade(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -83,6 +89,7 @@ func (h *CardHandler) Upgrade(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, res)
 }
+
 func (h *CardHandler) UpdateDeck(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -101,6 +108,7 @@ func (h *CardHandler) UpdateDeck(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, res)
 }
+
 func (h *CardHandler) Gacha(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {

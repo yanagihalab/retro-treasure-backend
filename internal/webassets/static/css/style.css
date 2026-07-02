@@ -6460,10 +6460,9 @@ body.battle-only.special-battle .battle-panel .panel-head {
 html.js-landscape-game-ui body.battle-only .battlefield.battleflow-vertical,
 body.battle-only.special-battle .battlefield.battleflow-vertical {
   display: grid;
-  grid-template-columns: minmax(120px, 0.68fr) clamp(26px, 4vw, 42px) minmax(
-      220px,
-      1.35fr
-    ) minmax(108px, 0.5fr);
+  grid-template-columns:
+    minmax(120px, 0.68fr) clamp(26px, 4vw, 42px) minmax(220px, 1.35fr)
+    minmax(108px, 0.5fr);
   grid-template-rows: minmax(0, 1fr);
   grid-template-areas: "boss vs deck actions";
   height: 100%;
@@ -6514,10 +6513,9 @@ body.battle-only.special-battle .battlefield-deck-grid .battle-card-image {
 @media (max-width: 700px) {
   html.js-landscape-game-ui body.battle-only .battlefield.battleflow-vertical,
   body.battle-only.special-battle .battlefield.battleflow-vertical {
-    grid-template-columns: minmax(96px, 0.58fr) clamp(22px, 4vw, 32px) minmax(
-        170px,
-        1.42fr
-      ) minmax(86px, 0.46fr);
+    grid-template-columns:
+      minmax(96px, 0.58fr) clamp(22px, 4vw, 32px) minmax(170px, 1.42fr)
+      minmax(86px, 0.46fr);
     gap: 5px;
   }
 
