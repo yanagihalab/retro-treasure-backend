@@ -1,3 +1,18 @@
+function appBasePath() {
+  const meta = document.querySelector('meta[name="app-base-path"]');
+  const raw = window.__APP_BASE_PATH__ || meta?.content || "";
+  if (!raw || raw === "/") return "";
+  return String(raw).replace(/\/$/, "");
+}
+function appUrl(path) {
+  if (!path || !String(path).startsWith("/")) return path;
+  const base = appBasePath();
+  if (!base || String(path).startsWith(base + "/")) return path;
+  return `${base}${path}`;
+}
+function staticUrl(path) {
+  return appUrl(path);
+}
 const state = {
   token: localStorage.getItem("retro_token") || "",
   boss: null,
@@ -35,7 +50,7 @@ function getAuthHeaders() {
   };
 }
 async function api(path, opt = {}) {
-  const res = await fetch(path, {
+  const res = await fetch(appUrl(path), {
     ...opt,
     headers: { ...(opt.headers || {}), ...getAuthHeaders() },
   });
@@ -60,7 +75,7 @@ function initials(name) {
   return s.slice(0, 2).toUpperCase();
 }
 function cardImageUrl(id) {
-  return `/static/img/cards/card-${String(id).padStart(2, "0")}.png?v=relic-button-icons-fit-20260702`;
+  return staticUrl(`/static/img/cards/card-${String(id).padStart(2, "0")}.png?v=relic-button-icons-fit-20260702`);
 }
 function bossImageUrl(bossID = 1) {
   const id = Number(bossID) || 1;
@@ -73,7 +88,7 @@ function bossImageUrl(bossID = 1) {
     6: "nightmare.png",
   };
   const file = files[id] || `boss-${String(id).padStart(2, "0")}.png`;
-  return `/static/img/bosses/${file}?v=relic-button-icons-fit-20260702`;
+  return staticUrl(`/static/img/bosses/${file}?v=relic-button-icons-fit-20260702`);
 }
 function elementLabel(element) {
   return (
@@ -507,7 +522,7 @@ function goToAfterBattle(action) {
     home: "/static/index.html",
   };
   const url = routes[action];
-  if (url) window.location.href = url;
+  if (url) window.location.href = appUrl(url);
 }
 async function loadBossInfo() {
   const data = await api(`/api/boss?id=${state.bossID}`);

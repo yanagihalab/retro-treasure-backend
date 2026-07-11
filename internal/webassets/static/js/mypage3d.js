@@ -1,3 +1,18 @@
+function appBasePath() {
+  const meta = document.querySelector('meta[name="app-base-path"]');
+  const raw = window.__APP_BASE_PATH__ || meta?.content || "";
+  if (!raw || raw === "/") return "";
+  return String(raw).replace(/\/$/, "");
+}
+function appUrl(path) {
+  if (!path || !String(path).startsWith("/")) return path;
+  const base = appBasePath();
+  if (!base || String(path).startsWith(base + "/")) return path;
+  return `${base}${path}`;
+}
+function staticUrl(path) {
+  return appUrl(path);
+}
 (function () {
   function ready(fn) {
     if (document.readyState === "loading") {

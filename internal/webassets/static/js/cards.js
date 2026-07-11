@@ -1,3 +1,18 @@
+function appBasePath() {
+  const meta = document.querySelector('meta[name="app-base-path"]');
+  const raw = window.__APP_BASE_PATH__ || meta?.content || "";
+  if (!raw || raw === "/") return "";
+  return String(raw).replace(/\/$/, "");
+}
+function appUrl(path) {
+  if (!path || !String(path).startsWith("/")) return path;
+  const base = appBasePath();
+  if (!base || String(path).startsWith(base + "/")) return path;
+  return `${base}${path}`;
+}
+function staticUrl(path) {
+  return appUrl(path);
+}
 const state = {
   token: localStorage.getItem("retro_token") || "",
   collection: [],
@@ -38,7 +53,7 @@ function elementBadge(el) {
   return `<span class="element-badge ${el} element-${el}">${elementLabel(el)}</span>`;
 }
 function cardImageUrl(id) {
-  return `/static/img/cards/card-${String(id).padStart(2, "0")}.png?v=relic-button-icons-fit-20260702`;
+  return staticUrl(`/static/img/cards/card-${String(id).padStart(2, "0")}.png?v=relic-button-icons-fit-20260702`);
 }
 async function api(path, opt = {}) {
   const headers = {
@@ -46,7 +61,7 @@ async function api(path, opt = {}) {
     ...(opt.headers || {}),
   };
   if (state.token) headers.Authorization = `Bearer ${state.token}`;
-  const res = await fetch(path, { ...opt, headers });
+  const res = await fetch(appUrl(path), { ...opt, headers });
   const ct = res.headers.get("content-type") || "";
   const data = ct.includes("application/json")
     ? await res.json()

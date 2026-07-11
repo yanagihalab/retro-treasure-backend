@@ -1,3 +1,18 @@
+function appBasePath() {
+  const meta = document.querySelector('meta[name="app-base-path"]');
+  const raw = window.__APP_BASE_PATH__ || meta?.content || "";
+  if (!raw || raw === "/") return "";
+  return String(raw).replace(/\/$/, "");
+}
+function appUrl(path) {
+  if (!path || !String(path).startsWith("/")) return path;
+  const base = appBasePath();
+  if (!base || String(path).startsWith(base + "/")) return path;
+  return `${base}${path}`;
+}
+function staticUrl(path) {
+  return appUrl(path);
+}
 const qs = (s) => document.querySelector(s);
 const ANDROID_AUTO_USER_KEY = "retro_android_auto_username";
 const ANDROID_AUTO_PASS_KEY = "retro_android_auto_password";
@@ -53,7 +68,7 @@ async function api(path, options = {}) {
     ...(options.headers || {}),
   };
 
-  const response = await fetch(path, {
+  const response = await fetch(appUrl(path), {
     ...options,
     headers,
   });
@@ -148,14 +163,14 @@ function replaceAndroidCredentials() {
 }
 
 async function authenticateAndroidCredentials(credentials) {
-  const login = await fetch("/api/auth/login", {
+  const login = await fetch(appUrl("/api/auth/login"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
   if (login.ok) return login.json();
 
-  const register = await fetch("/api/auth/register", {
+  const register = await fetch(appUrl("/api/auth/register"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
@@ -165,7 +180,7 @@ async function authenticateAndroidCredentials(credentials) {
   const fallback = replaceAndroidCredentials();
   credentials.username = fallback.username;
   credentials.password = fallback.password;
-  const retry = await fetch("/api/auth/register", {
+  const retry = await fetch(appUrl("/api/auth/register"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(fallback),

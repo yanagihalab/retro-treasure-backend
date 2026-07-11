@@ -1,0 +1,18 @@
+[Unit]
+Description=Relic Raid web service
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/relic-raid
+EnvironmentFile=/home/ubuntu/.relic-raid/production.env
+ExecStart=/home/ubuntu/relic-raid/relic-raid
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

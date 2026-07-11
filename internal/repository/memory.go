@@ -3,7 +3,10 @@ package repository
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
+	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -37,6 +40,8 @@ type WeightedDrop struct {
 type MemoryRepository struct {
 	mu sync.RWMutex
 
+	persistencePath string
+
 	nextUserID int64
 	nextLogID  int64
 
@@ -63,6 +68,23 @@ type MemoryRepository struct {
 	userBossChallengeTickets map[int64]int
 }
 
+type persistentState struct {
+	NextUserID               int64                                           `json:"next_user_id"`
+	NextLogID                int64                                           `json:"next_log_id"`
+	UsersByID                map[int64]model.User                            `json:"users_by_id"`
+	PasswordHashes           map[int64]string                                `json:"password_hashes"`
+	Tokens                   map[string]int64                                `json:"tokens"`
+	PlayerStatuses           map[int64]model.PlayerStatus                    `json:"player_statuses"`
+	Inventories              map[int64]map[int64]int                         `json:"inventories"`
+	Encyclopedia             map[int64]map[int64]time.Time                   `json:"encyclopedia"`
+	ExplorationLogs          []model.ExplorationLog                          `json:"exploration_logs"`
+	LoginBonusClaim          map[int64]time.Time                             `json:"login_bonus_claim"`
+	UserCards                map[int64][]model.UserCharacterCard             `json:"user_cards"`
+	UserCheckpointRecords    map[int64]map[string]model.UserCheckpointRecord `json:"user_checkpoint_records"`
+	UserGachaTickets         map[int64]int                                   `json:"user_gacha_tickets"`
+	UserBossChallengeTickets map[int64]int                                   `json:"user_boss_challenge_tickets"`
+}
+
 func NewMemoryRepository() *MemoryRepository {
 	return &MemoryRepository{
 		nextUserID:               1,
@@ -86,6 +108,122 @@ func NewMemoryRepository() *MemoryRepository {
 		userGachaTickets:         make(map[int64]int),
 		userBossChallengeTickets: make(map[int64]int),
 	}
+}
+
+func (r *MemoryRepository) SetPersistencePath(path string) {
+	r.persistencePath = path
+}
+
+func (r *MemoryRepository) LoadPersistentState() error {
+	if r.persistencePath == "" {
+		return nil
+	}
+
+	data, err := os.ReadFile(r.persistencePath)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+
+	var state persistentState
+	if err := json.Unmarshal(data, &state); err != nil {
+		return err
+	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if state.NextUserID > 0 {
+		r.nextUserID = state.NextUserID
+	}
+	if state.NextLogID > 0 {
+		r.nextLogID = state.NextLogID
+	}
+	if state.UsersByID != nil {
+		r.usersByID = state.UsersByID
+		r.usernames = make(map[string]int64, len(state.UsersByID))
+		for id, user := range state.UsersByID {
+			if state.PasswordHashes != nil {
+				user.PasswordHash = state.PasswordHashes[id]
+				r.usersByID[id] = user
+			}
+			r.usernames[user.Username] = id
+		}
+	}
+	if state.Tokens != nil {
+		r.tokens = state.Tokens
+	}
+	if state.PlayerStatuses != nil {
+		r.playerStatuses = state.PlayerStatuses
+	}
+	if state.Inventories != nil {
+		r.inventories = state.Inventories
+	}
+	if state.Encyclopedia != nil {
+		r.encyclopedia = state.Encyclopedia
+	}
+	if state.ExplorationLogs != nil {
+		r.explorationLogs = state.ExplorationLogs
+	}
+	if state.LoginBonusClaim != nil {
+		r.loginBonusClaim = state.LoginBonusClaim
+	}
+	if state.UserCards != nil {
+		r.userCards = state.UserCards
+	}
+	if state.UserCheckpointRecords != nil {
+		r.userCheckpointRecords = state.UserCheckpointRecords
+	}
+	if state.UserGachaTickets != nil {
+		r.userGachaTickets = state.UserGachaTickets
+	}
+	if state.UserBossChallengeTickets != nil {
+		r.userBossChallengeTickets = state.UserBossChallengeTickets
+	}
+
+	return nil
+}
+
+func (r *MemoryRepository) savePersistentStateLocked() error {
+	if r.persistencePath == "" {
+		return nil
+	}
+
+	state := persistentState{
+		NextUserID:               r.nextUserID,
+		NextLogID:                r.nextLogID,
+		UsersByID:                r.usersByID,
+		PasswordHashes:           make(map[int64]string, len(r.usersByID)),
+		Tokens:                   r.tokens,
+		PlayerStatuses:           r.playerStatuses,
+		Inventories:              r.inventories,
+		Encyclopedia:             r.encyclopedia,
+		ExplorationLogs:          r.explorationLogs,
+		LoginBonusClaim:          r.loginBonusClaim,
+		UserCards:                r.userCards,
+		UserCheckpointRecords:    r.userCheckpointRecords,
+		UserGachaTickets:         r.userGachaTickets,
+		UserBossChallengeTickets: r.userBossChallengeTickets,
+	}
+	for id, user := range r.usersByID {
+		state.PasswordHashes[id] = user.PasswordHash
+	}
+
+	data, err := json.MarshalIndent(state, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(r.persistencePath), 0o700); err != nil {
+		return err
+	}
+
+	tmp := r.persistencePath + ".tmp"
+	if err := os.WriteFile(tmp, data, 0o600); err != nil {
+		return err
+	}
+	return os.Rename(tmp, r.persistencePath)
 }
 
 func (r *MemoryRepository) CreateUser(username, passwordHash string) (model.User, model.PlayerStatus, error) {
@@ -115,6 +253,7 @@ func (r *MemoryRepository) CreateUser(username, passwordHash string) (model.User
 		r.userCards[user.ID] = append(r.userCards[user.ID], model.UserCharacterCard{UserID: user.ID, CardID: cardID, IsEquipped: i == 0, DeckSlot: i + 1, Level: 1, AcquiredAt: now})
 	}
 	r.nextUserID++
+	_ = r.savePersistentStateLocked()
 	return user, status, nil
 }
 
@@ -134,8 +273,50 @@ func (r *MemoryRepository) Login(username, passwordHash string) (string, model.U
 		return "", model.User{}, err
 	}
 	r.tokens[token] = user.ID
+	_ = r.savePersistentStateLocked()
 	return token, user, nil
 }
+
+func (r *MemoryRepository) GetUserByUsername(username string) (model.User, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	uid, ok := r.usernames[username]
+	if !ok {
+		return model.User{}, ErrInvalidCredentials
+	}
+	return r.usersByID[uid], nil
+}
+
+func (r *MemoryRepository) IssueToken(userID int64) (string, model.User, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	user, ok := r.usersByID[userID]
+	if !ok {
+		return "", model.User{}, ErrUserNotFound
+	}
+	token, err := randomToken()
+	if err != nil {
+		return "", model.User{}, err
+	}
+	r.tokens[token] = user.ID
+	_ = r.savePersistentStateLocked()
+	return token, user, nil
+}
+
+func (r *MemoryRepository) UpdatePasswordHash(userID int64, passwordHash string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	user, ok := r.usersByID[userID]
+	if !ok {
+		return ErrUserNotFound
+	}
+	user.PasswordHash = passwordHash
+	user.UpdatedAt = time.Now()
+	r.usersByID[userID] = user
+	_ = r.savePersistentStateLocked()
+	return nil
+}
+
 func (r *MemoryRepository) UserIDByToken(token string) (int64, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -168,6 +349,7 @@ func (r *MemoryRepository) SavePlayerStatus(status model.PlayerStatus) error {
 	defer r.mu.Unlock()
 	status.UpdatedAt = time.Now()
 	r.playerStatuses[status.UserID] = status
+	_ = r.savePersistentStateLocked()
 	return nil
 }
 
@@ -229,6 +411,7 @@ func (r *MemoryRepository) AddItemToInventory(userID, itemID int64, qty int) err
 		r.inventories[userID] = make(map[int64]int)
 	}
 	r.inventories[userID][itemID] += qty
+	_ = r.savePersistentStateLocked()
 	return nil
 }
 func (r *MemoryRepository) ListInventory(userID int64) ([]model.InventoryEntry, error) {
@@ -259,6 +442,7 @@ func (r *MemoryRepository) RegisterEncyclopedia(userID, itemID int64) (bool, err
 		return false, nil
 	}
 	r.encyclopedia[userID][itemID] = time.Now()
+	_ = r.savePersistentStateLocked()
 	return true, nil
 }
 func (r *MemoryRepository) ListEncyclopedia(userID int64) ([]model.EncyclopediaEntry, error) {
@@ -287,6 +471,7 @@ func (r *MemoryRepository) AddExplorationLog(log model.ExplorationLog) error {
 	log.ID = r.nextLogID
 	r.nextLogID++
 	r.explorationLogs = append(r.explorationLogs, log)
+	_ = r.savePersistentStateLocked()
 	return nil
 }
 func (r *MemoryRepository) ClaimLoginBonus(userID int64) (int, error) {
@@ -301,6 +486,7 @@ func (r *MemoryRepository) ClaimLoginBonus(userID int64) (int, error) {
 	st.Coins += 100
 	r.playerStatuses[userID] = st
 	r.loginBonusClaim[userID] = now
+	_ = r.savePersistentStateLocked()
 	return 100, nil
 }
 func (r *MemoryRepository) ListNotices() []model.Notice {
@@ -423,6 +609,7 @@ func (r *MemoryRepository) AddCardToUser(userID, cardID int64) (model.CharacterC
 			uc.BonusAttack += 1
 			uc.BonusDefense += 1
 			r.userCards[userID][i] = uc
+			_ = r.savePersistentStateLocked()
 			return applyCardBonuses(card, uc), true, nil
 		}
 	}
@@ -441,6 +628,7 @@ func (r *MemoryRepository) AddCardToUser(userID, cardID int64) (model.CharacterC
 	}
 	uc := model.UserCharacterCard{UserID: userID, CardID: cardID, DeckSlot: deckSlot, Level: 1, AcquiredAt: time.Now()}
 	r.userCards[userID] = append(r.userCards[userID], uc)
+	_ = r.savePersistentStateLocked()
 	return applyCardBonuses(card, uc), false, nil
 }
 func (r *MemoryRepository) UpgradeCard(userID, cardID int64) (model.CharacterCard, model.UserCharacterCard, int, error) {
@@ -465,6 +653,7 @@ func (r *MemoryRepository) UpgradeCard(userID, cardID int64) (model.CharacterCar
 		uc.BonusDefense += 1
 		r.userCards[userID][i] = uc
 		r.playerStatuses[userID] = st
+		_ = r.savePersistentStateLocked()
 		return applyCardBonuses(r.cards[cardID], uc), uc, cost, nil
 	}
 	return model.CharacterCard{}, model.UserCharacterCard{}, 0, ErrCardNotFound
@@ -498,6 +687,7 @@ func (r *MemoryRepository) UpdateDeck(userID int64, cardIDs []int64) error {
 			r.userCards[userID][idx].IsEquipped = true
 		}
 	}
+	_ = r.savePersistentStateLocked()
 	return nil
 }
 func (r *MemoryRepository) ListGachaPool() []model.CharacterCard {
@@ -527,6 +717,7 @@ func (r *MemoryRepository) SpendCoins(userID int64, amount int) (int, error) {
 	}
 	st.Coins -= amount
 	r.playerStatuses[userID] = st
+	_ = r.savePersistentStateLocked()
 	return st.Coins, nil
 }
 func (r *MemoryRepository) AddCoins(userID int64, amount int) (int, error) {
@@ -538,6 +729,7 @@ func (r *MemoryRepository) AddCoins(userID int64, amount int) (int, error) {
 	}
 	st.Coins += amount
 	r.playerStatuses[userID] = st
+	_ = r.savePersistentStateLocked()
 	return st.Coins, nil
 }
 func (r *MemoryRepository) ListRewardCandidateCards() []model.CharacterCard {
@@ -672,6 +864,7 @@ func (r *MemoryRepository) SaveCheckpointRecord(rec model.UserCheckpointRecord) 
 		r.userCheckpointRecords[rec.UserID] = make(map[string]model.UserCheckpointRecord)
 	}
 	r.userCheckpointRecords[rec.UserID][rec.CheckpointID] = rec
+	_ = r.savePersistentStateLocked()
 	return nil
 }
 
@@ -688,6 +881,7 @@ func (r *MemoryRepository) AddExp(userID int64, exp int) (model.PlayerStatus, er
 		st.Level++
 	}
 	r.playerStatuses[userID] = st
+	_ = r.savePersistentStateLocked()
 	return st, nil
 }
 
@@ -699,12 +893,14 @@ func (r *MemoryRepository) AddGachaTickets(userID int64, amount int) int {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.userGachaTickets[userID] += amount
+	_ = r.savePersistentStateLocked()
 	return r.userGachaTickets[userID]
 }
 func (r *MemoryRepository) AddBossChallengeTickets(userID int64, amount int) int {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.userBossChallengeTickets[userID] += amount
+	_ = r.savePersistentStateLocked()
 	return r.userBossChallengeTickets[userID]
 }
 func (r *MemoryRepository) GetGachaTickets(userID int64) int {

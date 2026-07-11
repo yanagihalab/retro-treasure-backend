@@ -1,3 +1,18 @@
+function appBasePath() {
+  const meta = document.querySelector('meta[name="app-base-path"]');
+  const raw = window.__APP_BASE_PATH__ || meta?.content || "";
+  if (!raw || raw === "/") return "";
+  return String(raw).replace(/\/$/, "");
+}
+function appUrl(path) {
+  if (!path || !String(path).startsWith("/")) return path;
+  const base = appBasePath();
+  if (!base || String(path).startsWith(base + "/")) return path;
+  return `${base}${path}`;
+}
+function staticUrl(path) {
+  return appUrl(path);
+}
 const state = {
   token: localStorage.getItem("retro_token") || "",
   userId: Number(localStorage.getItem("retro_user_id") || "0"),
@@ -82,7 +97,7 @@ function elementLabel(element) {
 }
 
 function cardImageUrl(cardID) {
-  return `/static/img/cards/card-${String(cardID).padStart(2, "0")}.png?v=relic-button-icons-fit-20260702`;
+  return staticUrl(`/static/img/cards/card-${String(cardID).padStart(2, "0")}.png?v=relic-button-icons-fit-20260702`);
 }
 
 function bossImageUrl(bossID = 1) {
@@ -96,7 +111,7 @@ function bossImageUrl(bossID = 1) {
     6: "nightmare.png",
   };
   const file = files[id] || `boss-${String(id).padStart(2, "0")}.png`;
-  return `/static/img/bosses/${file}?v=relic-button-icons-fit-20260702`;
+  return staticUrl(`/static/img/bosses/${file}?v=relic-button-icons-fit-20260702`);
 }
 
 function bossEffectLabel(effect) {
@@ -189,7 +204,7 @@ async function api(path, options = {}) {
   };
   if (state.token) headers.Authorization = `Bearer ${state.token}`;
 
-  const res = await fetch(path, { ...options, headers });
+  const res = await fetch(appUrl(path), { ...options, headers });
   const contentType = res.headers.get("content-type") || "";
   const data = contentType.includes("application/json")
     ? await res.json()
@@ -300,7 +315,7 @@ async function authenticateAndroidCredentials(credentials) {
 async function autoLoginForAndroid() {
   if (!isAndroidAppWebView() || state.token) return false;
   if (!qs("#authView")) {
-    location.href = "/static/index.html";
+    location.href = appUrl("/static/index.html");
     return true;
   }
 
@@ -844,7 +859,7 @@ function renderBossDetail(bossID) {
         )
         .join("")}
     </div>
-    <a class="button-link boss-challenge-link" href="/static/battle.html?boss_id=${boss.id}">このボスに挑戦</a>
+    <a class="button-link boss-challenge-link" href="${appUrl(`/static/battle.html?boss_id=${boss.id}`)}">このボスに挑戦</a>
   `;
 }
 
@@ -906,7 +921,7 @@ function bindGameActions() {
       location.pathname !== "/" &&
       !location.pathname.endsWith("/index.html")
     ) {
-      location.href = "/static/index.html";
+      location.href = appUrl("/static/index.html");
     }
     showToast("ログアウトしました");
   });
@@ -919,7 +934,7 @@ async function bootstrapGame() {
       !qs("#authView") &&
       !(currentPage() === "mypage" && qs(".mypage-hud"))
     ) {
-      location.href = "/static/index.html";
+      location.href = appUrl("/static/index.html");
     }
     return;
   }

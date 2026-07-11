@@ -1,3 +1,18 @@
+function appBasePath() {
+  const meta = document.querySelector('meta[name="app-base-path"]');
+  const raw = window.__APP_BASE_PATH__ || meta?.content || "";
+  if (!raw || raw === "/") return "";
+  return String(raw).replace(/\/$/, "");
+}
+function appUrl(path) {
+  if (!path || !String(path).startsWith("/")) return path;
+  const base = appBasePath();
+  if (!base || String(path).startsWith(base + "/")) return path;
+  return `${base}${path}`;
+}
+function staticUrl(path) {
+  return appUrl(path);
+}
 (function () {
   const overlay = document.createElement("div");
   overlay.className = "screen-transition";
@@ -79,7 +94,7 @@
       dock.innerHTML = dockItems
         .map(
           ([key, href, label]) =>
-            `<a class="${key === current ? "active" : ""}" href="${href}"><span>${label}</span></a>`,
+            `<a class="${key === current ? "active" : ""}" href="${appUrl(href)}"><span>${label}</span></a>`,
         )
         .join("");
       document.body.appendChild(dock);
@@ -115,16 +130,16 @@
   }
 
   const generatedIconMap = {
-    home: "/static/img/ui/icon-home.png?v=relic-button-icons-fit-20260702",
-    player: "/static/img/ui/icon-player.png?v=relic-button-icons-fit-20260702",
-    deck: "/static/img/ui/icon-deck.png?v=relic-button-icons-fit-20260702",
-    boss: "/static/img/ui/icon-boss.png?v=relic-button-icons-fit-20260702",
+    home: staticUrl("/static/img/ui/icon-home.png?v=relic-button-icons-fit-20260702"),
+    player: staticUrl("/static/img/ui/icon-player.png?v=relic-button-icons-fit-20260702"),
+    deck: staticUrl("/static/img/ui/icon-deck.png?v=relic-button-icons-fit-20260702"),
+    boss: staticUrl("/static/img/ui/icon-boss.png?v=relic-button-icons-fit-20260702"),
     checkpoint:
-      "/static/img/ui/icon-checkpoint.png?v=relic-button-icons-fit-20260702",
-    gacha: "/static/img/ui/icon-gacha.png?v=relic-button-icons-fit-20260702",
-    cardManage: "/static/img/ui/icon-deck.png?v=relic-button-icons-fit-20260702",
+      staticUrl("/static/img/ui/icon-checkpoint.png?v=relic-button-icons-fit-20260702"),
+    gacha: staticUrl("/static/img/ui/icon-gacha.png?v=relic-button-icons-fit-20260702"),
+    cardManage: staticUrl("/static/img/ui/icon-deck.png?v=relic-button-icons-fit-20260702"),
     encyclopedia:
-      "/static/img/ui/icon-encyclopedia.svg?v=relic-button-icons-fit-20260702",
+      staticUrl("/static/img/ui/icon-encyclopedia.svg?v=relic-button-icons-fit-20260702"),
   };
 
   function iconForElement(element) {
