@@ -36,7 +36,16 @@ GAME_BASE_URL=http://<your-mac-lan-ip>:8080/static/
 
 その後 Android Studio で Sync/Run してください。
 
+## 本番URL
+
+本番化するときは `GAME_BASE_URL` をデプロイ済みHTTPS URLへ変更してください。
+
+```properties
+GAME_BASE_URL=https://ik1-206-76937.vs.sakura.ne.jp/games/
+```
+
 ## 注意
 
-- 現在のバックエンドはインメモリ実装なので、サーバー再起動でログイン状態や進行状態は消えます。
-- 本番化するときは `GAME_BASE_URL` をデプロイ済みHTTPS URLへ変更してください。
+- ローカル開発では `GAME_BASE_URL` の末尾 `/` を付けてください。
+- 本番サーバーは `APP_BASE_PATH=/games` で起動します。
+- ユーザー、カード、進行状況はサーバー側の永続化ファイルに保存されます。

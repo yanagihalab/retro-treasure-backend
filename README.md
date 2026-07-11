@@ -1,404 +1,125 @@
-# Retro Treasure Game Backend
-
-ガラケー時代の探索ソーシャルゲームを現代Web向けに再構成するための、Go製バックエンド雛形です。
-
-このリポジトリは次の2つを目的にしています。
-
-- すぐに起動して API 動作を確認できること
-- 後から DB 永続化、イベント、ランキング、フレンド機能を追加しやすいこと
-
-元作品の固有名称・画像・世界観を流用せず、**探索型コレクションゲーム**として再設計する前提です。
-
----
-
-
-## Docker での実行
-
-### 前提
-
-- Docker
-- Docker Compose Plugin (`docker compose`)
-
-### 1. Docker 単体で起動
-
-ビルド:
-
-```bash
-docker build -t retro-treasure-backend .
-```
-
-起動:
-
-```bash
-docker run --rm -p 8080:8080   -e APP_NAME=retro-treasure-api   -e APP_PORT=8080   retro-treasure-backend
-```
-
-ヘルスチェック:
-
-```bash
-curl http://localhost:8080/health
-```
-
-期待される返却:
-
-```json
-{"status":"ok"}
-```
-
-### 2. docker compose で起動
-
-```bash
-docker compose up --build
-```
-
-バックグラウンド起動:
-
-```bash
-docker compose up -d --build
-```
-
-停止:
-
-```bash
-docker compose down
-```
-
-### 3. API 動作確認例
-
-ユーザー登録:
-
-```bash
-curl -X POST http://localhost:8080/api/auth/register   -H "Content-Type: application/json"   -d '{
-    "username":"player1",
-    "password":"password123"
-  }'
-```
-
-ログイン:
-
-```bash
-curl -X POST http://localhost:8080/api/auth/login   -H "Content-Type: application/json"   -d '{
-    "username":"player1",
-    "password":"password123"
-  }'
-```
-
-返却された `token` を使ってプレイヤー情報取得:
-
-```bash
-curl http://localhost:8080/api/player/me   -H "Authorization: Bearer <token>"
-```
-
-### 4. ポート変更
-
-ホスト側の公開ポートを 18080 にしたい場合:
-
-```yaml
-services:
-  backend:
-    ports:
-      - "18080:8080"
-```
-
-### 5. 現状の注意点
-
-- 現在は **インメモリ実装** です
-- コンテナ再起動で登録ユーザーや進行状態は消えます
-- 永続化したい場合は次段階で PostgreSQL 対応へ切り替えます
-
----
-
-## Android アプリでの実行
-
-Android Studio で `android/` ディレクトリを開くと、RELIC RAID の WebView アプリとして実行できます。
-
-開発時は先にバックエンドを起動してください。
-
-```bash
-go run ./cmd/server
-```
-
-Android Emulator では初期設定のまま `http://10.0.2.2:8080/static/` を読み込みます。
-
-実機で確認する場合は `android/local.properties.example` を `android/local.properties` にコピーして、Mac の LAN IP を指定してください。
-
-```properties
-GAME_BASE_URL=http://<your-mac-lan-ip>:8080/static/
-```
-
-詳細は `android/README.md` を参照してください。
-
----
-
-## 1. 企画概要
-
-### 1.1 コンセプト
-
-短時間で繰り返し遊べる探索ループを中心に、次の体験を提供します。
-
-- スタミナ消費による軽い周回
-- 宝物や素材の収集
-- 図鑑の登録と収集率上昇
-- ログインボーナスによる日次継続
-- 将来的なイベント拡張
-
-### 1.2 想定プラットフォーム
-
-- PC ブラウザ
-- スマホブラウザ
-- 将来的に PWA 対応可能
-
-### 1.3 MVP の範囲
-
-- ユーザー登録 / ログイン
-- マイページ情報取得
-- エリア一覧取得
-- 探索実行
-- 所持品一覧取得
-- 図鑑一覧取得
-- ログインボーナス受け取り
-- お知らせ一覧取得
-
----
-
-## 2. ゲーム仕様
-
-### 2.1 基本ループ
-
-1. ユーザーがマイページを開く
-2. スタミナ残量を確認する
-3. 探索エリアを選ぶ
-4. 探索結果を受け取る
-5. アイテム / コイン / 経験値を獲得する
-6. 新規アイテムなら図鑑に登録される
-7. レベルアップや新エリア開放へつながる
-
-### 2.2 プレイヤーパラメータ
-
-- レベル
-- 経験値
-- スタミナ
-- 最大スタミナ
-- コイン
-- ジェム
-- 総探索回数
-
-### 2.3 探索の結果タイプ
-
-- `item`: アイテム発見
-- `nothing`: 空振り
-- `rare_chest`: レア宝箱
-- `enemy`: 敵遭遇
-
-### 2.4 初期ルール
-
-- スタミナは 5 分で 1 回復
-- レベルアップ時に最大スタミナ +2
-- エリアごとにスタミナ消費量が異なる
-- 探索報酬はサーバ側で決定する
-
-### 2.5 レベル設計例
-
-- Lv1: 0 EXP
-- Lv2: 10 EXP
-- Lv3: 30 EXP
-- Lv4: 60 EXP
-- Lv5: 100 EXP
-- Lv6: 150 EXP
-- 以降は簡易式で増加
-
----
-
-## 3. API 一覧
-
-### 認証
-
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-
-### プレイヤー
-
-- `GET /api/player/me`
-
-### エリア
-
-- `GET /api/areas`
-
-### 探索
-
-- `POST /api/explore`
-
-### アイテム
-
-- `GET /api/items/inventory`
-- `GET /api/encyclopedia`
-
-### 日次
-
-- `POST /api/login-bonus/claim`
-
-### 運営情報
-
-- `GET /api/notices`
-
-### ヘルスチェック
-
-- `GET /health`
-
----
-
-## 4. 画面一覧
-
-### 4.1 タイトル画面
-
-- 新規登録
-- ログイン
-- お知らせへの導線
-
-### 4.2 マイページ
-
-- プレイヤー名
-- レベル
-- 経験値
-- スタミナ
-- コイン
-- 各機能への導線
-
-### 4.3 探索エリア選択
-
-- 開放済みエリア一覧
-- 必要レベル
-- スタミナ消費
-- エリア説明
-
-### 4.4 探索結果画面
-
-- 結果メッセージ
-- 経験値増加
-- コイン増加
-- アイテム獲得
-- 図鑑登録
-- レベルアップ表示
-
-### 4.5 所持品一覧
-
-- アイテム名
-- レア度
-- 個数
-
-### 4.6 図鑑画面
-
-- 登録済みアイテム
-- 未発見枠
-- 収集率
-
-### 4.7 ログインボーナス画面
-
-- 今日の報酬
-- 受取状態
-
-### 4.8 お知らせ画面
-
-- タイトル
-- 本文
-- 投稿日時
-
----
-
-## 5. データモデル
-
-本雛形は**インメモリ実装**で動作します。
-
-ただし、将来 PostgreSQL へ移行しやすいように、リポジトリ層とマイグレーション SQL の雛形も含めています。
-
-### 主なモデル
-
-- `User`
-- `PlayerStatus`
-- `Area`
-- `Item`
-- `InventoryEntry`
-- `EncyclopediaEntry`
-- `Notice`
-- `ExplorationLog`
-
-### 永続化へ移行する際の主テーブル
-
-- `users`
-- `player_status`
-- `areas`
-- `items`
-- `area_drop_tables`
-- `user_items`
-- `encyclopedia_entries`
-- `exploration_logs`
-- `login_bonus_logs`
-- `notices`
-
-`migrations/001_init.sql` に初期 SQL の雛形を置いています。
-
----
-
-## 6. ディレクトリ構成
+# RELIC RAID
+
+RELIC RAID is a Go-based web game service with an embedded browser game UI. It serves the API and static game screens from one binary, and can run locally, inside Docker, in an Android WebView, or behind nginx on a VPS.
+
+The current game is a landscape-oriented, Cthulhu-inspired collection RPG about disaster-prevention relic cards, checkpoint nodes, and endurance-style boss battles.
+
+## Current Features
+
+- Embedded web UI under `/static/`
+- Optional base path support such as `/games/`
+- REST API for authentication, player state, cards, bosses, gacha, checkpoints, inventory, and notices
+- 100 player cards across `heart`, `tech`, and `body` attributes
+- Boss selection and endurance battle flow
+- Boss attack attributes, attack skills, hints, and battle status effects
+- Checkpoint map page with QR node progression
+- Android WebView project under `android/`
+- File-backed persistence for users, cards, decks, progress, tickets, checkpoint history, and tokens
+- bcrypt password hashing, with legacy SHA-256 login compatibility
+- VPS deployment assets under `deploy/`
+
+## Repository Layout
 
 ```text
-retro-treasure-backend/
-├─ cmd/server/main.go
-├─ internal/
-│  ├─ config/
-│  ├─ handler/
-│  ├─ middleware/
-│  ├─ model/
-│  ├─ repository/
-│  ├─ seed/
-│  └─ service/
-├─ migrations/001_init.sql
-├─ go.mod
+.
+├─ cmd/server/                 # HTTP server entrypoint
+├─ internal/config/            # Environment configuration
+├─ internal/handler/           # HTTP handlers
+├─ internal/middleware/        # Auth middleware
+├─ internal/model/             # API and game models
+├─ internal/repository/        # In-memory repository with JSON persistence
+├─ internal/seed/              # Master data seeds
+├─ internal/service/           # Game and API business logic
+├─ internal/webassets/         # Embedded HTML/CSS/JS/images
+├─ android/                    # Android WebView wrapper
+├─ deploy/                     # VPS systemd/nginx deployment files
+├─ migrations/                 # Future SQL migration draft
+├─ Dockerfile
+├─ docker-compose.yml
 └─ README.md
 ```
 
----
+## Requirements
 
-## 7. 起動方法
+- Go 1.23 or newer for local development
+- Node.js for JavaScript syntax checks
+- Docker and Docker Compose, optional
+- Android Studio, optional
 
-### 7.1 必要環境
+The VPS deployment uses a prebuilt Linux binary, so Go does not need to be installed on the VPS.
 
-- Go 1.22 以上
+## Quick Start
 
-### 7.2 起動
+Run the service locally:
 
 ```bash
 go run ./cmd/server
 ```
 
-デフォルトでは `:8080` で起動します。
+Open:
 
-```bash
-curl http://localhost:8080/health
-```
+- Game home: `http://localhost:8080/static/`
+- Health check: `http://localhost:8080/health`
 
-期待される応答:
+Expected health response:
 
 ```json
 {"status":"ok"}
 ```
 
-### 7.3 環境変数
+## Environment Variables
 
-- `APP_PORT`: 省略時 `8080`
-- `APP_NAME`: 省略時 `retro-treasure-api`
+| Name | Default | Description |
+| --- | --- | --- |
+| `APP_NAME` | `retro-treasure-api` | Name shown in server logs |
+| `APP_HOST` | empty | Bind host. Use `127.0.0.1` behind nginx |
+| `APP_PORT` | `8080` | Internal HTTP port |
+| `APP_BASE_PATH` | empty | Public path prefix, for example `/games` |
+| `DATA_DIR` | empty | Directory for persistent state |
+| `APP_STATE_FILE` | empty | Explicit JSON state file path |
 
-例:
+If `APP_STATE_FILE` is empty and `DATA_DIR` is set, the server writes state to:
 
-```bash
-APP_PORT=9090 go run ./cmd/server
+```text
+${DATA_DIR}/state.json
 ```
 
----
+Local persistent run:
 
-## 8. 動作確認例
+```bash
+mkdir -p .local-data
+DATA_DIR=.local-data go run ./cmd/server
+```
 
-### 8.1 ユーザー登録
+Base path run matching the VPS:
+
+```bash
+mkdir -p .local-data
+APP_HOST=127.0.0.1 \
+APP_PORT=8080 \
+APP_BASE_PATH=/games \
+DATA_DIR=.local-data \
+go run ./cmd/server
+```
+
+Then open `http://localhost:8080/games/`.
+
+## Base Path Behavior
+
+The app can be published under a sub-path such as `/games/`.
+
+When `APP_BASE_PATH=/games` is set:
+
+- `/games/` serves the game home.
+- `/games/static/...` serves static assets.
+- `/games/api/...` routes to the same API handlers as `/api/...`.
+- Served HTML/JS/CSS receives `window.__APP_BASE_PATH__` and a matching `<meta name="app-base-path">`.
+
+This removes the need to rely on nginx `sub_filter` for asset and API path rewriting.
+
+## API Examples
+
+Register:
 
 ```bash
 curl -X POST http://localhost:8080/api/auth/register \
@@ -406,7 +127,7 @@ curl -X POST http://localhost:8080/api/auth/register \
   -d '{"username":"player1","password":"password123"}'
 ```
 
-### 8.2 ログイン
+Login:
 
 ```bash
 curl -X POST http://localhost:8080/api/auth/login \
@@ -414,165 +135,249 @@ curl -X POST http://localhost:8080/api/auth/login \
   -d '{"username":"player1","password":"password123"}'
 ```
 
-レスポンス例:
-
-```json
-{
-  "token": "...",
-  "user_id": 1
-}
-```
-
-以降は `Authorization: Bearer <token>` を付与します。
-
-### 8.3 マイページ情報取得
+Use the returned token:
 
 ```bash
 curl http://localhost:8080/api/player/me \
   -H 'Authorization: Bearer <token>'
 ```
 
-### 8.4 エリア一覧取得
+With `APP_BASE_PATH=/games`, use `/games/api/...`:
 
 ```bash
-curl http://localhost:8080/api/areas \
-  -H 'Authorization: Bearer <token>'
+curl http://localhost:8080/games/api/checkpoints/master
 ```
 
-### 8.5 探索実行
+## Main API Routes
+
+### Auth
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+
+### Player
+
+- `GET /api/player/me`
+
+### Exploration and Items
+
+- `GET /api/areas`
+- `POST /api/explore`
+- `GET /api/items/inventory`
+- `GET /api/encyclopedia`
+
+### Cards and Gacha
+
+- `GET /api/cards/me`
+- `GET /api/cards/deck`
+- `GET /api/cards/collection`
+- `GET /api/cards/archive`
+- `POST /api/cards/upgrade`
+- `POST /api/cards/deck`
+- `POST /api/gacha/draw`
+
+### Bosses
+
+- `GET /api/boss`
+- `POST /api/boss/auto`
+
+### Checkpoints
+
+- `GET /api/checkpoints/master`
+- `GET /api/checkpoints/history`
+- `POST /api/checkpoints/claim`
+
+### Daily and Notices
+
+- `POST /api/login-bonus/claim`
+- `GET /api/notices`
+- `GET /health`
+
+## Persistence
+
+Runtime data is stored in memory and periodically serialized to a JSON state file after mutations. This keeps the implementation simple while preventing VPS restarts from wiping players and progress.
+
+Persisted state includes:
+
+- Users and password hashes
+- Auth tokens
+- Player status
+- Inventory and encyclopedia progress
+- Owned cards, deck slots, upgrades, and tickets
+- Exploration logs
+- Login bonus claim state
+- Checkpoint claim history
+
+The state file should live outside the repository, for example:
+
+```text
+/home/ubuntu/.relic-raid/data/state.json
+```
+
+Back it up before replacing production binaries or changing persistence code.
+
+## Authentication
+
+New passwords are hashed with bcrypt.
+
+Older SHA-256 hashes are still accepted for login compatibility. When a legacy hash login succeeds, the password hash is upgraded to bcrypt and written back to the persistent state file.
+
+Never commit production state files or environment files.
+
+## Docker
+
+Build:
 
 ```bash
-curl -X POST http://localhost:8080/api/explore \
-  -H 'Authorization: Bearer <token>' \
-  -H 'Content-Type: application/json' \
-  -d '{"area_id":1}'
+docker build -t relic-raid .
 ```
 
-### 8.6 所持品一覧
+Run without persistence:
 
 ```bash
-curl http://localhost:8080/api/items/inventory \
-  -H 'Authorization: Bearer <token>'
+docker run --rm -p 8080:8080 relic-raid
 ```
 
-### 8.7 図鑑一覧
+Run with persistence:
 
 ```bash
-curl http://localhost:8080/api/encyclopedia \
-  -H 'Authorization: Bearer <token>'
+mkdir -p .local-data
+docker run --rm \
+  -p 8080:8080 \
+  -e DATA_DIR=/data \
+  -v "$PWD/.local-data:/data" \
+  relic-raid
 ```
 
-### 8.8 ログインボーナス受け取り
+Docker Compose:
 
 ```bash
-curl -X POST http://localhost:8080/api/login-bonus/claim \
-  -H 'Authorization: Bearer <token>'
+docker compose up --build
 ```
 
-### 8.9 お知らせ一覧
+Stop:
 
 ```bash
-curl http://localhost:8080/api/notices \
-  -H 'Authorization: Bearer <token>'
+docker compose down
 ```
 
----
+## Android
 
-## 9. 実装方針
+Open `android/` in Android Studio.
 
-### 9.1 レイヤ分離
+For emulator development, start the Go server locally:
 
-- `handler`: HTTP 入出力
-- `service`: 業務ロジック
-- `repository`: データアクセス
-- `model`: ドメイン構造体
+```bash
+go run ./cmd/server
+```
 
-### 9.2 現在の実装
+The emulator uses:
 
-- 認証は簡易トークン方式
-- データはインメモリ保持
-- 再起動するとユーザーデータは消える
-- 初期エリア / アイテム / お知らせは起動時にシードされる
+```text
+http://10.0.2.2:8080/static/
+```
 
-### 9.3 将来の拡張ポイント
+For physical devices, copy the local properties example and set a reachable LAN or HTTPS URL:
 
-- PostgreSQL への置き換え
-- JWT 導入
-- パスワードハッシュの強化
-- フレンド / ランキング / イベント追加
-- 期間限定ドロップテーブル
-- 管理画面追加
+```bash
+cp android/local.properties.example android/local.properties
+```
 
----
+```properties
+GAME_BASE_URL=http://<your-mac-lan-ip>:8080/static/
+```
 
-## 10. 探索ロジックの概要
+For production WebView builds, point `GAME_BASE_URL` to:
 
-探索時には次を行います。
+```text
+https://ik1-206-76937.vs.sakura.ne.jp/games/
+```
 
-1. ユーザー認証
-2. プレイヤー状態の取得
-3. 自然回復分のスタミナ反映
-4. エリア開放条件チェック
-5. スタミナ不足チェック
-6. ドロップ候補から重み付き抽選
-7. 経験値 / コイン / アイテム反映
-8. 図鑑登録判定
-9. レベルアップ判定
-10. 探索ログ保存
+See `android/README.md` for Android-specific notes.
 
----
+## VPS Deployment
 
-## 11. 初期シードデータ
+The Sakura VPS deployment publishes RELIC RAID under:
 
-### エリア
+```text
+https://ik1-206-76937.vs.sakura.ne.jp/games/
+```
 
-- 草原の入口
-- 古代遺跡
-- 深緑の森
+Runtime design:
 
-### アイテム
+- nginx exposes only ports 80 and 443.
+- RELIC RAID binds to `127.0.0.1:8090`.
+- Existing Tozan Todoke ports `8080` and `8788` are not reused.
+- Environment and state live under `/home/ubuntu/.relic-raid/`.
+- systemd service name is `relic-raid.service`.
 
-- きらめく石
-- 古びたコイン
-- 幻の羽根
-- 遺跡の欠片
-- 神秘の宝玉
+Deployment files are tracked in:
 
-### お知らせ
+```text
+deploy/relic-raid.service
+deploy/nginx-games-location.conf
+deploy/README.md
+```
 
-- サービス開始のお知らせ
-- 探索キャンペーン準備中
+See `deploy/README.md` for the exact install, update, nginx, systemd, and verification commands.
 
----
+## Production Build
 
-## 12. 権利面の注意
+Build a Linux binary for the VPS:
 
-この雛形は**復刻ドリランド風のゲーム性**を参考にした設計です。
+```bash
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o relic-raid ./cmd/server
+```
 
-以下は避けてください。
+Deploy the binary and tracked deploy files:
 
-- 元作品の名称利用
-- 元作品のキャラクター名利用
-- 元画像 / 元UI の直接流用
-- 固有設定の過度な再現
+```bash
+rsync -av relic-raid deploy/relic-raid.service deploy/nginx-games-location.conf \
+  sakura-tozantodoke:/home/ubuntu/relic-raid/
+```
 
-公開・商用化を前提とする場合は、名称・世界観・アート・文言をオリジナル化してください。
+Then apply the sudo steps from `deploy/README.md` on the VPS.
 
----
+## Verification
 
-## 13. 次の実装候補
+Run Go tests:
 
-優先度順の候補です。
+```bash
+go test ./...
+```
 
-1. PostgreSQL リポジトリ実装
-2. フロントエンド画面一式
-3. イベントシステム追加
-4. ランキング追加
-5. 管理者向けお知らせ編集 API
-6. Docker / docker-compose 対応
+Check JavaScript syntax:
 
----
+```bash
+for f in internal/webassets/static/js/*.js; do
+  node --check "$f"
+done
+```
 
-## 14. ライセンス
+Local base path smoke test:
 
-必要に応じて設定してください。社内試作や研究用なら未設定でも構いませんが、公開時は明示を推奨します。
+```bash
+rm -rf /tmp/relic-raid-verify
+mkdir -p /tmp/relic-raid-verify
+APP_HOST=127.0.0.1 \
+APP_PORT=18090 \
+APP_BASE_PATH=/games \
+DATA_DIR=/tmp/relic-raid-verify \
+go run ./cmd/server
+```
+
+In another terminal:
+
+```bash
+curl -I http://127.0.0.1:18090/games/
+curl -I http://127.0.0.1:18090/games/static/js/app.js
+curl http://127.0.0.1:18090/games/api/checkpoints/master
+```
+
+## Development Notes
+
+- Keep secrets, production env files, and state files outside git.
+- Prefer adding game master data in `internal/seed/seed.go`.
+- Keep API response shapes in `internal/model/`.
+- Keep browser UI assets in `internal/webassets/static/`.
+- The current JSON persistence is suitable for a small single-process VPS deployment. For multi-instance or larger production use, move persistent state to SQLite or PostgreSQL.
