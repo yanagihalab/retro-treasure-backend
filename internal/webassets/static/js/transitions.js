@@ -115,15 +115,16 @@
   }
 
   const generatedIconMap = {
-    home: "/static/img/ui/icon-home.png?v=relic-boss-drops-deck-icons-20260630",
-    player:
-      "/static/img/ui/icon-player.png?v=relic-boss-drops-deck-icons-20260630",
-    deck: "/static/img/ui/icon-deck.png?v=relic-boss-drops-deck-icons-20260630",
-    boss: "/static/img/ui/icon-boss.png?v=relic-boss-drops-deck-icons-20260630",
+    home: "/static/img/ui/icon-home.png?v=relic-button-icons-fit-20260702",
+    player: "/static/img/ui/icon-player.png?v=relic-button-icons-fit-20260702",
+    deck: "/static/img/ui/icon-deck.png?v=relic-button-icons-fit-20260702",
+    boss: "/static/img/ui/icon-boss.png?v=relic-button-icons-fit-20260702",
     checkpoint:
-      "/static/img/ui/icon-checkpoint.png?v=relic-boss-drops-deck-icons-20260630",
-    gacha:
-      "/static/img/ui/icon-gacha.png?v=relic-boss-drops-deck-icons-20260630",
+      "/static/img/ui/icon-checkpoint.png?v=relic-button-icons-fit-20260702",
+    gacha: "/static/img/ui/icon-gacha.png?v=relic-button-icons-fit-20260702",
+    cardManage: "/static/img/ui/icon-deck.png?v=relic-button-icons-fit-20260702",
+    encyclopedia:
+      "/static/img/ui/icon-encyclopedia.svg?v=relic-button-icons-fit-20260702",
   };
 
   function iconForElement(element) {
@@ -171,12 +172,17 @@
     )
       return "gacha";
     if (
-      route.endsWith("/cards.html") ||
       route.endsWith("/encyclopedia.html") ||
-      text.includes("CARD") ||
-      text.includes("カード") ||
       text.includes("図鑑")
     )
+      return "encyclopedia";
+    if (
+      route.endsWith("/cards.html") ||
+      text.includes("カード管理") ||
+      text.includes("CARD")
+    )
+      return "cardManage";
+    if (text.includes("カード"))
       return "deck";
     if (text.includes("ログイン")) return "IN";
     if (text.includes("ログアウト") || text.includes("LOGOUT")) return "X";

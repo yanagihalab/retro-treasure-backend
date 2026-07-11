@@ -4,6 +4,7 @@ import "os"
 
 type Config struct {
 	AppName string
+	Host    string
 	Port    string
 }
 
@@ -18,8 +19,18 @@ func Load() Config {
 		name = "retro-treasure-api"
 	}
 
+	host := os.Getenv("APP_HOST")
+
 	return Config{
 		AppName: name,
+		Host:    host,
 		Port:    port,
 	}
+}
+
+func (c Config) Addr() string {
+	if c.Host == "" {
+		return ":" + c.Port
+	}
+	return c.Host + ":" + c.Port
 }

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Eldritch encyclopedia icon">
+  <defs>
+    <radialGradient id="abyssCore" cx="50%" cy="44%" r="60%">
+      <stop offset="0" stop-color="#f1ffe8"/>
+      <stop offset="0.24" stop-color="#76ffc8"/>
+      <stop offset="0.58" stop-color="#6d2bb7"/>
+      <stop offset="1" stop-color="#050b0a"/>
+    </radialGradient>
+    <linearGradient id="oldGold" x1="16" y1="12" x2="112" y2="118">
+      <stop offset="0" stop-color="#fff0a8"/>
+      <stop offset="0.42" stop-color="#bfa04a"/>
+      <stop offset="1" stop-color="#4b3514"/>
+    </linearGradient>
+    <linearGradient id="bookHide" x1="24" y1="18" x2="101" y2="110">
+      <stop offset="0" stop-color="#163a32"/>
+      <stop offset="0.48" stop-color="#0a1d1a"/>
+      <stop offset="1" stop-color="#160b1e"/>
+    </linearGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <circle cx="64" cy="64" r="59" fill="#030908"/>
+  <circle cx="64" cy="64" r="53" fill="#071311" stroke="url(#oldGold)" stroke-width="4"/>
+  <circle cx="64" cy="64" r="45" fill="none" stroke="#2fc7a0" stroke-width="2" opacity=".32"/>
+
+  <path d="M35 27h31c8 0 14 6 14 14v61H45c-8 0-14-6-14-14V31c0-2 2-4 4-4Z" fill="url(#bookHide)" stroke="#d9c56f" stroke-width="3"/>
+  <path d="M65 41c0-8 6-14 14-14h21c2 0 4 2 4 4v71H79c-8 0-14-6-14-14V41Z" fill="#0b1717" stroke="#84e8c8" stroke-width="3"/>
+  <path d="M65 35v69" stroke="#d9c56f" stroke-width="3" stroke-linecap="round"/>
+
+  <path d="M45 47c7-5 13-5 19 0M45 60c6-4 12-4 18 0M45 73c7-5 13-5 19 0" fill="none" stroke="#9deecf" stroke-width="3" stroke-linecap="round" opacity=".82"/>
+
+  <g filter="url(#softGlow)">
+    <path d="M82 47c9 0 16 7 16 16s-7 16-16 16-16-7-16-16 7-16 16-16Z" fill="url(#abyssCore)" stroke="#f0df91" stroke-width="2"/>
+    <circle cx="82" cy="63" r="5" fill="#06110f" stroke="#eaffd7" stroke-width="2"/>
+    <path d="M82 39v9M82 78v10M66 63h-9M107 63h-9M71 52l-7-7M93 74l7 7M93 52l7-7M71 74l-7 7" stroke="#6fffd0" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <path d="M31 92c10-9 17-6 22 3 4 7 11 9 18 1" fill="none" stroke="#6d2bb7" stroke-width="5" stroke-linecap="round"/>
+  <path d="M98 88c-8-6-15-4-20 4-4 7-10 9-18 4" fill="none" stroke="#2fc7a0" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+  <path d="M36 31c-7 8-9 16-6 25M101 31c6 9 7 18 2 27" fill="none" stroke="#2fc7a0" stroke-width="3" stroke-linecap="round" opacity=".55"/>
+</svg>

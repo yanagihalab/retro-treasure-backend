@@ -8724,6 +8724,68 @@ body:not(:has(.battle-device)) .home-tile {
   border-color: rgba(214, 185, 104, 0.32);
 }
 
+/* Keep generated menu artwork readable inside home buttons. */
+.home-tile.has-game-icon,
+html.js-smart-game-ui body:not(.battle-only) .home-tile.has-game-icon,
+html.js-landscape-game-ui body:not(.battle-only) .home-tile.has-game-icon,
+body:not(:has(.battle-device)) .home-tile.has-game-icon {
+  display: grid;
+  grid-template-columns: clamp(44px, 6.2vw, 58px) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: clamp(10px, 1.5vw, 14px);
+  min-height: clamp(86px, 13svh, 106px);
+  padding: clamp(12px, 2.1svh, 16px) clamp(14px, 2.2vw, 18px);
+  overflow: hidden;
+  text-align: left;
+}
+
+.home-tile.has-game-icon .tile-icon.generated-game-icon,
+html.js-smart-game-ui
+  body:not(.battle-only)
+  .home-tile.has-game-icon
+  .tile-icon.generated-game-icon,
+html.js-landscape-game-ui
+  body:not(.battle-only)
+  .home-tile.has-game-icon
+  .tile-icon.generated-game-icon,
+body:not(:has(.battle-device))
+  .home-tile.has-game-icon
+  .tile-icon.generated-game-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: clamp(44px, 6.2vw, 58px);
+  height: clamp(44px, 6.2vw, 58px);
+  transform: none;
+  background-size:
+    108% 108%,
+    auto,
+    auto;
+  border-radius: 16px;
+}
+
+.home-tile.has-game-icon span:not(.tile-icon),
+html.js-smart-game-ui
+  body:not(.battle-only)
+  .home-tile.has-game-icon
+  span:not(.tile-icon),
+html.js-landscape-game-ui
+  body:not(.battle-only)
+  .home-tile.has-game-icon
+  span:not(.tile-icon),
+body:not(:has(.battle-device)) .home-tile.has-game-icon span:not(.tile-icon) {
+  grid-column: 2;
+  align-self: end;
+}
+
+.home-tile.has-game-icon small,
+html.js-smart-game-ui body:not(.battle-only) .home-tile.has-game-icon small,
+html.js-landscape-game-ui body:not(.battle-only) .home-tile.has-game-icon small,
+body:not(:has(.battle-device)) .home-tile.has-game-icon small {
+  grid-column: 2;
+  align-self: start;
+}
+
 .hp-bar {
   background: rgba(3, 12, 11, 0.82);
   border-color: rgba(111, 207, 173, 0.3);
@@ -10593,4 +10655,42 @@ body.battle-only.special-battle .boss-section .battlefield-hp {
     opacity: 0;
     transform: translate(-50%, -8px) scale(0.96);
   }
+}
+
+/* Final home menu icon sizing: keep generated art inside each button. */
+body[data-page="home"] .home-tile.has-game-icon {
+  display: grid;
+  grid-template-columns: clamp(44px, 6.2vw, 58px) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: clamp(10px, 1.5vw, 14px);
+  min-height: clamp(86px, 13svh, 106px);
+  padding: clamp(12px, 2.1svh, 16px) clamp(14px, 2.2vw, 18px);
+  overflow: hidden;
+  text-align: left;
+}
+
+body[data-page="home"] .home-tile.has-game-icon .tile-icon.generated-game-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: clamp(44px, 6.2vw, 58px);
+  height: clamp(44px, 6.2vw, 58px);
+  background-size:
+    108% 108%,
+    auto,
+    auto;
+  border-radius: 16px;
+}
+
+body[data-page="home"] .home-tile.has-game-icon span:not(.tile-icon),
+body[data-page="home"] .home-tile.has-game-icon small {
+  grid-column: 2;
+}
+
+body[data-page="home"] .home-tile.has-game-icon span:not(.tile-icon) {
+  align-self: end;
+}
+
+body[data-page="home"] .home-tile.has-game-icon small {
+  align-self: start;
 }

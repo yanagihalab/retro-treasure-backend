@@ -38,7 +38,7 @@ function elementBadge(el) {
   return `<span class="element-badge ${el} element-${el}">${elementLabel(el)}</span>`;
 }
 function cardImageUrl(id) {
-  return `/static/img/cards/card-${String(id).padStart(2, "0")}.png?v=relic-boss-drops-deck-icons-20260630`;
+  return `/static/img/cards/card-${String(id).padStart(2, "0")}.png?v=relic-button-icons-fit-20260702`;
 }
 async function api(path, opt = {}) {
   const headers = {

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Card management icon">
+  <defs>
+    <radialGradient id="cardManageGlow" cx="50%" cy="42%" r="58%">
+      <stop offset="0" stop-color="#d7fff2"/>
+      <stop offset="0.42" stop-color="#47dfb3"/>
+      <stop offset="1" stop-color="#142922"/>
+    </radialGradient>
+    <linearGradient id="cardManageGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff2a8"/>
+      <stop offset="1" stop-color="#9a7a2e"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="58" fill="#071411"/>
+  <circle cx="64" cy="64" r="52" fill="none" stroke="url(#cardManageGold)" stroke-width="4"/>
+  <path d="M35 35h42c7 0 12 5 12 12v42c0 7-5 12-12 12H35c-7 0-12-5-12-12V47c0-7 5-12 12-12Z" fill="#0b1c18" stroke="#67e8c0" stroke-width="4"/>
+  <path d="M50 27h42c7 0 12 5 12 12v42c0 7-5 12-12 12H50c-7 0-12-5-12-12V39c0-7 5-12 12-12Z" fill="#132a24" stroke="#fff0a1" stroke-width="3"/>
+  <path d="M72 45l8 13 15 3-10 11 2 15-15-6-14 7 1-16-11-10 15-4 9-13Z" fill="url(#cardManageGlow)" stroke="#d9fff2" stroke-width="2"/>
+  <path d="M47 90h50" stroke="#47dfb3" stroke-width="5" stroke-linecap="round"/>
+  <path d="M47 78h24" stroke="#fff0a1" stroke-width="4" stroke-linecap="round"/>
+</svg>

@@ -88,7 +88,7 @@ func main() {
 		_, _ = w.Write(data)
 	})
 
-	addr := ":" + cfg.Port
+	addr := cfg.Addr()
 	log.Printf("%s started on %s", cfg.AppName, addr)
 	log.Fatal(http.ListenAndServe(addr, mux))
 }
