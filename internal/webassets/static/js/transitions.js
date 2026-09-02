@@ -311,7 +311,7 @@ function elementLabel(element) {
 }
 
 function cardImageUrl(cardID) {
-  return appUrl(`/static/img/cards/card-${String(cardID).padStart(2, "0")}.png?v=relic-button-icons-fit-20260702`);
+  return appUrl(`/static/img/cards/card-${String(cardID).padStart(2, "0")}.webp?v=relic-card-webp-20260902`);
 }
 
 function bossImageUrl(bossID) {
