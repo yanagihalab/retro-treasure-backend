@@ -14,14 +14,6 @@ func NewCardService(repo *repository.MemoryRepository) *CardService {
 	return &CardService{repo: repo}
 }
 
-func (s *CardService) GetMe(userID int64) (model.CardMeResponse, error) {
-	card, _, err := s.repo.GetEquippedCard(userID)
-	if err != nil {
-		return model.CardMeResponse{}, err
-	}
-	return model.CardMeResponse{EquippedCard: card}, nil
-}
-
 func (s *CardService) GetDeck(userID int64) (model.DeckResponse, error) {
 	cards, err := s.repo.ListDeckCards(userID)
 	if err != nil {
@@ -58,20 +50,6 @@ func (s *CardService) GetArchive(userID int64) (model.CardArchiveResponse, error
 		Total:          len(cards),
 		ObtainedCount:  obtained,
 		CompletionRate: rate,
-	}, nil
-}
-
-func (s *CardService) Upgrade(userID, cardID int64) (model.UpgradeCardResponse, error) {
-	card, uc, cost, err := s.repo.UpgradeCard(userID, cardID)
-	if err != nil {
-		return model.UpgradeCardResponse{}, err
-	}
-	status, _ := s.repo.GetPlayerStatus(userID)
-	return model.UpgradeCardResponse{
-		Card:        card,
-		User:        uc,
-		Cost:        cost,
-		PlayerCoins: status.Coins,
 	}, nil
 }
 

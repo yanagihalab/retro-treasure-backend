@@ -1,10 +1,24 @@
 package config
 
-import "os"
+import (
+	"os"
+	"strings"
+)
+
+type DatabaseConfig struct {
+	Enabled  bool
+	Host     string
+	Name     string
+	Password string
+	Port     string
+	StateKey string
+	User     string
+}
 
 type Config struct {
 	AppName         string
 	BasePath        string
+	Database        DatabaseConfig
 	DataDir         string
 	Host            string
 	PersistencePath string
@@ -33,10 +47,42 @@ func Load() Config {
 	return Config{
 		AppName:         name,
 		BasePath:        basePath,
+		Database:        loadDatabaseConfig(),
 		DataDir:         dataDir,
 		Host:            host,
 		PersistencePath: persistencePath,
 		Port:            port,
+	}
+}
+
+func loadDatabaseConfig() DatabaseConfig {
+	databasePort := os.Getenv("DB_PORT")
+	if databasePort == "" {
+		databasePort = "3306"
+	}
+
+	stateKey := os.Getenv("DB_STATE_KEY")
+	if stateKey == "" {
+		stateKey = "primary"
+	}
+
+	return DatabaseConfig{
+		Enabled:  envEnabled(os.Getenv("DB_ENABLED")),
+		Host:     os.Getenv("DB_HOST"),
+		Name:     os.Getenv("DB_NAME"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Port:     databasePort,
+		StateKey: stateKey,
+		User:     os.Getenv("DB_USER"),
+	}
+}
+
+func envEnabled(value string) bool {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "1", "true", "yes", "on":
+		return true
+	default:
+		return false
 	}
 }
 

@@ -1,136 +1,171 @@
-# Relic Raid VPS deployment
+# RELIC RAID VPSデプロイ
 
-Relic Raid is served behind nginx under `/games/`.
+RELIC RAIDをGitHubからVPSへcloneし、ソースコードのまま `/games/` で公開します。実行元は `/home/ubuntu/relic-raid-source` です。VPSへビルド済みバイナリは配布しません。
 
-This deployment is designed to coexist with the existing Tozan Todoke services on the same VPS. Do not reuse ports `8080` or `8788`, and do not expose the Relic Raid internal port directly to the internet.
+## 構成
 
-## Runtime layout
+| 項目 | 値 |
+| --- | --- |
+| 公開URL | `https://ik1-206-76937.vs.sakura.ne.jp/games/` |
+| Git作業ツリー | `/home/ubuntu/relic-raid-source` |
+| Go | `/home/ubuntu/.local/go/bin/go` |
+| 内部bind | `127.0.0.1:8090` |
+| systemd | `relic-raid.service` |
+| 環境変数 | `/home/ubuntu/.relic-raid/production.env` |
+| MariaDB | `127.0.0.1:3306/relic_raid` |
+| nginx snippet | `/etc/nginx/snippets/nginx-games-location.conf` |
 
-- App directory: `/home/ubuntu/relic-raid`
-- Binary: `/home/ubuntu/relic-raid/relic-raid`
-- Environment file: `/home/ubuntu/.relic-raid/production.env`
-- Persistent data: `/home/ubuntu/.relic-raid/data/state.json`
-- Internal bind: `127.0.0.1:8090`
-- Public URL: `https://ik1-206-76937.vs.sakura.ne.jp/games/`
+既存のTozan Todokeが使う `127.0.0.1:8080` と `127.0.0.1:8788` は変更しません。RELIC RAIDの `8090` とMariaDBの `3306` は外部公開しません。
 
-## Existing services to preserve
+## 初回配置
 
-- Tozan Todoke frontend: `127.0.0.1:8080`
-- Tozan Todoke backend: `127.0.0.1:8788`
-- nginx public ports: `80`, `443`
-
-Relic Raid uses only `127.0.0.1:8090`.
-
-## Environment
-
-Create `/home/ubuntu/.relic-raid/production.env`:
-
-```env
-APP_NAME=relic-raid
-APP_HOST=127.0.0.1
-APP_PORT=8090
-APP_BASE_PATH=/games
-DATA_DIR=/home/ubuntu/.relic-raid/data
-APP_STATE_FILE=/home/ubuntu/.relic-raid/data/state.json
-```
-
-Keep the file outside the repository and do not commit secrets.
-
-Create directories and permissions:
+VPSへ接続してGitHubからcloneします。
 
 ```bash
-mkdir -p /home/ubuntu/relic-raid /home/ubuntu/.relic-raid/data
-chmod 700 /home/ubuntu/.relic-raid /home/ubuntu/.relic-raid/data
-chmod 600 /home/ubuntu/.relic-raid/production.env
+ssh sakura-tozantodoke
+git clone https://github.com/yanagihalab/retro-treasure-backend.git \
+  /home/ubuntu/relic-raid-source
+cd /home/ubuntu/relic-raid-source
 ```
 
-## Build locally
-
-From the repository root:
+Goをubuntuユーザー専用領域へ導入します。スクリプトは配布元とSHA-256を固定し、`sudo` を使いません。
 
 ```bash
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /tmp/relic-raid-deploy/relic-raid ./cmd/server
-cp deploy/relic-raid.service /tmp/relic-raid-deploy/relic-raid.service
-cp deploy/nginx-games-location.conf /tmp/relic-raid-deploy/nginx-games-location.conf
+chmod 755 deploy/install-go-user.sh
+./deploy/install-go-user.sh
+/home/ubuntu/.local/go/bin/go version
 ```
 
-Upload:
+## MariaDB初期設定
+
+MariaDBがVPSにインストール済みであることを確認してから実行します。
 
 ```bash
-rsync -av /tmp/relic-raid-deploy/relic-raid \
-  /tmp/relic-raid-deploy/relic-raid.service \
-  /tmp/relic-raid-deploy/nginx-games-location.conf \
-  sakura-tozantodoke:/home/ubuntu/relic-raid/
+chmod 755 deploy/setup-mariadb.sh
+./deploy/setup-mariadb.sh
 ```
 
-## Install or update
+このスクリプトは次を行います。
+
+- `relic_raid` データベースを作成
+- `relic_raid_app@127.0.0.1` に必要最小限の権限を付与
+- ランダムなDBパスワードを生成
+- `/home/ubuntu/.relic-raid/production.env` をモード `600` で作成
+
+DBパスワードは画面へ表示せず、Gitにも保存しません。既存の環境ファイルがある場合は日時付きでバックアップします。
+
+起動時にMariaDBの状態テーブルが空で、旧 `/home/ubuntu/.relic-raid/data/state.json` が存在する場合、その内容を一度だけMariaDBへ取り込みます。移行確認が終わるまで旧JSONは削除しません。
+
+## nginx include
+
+既存Tozan Todokeのserver blockには、次のincludeが1回だけ必要です。
+
+```nginx
+include /etc/nginx/snippets/nginx-games-location.conf;
+```
+
+未設定の場合だけ、既存設定をバックアップしてから追加してください。既存のserver blockやlocationは置き換えません。
 
 ```bash
-sudo cp /home/ubuntu/relic-raid/relic-raid.service /etc/systemd/system/relic-raid.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now relic-raid.service
+sudo cp /etc/nginx/sites-available/tozantodoke-public \
+  /etc/nginx/sites-available/tozantodoke-public.bak.$(date +%Y%m%d-%H%M%S)
+```
 
-sudo cp /home/ubuntu/relic-raid/nginx-games-location.conf /etc/nginx/snippets/nginx-games-location.conf
-sudo cp /etc/nginx/sites-available/tozantodoke-public /etc/nginx/sites-available/tozantodoke-public.bak.$(date +%Y%m%d-%H%M%S)
-sudo perl -0pi -e 's|(include /etc/nginx/snippets/zero-order-forum-location.conf;)|include /etc/nginx/snippets/nginx-games-location.conf;\n\n    $1|' /etc/nginx/sites-available/tozantodoke-public
+includeを追加した後は、必ず検証してからreloadします。
+
+```bash
 sudo nginx -t
 sudo systemctl reload nginx
+```
+
+## 初回起動
+
+ソース、systemd、nginx、MariaDBの準備をまとめて検証し、サービスを切り替えます。
+
+```bash
+cd /home/ubuntu/relic-raid-source
+chmod 755 deploy/deploy-source-vps.sh
+./deploy/deploy-source-vps.sh
+```
+
+このスクリプトは `go test ./...`、設定バックアップ、`nginx -t`、systemd再起動、内部・外部URLの疎通確認を順に実行します。切り替え後の検証に失敗した場合は、直前のsystemd/nginx設定へ戻します。
+
+systemdは次のソースを直接起動します。
+
+```ini
+WorkingDirectory=/home/ubuntu/relic-raid-source
+ExecStart=/home/ubuntu/.local/go/bin/go run -mod=readonly ./cmd/server
+```
+
+## GitHubから更新
+
+VPSの作業ツリーがcleanなことを確認してから、fast-forwardで更新します。
+
+```bash
+cd /home/ubuntu/relic-raid-source
+git status --short
+git pull --ff-only origin main
+/home/ubuntu/.local/go/bin/go test ./...
+./deploy/deploy-source-vps.sh
+```
+
+## VPS上で編集
+
+ソースは通常のGit作業ツリーなので、SSH接続後に直接確認・編集できます。
+
+```bash
+cd /home/ubuntu/relic-raid-source
+git status
+git diff
+```
+
+編集後はテストしてから再起動します。
+
+```bash
+/home/ubuntu/.local/go/bin/go test ./...
 sudo systemctl restart relic-raid.service
+journalctl -u relic-raid.service -n 100 --no-pager
 ```
 
-Only insert the nginx snippet once. If it is already included, copy the snippet and reload nginx.
+VPSだけにある変更を失わないよう、`git pull` 前にcommitしてGitHubへpushするか、別ブランチへ退避してください。`production.env`、MariaDBデータ、進行状態はGitへ追加しません。
 
-## Updating an already installed server
-
-If the nginx snippet is already included, use the shorter update flow:
+## 動作確認
 
 ```bash
-sudo cp /home/ubuntu/relic-raid/relic-raid.service /etc/systemd/system/relic-raid.service
-sudo systemctl daemon-reload
-sudo cp /home/ubuntu/relic-raid/nginx-games-location.conf /etc/nginx/snippets/nginx-games-location.conf
-sudo nginx -t
-sudo systemctl reload nginx
-sudo systemctl restart relic-raid.service
-```
+ss -ltnp | grep -E ':3306|:8090|:8080|:8788'
+systemctl status mariadb.service relic-raid.service --no-pager -l
 
-## Backup state
-
-Before risky changes, back up the state file:
-
-```bash
-mkdir -p /home/ubuntu/relic-raid-backups
-cp /home/ubuntu/.relic-raid/data/state.json \
-  /home/ubuntu/relic-raid-backups/state.$(date +%Y%m%d-%H%M%S).json
-```
-
-If the file does not exist yet, no users have been persisted.
-
-## Verification
-
-```bash
-ss -ltnp | grep -E ':8090|:8080|:8788'
-systemctl status relic-raid.service --no-pager -l
-curl -I http://127.0.0.1:8090/health
+curl -i http://127.0.0.1:8090/health
 curl -I http://127.0.0.1:8090/games/
-curl -I http://127.0.0.1:8090/games/static/js/app.js
+curl -I http://127.0.0.1:8090/games/static/js/transitions.js
 curl http://127.0.0.1:8090/games/api/checkpoints/master | head -c 300
-curl -k -I https://ik1-206-76937.vs.sakura.ne.jp/games/
-curl -k -I https://ik1-206-76937.vs.sakura.ne.jp/
+
+curl -I https://ik1-206-76937.vs.sakura.ne.jp/games/
+curl -I https://ik1-206-76937.vs.sakura.ne.jp/
 ```
 
-## Expected headers
-
-`/games/` should return `200 OK` from nginx after the snippet is included and the service is restarted.
-
-`/` should still return the existing Tozan Todoke frontend.
-
-## Rollback
-
-Restore the previous binary or nginx site backup, then reload:
+MariaDB状態確認:
 
 ```bash
-sudo cp /etc/nginx/sites-available/tozantodoke-public.bak.<timestamp> /etc/nginx/sites-available/tozantodoke-public
-sudo nginx -t
-sudo systemctl reload nginx
+sudo mariadb relic_raid -e \
+  "SELECT state_key, updated_at, JSON_LENGTH(payload, '$.users_by_id') AS users FROM relic_raid_state;"
+```
+
+`/health` が `503` の場合は、MariaDB接続、権限、`production.env` を確認します。正常時は `{"status":"ok"}` を返します。
+
+## 運用コマンド
+
+```bash
 sudo systemctl restart relic-raid.service
+sudo systemctl stop relic-raid.service
+sudo systemctl start relic-raid.service
+systemctl status relic-raid.service --no-pager -l
+journalctl -u relic-raid.service -n 100 --no-pager
+```
+
+サービスが実際にソースから起動していることは次で確認できます。
+
+```bash
+systemctl show relic-raid.service -p WorkingDirectory -p ExecStart
+git -C /home/ubuntu/relic-raid-source rev-parse --short HEAD
 ```

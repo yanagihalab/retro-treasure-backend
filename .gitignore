@@ -1,4 +1,7 @@
 .gocache/
+.env
+.local-data/
+production.env
 android/.gradle/
 android/.idea/
 android/build/

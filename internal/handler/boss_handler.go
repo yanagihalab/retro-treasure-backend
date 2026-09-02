@@ -21,8 +21,7 @@ func (h *BossHandler) GetBoss(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusUnauthorized, "unauthorized")
 		return
 	}
-	bossID := parseBossID(r)
-	res, err := h.svc.GetBoss(userID, bossID)
+	res, err := h.svc.GetBoss(userID)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -46,6 +45,29 @@ func (h *BossHandler) AutoBattle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	res, err := h.svc.AutoBattle(userID, bossID)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, res)
+}
+
+func (h *BossHandler) GetReward(w http.ResponseWriter, r *http.Request) {
+	userID, ok := middleware.UserIDFromContext(r.Context())
+	if !ok {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	bossID := parseBossID(r)
+	if r.Body != nil {
+		var req struct {
+			BossID int64 `json:"boss_id"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err == nil && req.BossID > 0 {
+			bossID = req.BossID
+		}
+	}
+	res, err := h.svc.GetReward(userID, bossID)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
 		return

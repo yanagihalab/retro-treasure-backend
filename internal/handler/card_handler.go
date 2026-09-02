@@ -15,20 +15,6 @@ func NewCardHandler(svc *service.CardService) *CardHandler {
 	return &CardHandler{svc: svc}
 }
 
-func (h *CardHandler) Me(w http.ResponseWriter, r *http.Request) {
-	userID, ok := middleware.UserIDFromContext(r.Context())
-	if !ok {
-		writeError(w, http.StatusUnauthorized, "unauthorized")
-		return
-	}
-	res, err := h.svc.GetMe(userID)
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	writeJSON(w, http.StatusOK, res)
-}
-
 func (h *CardHandler) Deck(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.UserIDFromContext(r.Context())
 	if !ok {
@@ -66,25 +52,6 @@ func (h *CardHandler) Archive(w http.ResponseWriter, r *http.Request) {
 	res, err := h.svc.GetArchive(userID)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	writeJSON(w, http.StatusOK, res)
-}
-
-func (h *CardHandler) Upgrade(w http.ResponseWriter, r *http.Request) {
-	userID, ok := middleware.UserIDFromContext(r.Context())
-	if !ok {
-		writeError(w, http.StatusUnauthorized, "unauthorized")
-		return
-	}
-	var req model.UpgradeCardRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request")
-		return
-	}
-	res, err := h.svc.Upgrade(userID, req.CardID)
-	if err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	writeJSON(w, http.StatusOK, res)

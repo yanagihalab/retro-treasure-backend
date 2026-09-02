@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"io/fs"
 	"log"
 	"mime"
@@ -23,6 +24,25 @@ func main() {
 	cfg := config.Load()
 	repo := repository.NewMemoryRepository()
 	repo.SetPersistencePath(cfg.PersistencePath)
+	if cfg.Database.Enabled {
+		store, err := repository.NewMariaDBStateStore(repository.MariaDBConfig{
+			Host:     cfg.Database.Host,
+			Name:     cfg.Database.Name,
+			Password: cfg.Database.Password,
+			Port:     cfg.Database.Port,
+			StateKey: cfg.Database.StateKey,
+			User:     cfg.Database.User,
+		})
+		if err != nil {
+			log.Fatalf("failed to connect MariaDB: %v", err)
+		}
+		repo.SetStateStore(store)
+		defer func() {
+			if err := repo.Close(); err != nil {
+				log.Printf("failed to close persistence: %v", err)
+			}
+		}()
+	}
 	seed.Load(repo)
 	if err := repo.LoadPersistentState(); err != nil {
 		log.Fatalf("failed to load persistent state: %v", err)
@@ -30,9 +50,6 @@ func main() {
 
 	authSvc := service.NewAuthService(repo)
 	playerSvc := service.NewPlayerService(repo)
-	areaSvc := service.NewAreaService(repo)
-	exploreSvc := service.NewExploreService(repo)
-	itemSvc := service.NewItemService(repo)
 	loginBonusSvc := service.NewLoginBonusService(repo)
 	noticeSvc := service.NewNoticeService(repo)
 	cardSvc := service.NewCardService(repo)
@@ -41,9 +58,6 @@ func main() {
 
 	authH := handler.NewAuthHandler(authSvc)
 	playerH := handler.NewPlayerHandler(playerSvc)
-	areaH := handler.NewAreaHandler(areaSvc)
-	exploreH := handler.NewExploreHandler(exploreSvc)
-	itemH := handler.NewItemHandler(itemSvc)
 	loginBonusH := handler.NewLoginBonusHandler(loginBonusSvc)
 	noticeH := handler.NewNoticeHandler(noticeSvc)
 	cardH := handler.NewCardHandler(cardSvc)
@@ -53,26 +67,28 @@ func main() {
 	appMux := http.NewServeMux()
 	appMux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+		defer cancel()
+		if err := repo.PingPersistence(ctx); err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			_, _ = w.Write([]byte(`{"status":"error","persistence":"unavailable"}`))
+			return
+		}
 		_, _ = w.Write([]byte(`{"status":"ok"}`))
 	})
 	appMux.HandleFunc("POST /api/auth/register", authH.Register)
 	appMux.HandleFunc("POST /api/auth/login", authH.Login)
 	appMux.Handle("GET /api/player/me", middleware.RequireAuth(repo, http.HandlerFunc(playerH.Me)))
-	appMux.Handle("GET /api/areas", middleware.RequireAuth(repo, http.HandlerFunc(areaH.List)))
-	appMux.Handle("POST /api/explore", middleware.RequireAuth(repo, http.HandlerFunc(exploreH.Explore)))
-	appMux.Handle("GET /api/items/inventory", middleware.RequireAuth(repo, http.HandlerFunc(itemH.Inventory)))
-	appMux.Handle("GET /api/encyclopedia", middleware.RequireAuth(repo, http.HandlerFunc(itemH.Encyclopedia)))
 	appMux.Handle("POST /api/login-bonus/claim", middleware.RequireAuth(repo, http.HandlerFunc(loginBonusH.Claim)))
 	appMux.Handle("GET /api/notices", middleware.RequireAuth(repo, http.HandlerFunc(noticeH.List)))
-	appMux.Handle("GET /api/cards/me", middleware.RequireAuth(repo, http.HandlerFunc(cardH.Me)))
 	appMux.Handle("GET /api/cards/deck", middleware.RequireAuth(repo, http.HandlerFunc(cardH.Deck)))
 	appMux.Handle("GET /api/cards/collection", middleware.RequireAuth(repo, http.HandlerFunc(cardH.Collection)))
 	appMux.Handle("GET /api/cards/archive", middleware.RequireAuth(repo, http.HandlerFunc(cardH.Archive)))
-	appMux.Handle("POST /api/cards/upgrade", middleware.RequireAuth(repo, http.HandlerFunc(cardH.Upgrade)))
 	appMux.Handle("POST /api/cards/deck", middleware.RequireAuth(repo, http.HandlerFunc(cardH.UpdateDeck)))
 	appMux.Handle("POST /api/gacha/draw", middleware.RequireAuth(repo, http.HandlerFunc(cardH.Gacha)))
 	appMux.Handle("GET /api/boss", middleware.RequireAuth(repo, http.HandlerFunc(bossH.GetBoss)))
 	appMux.Handle("POST /api/boss/auto", middleware.RequireAuth(repo, http.HandlerFunc(bossH.AutoBattle)))
+	appMux.Handle("POST /api/boss/reward", middleware.RequireAuth(repo, http.HandlerFunc(bossH.GetReward)))
 	appMux.HandleFunc("GET /api/checkpoints/master", checkpointH.Master)
 	appMux.Handle("GET /api/checkpoints/history", middleware.RequireAuth(repo, http.HandlerFunc(checkpointH.History)))
 	appMux.Handle("POST /api/checkpoints/claim", middleware.RequireAuth(repo, http.HandlerFunc(checkpointH.Claim)))
@@ -98,7 +114,13 @@ func main() {
 
 	mux := basePathMux(appMux, cfg.BasePath)
 	addr := cfg.Addr()
-	log.Printf("%s started on %s base_path=%q persistence=%q", cfg.AppName, addr, cfg.BasePath, cfg.PersistencePath)
+	persistenceMode := "memory"
+	if cfg.Database.Enabled {
+		persistenceMode = "mariadb"
+	} else if cfg.PersistencePath != "" {
+		persistenceMode = "json"
+	}
+	log.Printf("%s started on %s base_path=%q persistence=%s", cfg.AppName, addr, cfg.BasePath, persistenceMode)
 	log.Fatal(http.ListenAndServe(addr, mux))
 }
 

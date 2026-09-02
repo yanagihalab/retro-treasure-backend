@@ -1,5 +1,9 @@
 .git
 .gitignore
+.gocache/
+.local-data/
+android/app/build/
+android/build/
 bin
 coverage
 *.log

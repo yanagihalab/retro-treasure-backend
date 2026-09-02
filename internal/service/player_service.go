@@ -13,17 +13,14 @@ func NewPlayerService(repo *repository.MemoryRepository) *PlayerService {
 }
 
 type PlayerMeResponse struct {
-	UserID            int64  `json:"user_id"`
-	Username          string `json:"username"`
-	Level             int    `json:"level"`
-	Exp               int    `json:"exp"`
-	Stamina           int    `json:"stamina"`
-	MaxStamina        int    `json:"max_stamina"`
-	StaminaDisplay    string `json:"stamina_display"`
-	StaminaInfinite   bool   `json:"stamina_infinite"`
-	Coins             int    `json:"coins"`
-	Gems              int    `json:"gems"`
-	TotalExplorations int    `json:"total_explorations"`
+	UserID   int64  `json:"user_id"`
+	Username string `json:"username"`
+	Level    int    `json:"level"`
+	Exp      int    `json:"exp"`
+	Coins    int    `json:"coins"`
+	Decks    int    `json:"decks"`
+	Owned    int    `json:"owned"`
+	Tutorial bool   `json:"tutorial"`
 }
 
 func (s *PlayerService) GetMe(userID int64) (PlayerMeResponse, error) {
@@ -37,17 +34,31 @@ func (s *PlayerService) GetMe(userID int64) (PlayerMeResponse, error) {
 		return PlayerMeResponse{}, err
 	}
 
-	return PlayerMeResponse{
-		UserID:            user.ID,
-		Username:          user.Username,
-		Level:             status.Level,
-		Exp:               status.Exp,
-		Stamina:           status.Stamina,
-		MaxStamina:        status.MaxStamina,
-		StaminaDisplay:    "∞",
-		StaminaInfinite:   true,
-		Coins:             status.Coins,
-		Gems:              status.Gems,
-		TotalExplorations: status.TotalExplorations,
-	}, nil
+	deck, err := s.repo.ListDeckCards(userID)
+	if err != nil {
+		return PlayerMeResponse{}, err
+	}
+
+	owned, err := s.repo.ListOwnedCards(userID)
+	if err != nil {
+		return PlayerMeResponse{}, err
+	}
+
+	result := PlayerMeResponse{
+		UserID:   user.ID,
+		Username: user.Username,
+		Level:    status.Level,
+		Exp:      status.Exp,
+		Coins:    status.Coins,
+		Decks:    len(deck),
+		Owned:    len(owned),
+		Tutorial: status.Tutorial,
+	}
+
+	if len(owned) >= 4 {
+		status.Tutorial = false
+		_ = s.repo.SavePlayerStatus(status)
+	}
+
+	return result, nil
 }

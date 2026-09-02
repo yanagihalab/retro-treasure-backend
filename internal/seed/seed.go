@@ -1,7 +1,6 @@
 package seed
 
 import (
-	"strings"
 	"time"
 
 	"retro-treasure-backend/internal/model"
@@ -9,146 +8,315 @@ import (
 )
 
 func Load(repo *repository.MemoryRepository) {
-	repo.SeedAreas([]model.Area{{ID: 1, Name: "草原の入口", Description: "初心者向けの探索エリア。", RequiredLevel: 1, StaminaCost: 1, IsActive: true, SortOrder: 1}, {ID: 2, Name: "古代遺跡", Description: "希少な欠片が眠る遺跡。", RequiredLevel: 3, StaminaCost: 2, IsActive: true, SortOrder: 2}, {ID: 3, Name: "深緑の森", Description: "少し危険だが報酬が良い。", RequiredLevel: 5, StaminaCost: 3, IsActive: true, SortOrder: 3}})
-	repo.SeedItems([]model.Item{{ID: 1, Name: "きらめく石", Description: "淡く輝く石。", Rarity: 1, ItemType: "treasure", SellPrice: 10, IsEncyclopediaTarget: true}, {ID: 2, Name: "古びたコイン", Description: "昔の時代の硬貨。", Rarity: 1, ItemType: "treasure", SellPrice: 12, IsEncyclopediaTarget: true}, {ID: 3, Name: "幻の羽根", Description: "めったに見つからない羽根。", Rarity: 3, ItemType: "treasure", SellPrice: 80, IsEncyclopediaTarget: true}, {ID: 4, Name: "遺跡の欠片", Description: "遺跡の一部と思われる破片。", Rarity: 2, ItemType: "material", SellPrice: 30, IsEncyclopediaTarget: true}, {ID: 5, Name: "神秘の宝玉", Description: "強い光を宿した宝玉。", Rarity: 4, ItemType: "treasure", SellPrice: 150, IsEncyclopediaTarget: true}})
-	repo.SeedCards(withDefenseSkills([]model.CharacterCard{
-		{ID: 1, Name: "電波梟レディオ（防災ラジオ）", Description: "防災ラジオにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 24, Attack: 7, Defense: 5, IsStarter: true, PortraitLabel: "C001", FrameStyle: "bronze"},
-		{ID: 2, Name: "蓄電核ボルト（モバイルバッテリー）", Description: "モバイルバッテリーにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 28, Attack: 9, Defense: 7, IsStarter: true, PortraitLabel: "C002", FrameStyle: "bronze"},
-		{ID: 3, Name: "衛生扉サニア（非常用簡易トイレ）", Description: "非常用簡易トイレにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 32, Attack: 11, Defense: 5, IsStarter: true, PortraitLabel: "C003", FrameStyle: "bronze"},
-		{ID: 4, Name: "補給係レーション（長期保存食）", Description: "長期保存食にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 30, Attack: 7, Defense: 6, IsStarter: true, PortraitLabel: "C004", FrameStyle: "bronze"},
-		{ID: 5, Name: "灯魂ランタン（ランタン）", Description: "ランタンにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 28, Attack: 7, Defense: 6, IsStarter: true, PortraitLabel: "C005", FrameStyle: "bronze"},
-		{ID: 6, Name: "地図鱗マップ（ハザードマップ）", Description: "ハザードマップにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 35, Attack: 10, Defense: 5, IsStarter: true, PortraitLabel: "C006", FrameStyle: "bronze"},
-		{ID: 7, Name: "避難導師シェルター（避難所案内）", Description: "避難所案内にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 32, Attack: 12, Defense: 7, PortraitLabel: "C007", FrameStyle: "gold"},
-		{ID: 8, Name: "応急箱メディカ（救急セット）", Description: "救急セットにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 27, Attack: 7, Defense: 7, PortraitLabel: "C008", FrameStyle: "bronze"},
-		{ID: 9, Name: "水瓶精アクアポット（保存水）", Description: "保存水にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 31, Attack: 9, Defense: 5, PortraitLabel: "C009", FrameStyle: "bronze"},
-		{ID: 10, Name: "心拍灯ビーコン（救難ビーコン）", Description: "救難ビーコンにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 35, Attack: 11, Defense: 7, PortraitLabel: "C010", FrameStyle: "gold"},
-		{ID: 11, Name: "手回しギア（手回し発電機）", Description: "手回し発電機にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 27, Attack: 9, Defense: 6, PortraitLabel: "C011", FrameStyle: "bronze"},
-		{ID: 12, Name: "静寂鳥イヤープラグ（耳栓）", Description: "耳栓にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 34, Attack: 8, Defense: 5, PortraitLabel: "C012", FrameStyle: "bronze"},
-		{ID: 13, Name: "温火カイロ（使い捨てカイロ）", Description: "使い捨てカイロにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 29, Attack: 7, Defense: 5, PortraitLabel: "C013", FrameStyle: "bronze"},
-		{ID: 14, Name: "安否札メッセンジャー（安否確認カード）", Description: "安否確認カードにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 26, Attack: 9, Defense: 7, PortraitLabel: "C014", FrameStyle: "bronze"},
-		{ID: 15, Name: "浄水精ピュリファ（携帯浄水器）", Description: "携帯浄水器にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 30, Attack: 11, Defense: 5, PortraitLabel: "C015", FrameStyle: "bronze"},
-		{ID: 16, Name: "夢避けチャーム（防災お守り）", Description: "防災お守りにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 28, Attack: 7, Defense: 6, PortraitLabel: "C016", FrameStyle: "bronze"},
-		{ID: 17, Name: "記録者ノートン（防災ノート）", Description: "防災ノートにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 35, Attack: 10, Defense: 8, PortraitLabel: "C017", FrameStyle: "gold"},
-		{ID: 18, Name: "薬師メディス（常備薬）", Description: "常備薬にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 33, Attack: 10, Defense: 5, PortraitLabel: "C018", FrameStyle: "bronze"},
-		{ID: 19, Name: "導線スパイダー（緊急連絡網）", Description: "緊急連絡網にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 28, Attack: 9, Defense: 5, PortraitLabel: "C019", FrameStyle: "bronze"},
-		{ID: 20, Name: "休眠布ブラン（防寒毛布）", Description: "防寒毛布にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 38, Attack: 9, Defense: 8, PortraitLabel: "C020", FrameStyle: "gold"},
-		{ID: 21, Name: "星見レシーバー（携帯ラジオ）", Description: "携帯ラジオにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 29, Attack: 9, Defense: 5, PortraitLabel: "C021", FrameStyle: "bronze"},
-		{ID: 22, Name: "灯守キャンドル（非常用キャンドル）", Description: "非常用キャンドルにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 27, Attack: 9, Defense: 6, PortraitLabel: "C022", FrameStyle: "bronze"},
-		{ID: 23, Name: "糧袋スナックル（携帯食）", Description: "携帯食にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 25, Attack: 9, Defense: 6, PortraitLabel: "C023", FrameStyle: "bronze"},
-		{ID: 24, Name: "目録司書リストラ（避難名簿）", Description: "避難名簿にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 32, Attack: 8, Defense: 5, PortraitLabel: "C024", FrameStyle: "bronze"},
-		{ID: 25, Name: "集合標ポインター（集合場所メモ）", Description: "集合場所メモにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 5, Element: "heart", MaxHP: 39, Attack: 11, Defense: 7, PortraitLabel: "C025", FrameStyle: "gold"},
-		{ID: 26, Name: "予備鏡スペアアイ（予備眼鏡）", Description: "予備眼鏡にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 31, Attack: 9, Defense: 7, PortraitLabel: "C026", FrameStyle: "bronze"},
-		{ID: 27, Name: "深淵通信ノイズ（緊急ラジオ）", Description: "緊急ラジオにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 38, Attack: 12, Defense: 6, PortraitLabel: "C027", FrameStyle: "gold"},
-		{ID: 28, Name: "防災アプリの案内霊（防災アプリ）", Description: "防災アプリにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 26, Attack: 7, Defense: 6, PortraitLabel: "C028", FrameStyle: "bronze"},
-		{ID: 29, Name: "暖炉核ウォーマ（保温材）", Description: "保温材にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 24, Attack: 7, Defense: 6, PortraitLabel: "C029", FrameStyle: "bronze"},
-		{ID: 30, Name: "慰霊鐘ベルハート（呼び鈴）", Description: "呼び鈴にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 34, Attack: 11, Defense: 6, PortraitLabel: "C030", FrameStyle: "gold"},
-		{ID: 31, Name: "水晶瓶ウォーター（飲料水ボトル）", Description: "飲料水ボトルにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 26, Attack: 9, Defense: 5, PortraitLabel: "C031", FrameStyle: "bronze"},
-		{ID: 32, Name: "小袋サプリカ（栄養補助食品）", Description: "栄養補助食品にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 30, Attack: 7, Defense: 7, PortraitLabel: "C032", FrameStyle: "bronze"},
-		{ID: 33, Name: "家族写真の守り手（家族写真）", Description: "家族写真にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 34, Attack: 9, Defense: 5, PortraitLabel: "C033", FrameStyle: "bronze"},
-		{ID: 34, Name: "救難信号ルミナ（救難ライト）", Description: "救難ライトにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 32, Attack: 9, Defense: 6, PortraitLabel: "C034", FrameStyle: "bronze"},
-		{ID: 35, Name: "音翼ホイッスル（ホイッスル）", Description: "ホイッスルにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 22, Attack: 10, Defense: 5, PortraitLabel: "C035", FrameStyle: "bronze"},
-		{ID: 36, Name: "羅針眼コンパス（コンパス）", Description: "コンパスにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 29, Attack: 15, Defense: 4, PortraitLabel: "C036", FrameStyle: "bronze"},
-		{ID: 37, Name: "装備鞄リュック（防災リュック）", Description: "防災リュックにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 33, Attack: 18, Defense: 6, PortraitLabel: "C037", FrameStyle: "gold"},
-		{ID: 38, Name: "雨走りレイン（レインウェア）", Description: "レインウェアにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 28, Attack: 15, Defense: 6, PortraitLabel: "C038", FrameStyle: "bronze"},
-		{ID: 39, Name: "自走靴ブーツ（安全靴）", Description: "安全靴にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 32, Attack: 18, Defense: 4, PortraitLabel: "C039", FrameStyle: "bronze"},
-		{ID: 40, Name: "支柱機ロッド（家具転倒防止伸縮棒）", Description: "家具転倒防止伸縮棒にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 36, Attack: 16, Defense: 6, PortraitLabel: "C040", FrameStyle: "gold"},
-		{ID: 41, Name: "刃技士マルチ（多機能ナイフ）", Description: "多機能ナイフにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 28, Attack: 11, Defense: 5, PortraitLabel: "C041", FrameStyle: "bronze"},
-		{ID: 42, Name: "結束霊タイラップ（結束バンド）", Description: "結束バンドにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 28, Attack: 16, Defense: 4, PortraitLabel: "C042", FrameStyle: "bronze"},
-		{ID: 43, Name: "防水殻ケースナー（防水ケース）", Description: "防水ケースにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 23, Attack: 13, Defense: 4, PortraitLabel: "C043", FrameStyle: "bronze"},
-		{ID: 44, Name: "太陽板ヘリオ（ソーラー充電器）", Description: "ソーラー充電器にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 27, Attack: 16, Defense: 6, PortraitLabel: "C044", FrameStyle: "bronze"},
-		{ID: 45, Name: "結索師ロープン（ロープ）", Description: "ロープにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 31, Attack: 14, Defense: 4, PortraitLabel: "C045", FrameStyle: "bronze"},
-		{ID: 46, Name: "掘削士ショベル（折りたたみスコップ）", Description: "折りたたみスコップにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 29, Attack: 13, Defense: 5, PortraitLabel: "C046", FrameStyle: "bronze"},
-		{ID: 47, Name: "作業霊グンテ（軍手）", Description: "軍手にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 36, Attack: 18, Defense: 7, PortraitLabel: "C047", FrameStyle: "gold"},
-		{ID: 48, Name: "幕使いブルーシェル（ブルーシート）", Description: "ブルーシートにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 34, Attack: 17, Defense: 4, PortraitLabel: "C048", FrameStyle: "bronze"},
-		{ID: 49, Name: "接着工ダクト（布テープ）", Description: "布テープにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 22, Attack: 14, Defense: 4, PortraitLabel: "C049", FrameStyle: "bronze"},
-		{ID: 50, Name: "工具箱メカニカ（工具セット）", Description: "工具セットにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 5, Element: "tech", MaxHP: 35, Attack: 18, Defense: 7, PortraitLabel: "C050", FrameStyle: "gold"},
-		{ID: 51, Name: "設営士テントラ（簡易テント）", Description: "簡易テントにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 30, Attack: 15, Defense: 4, PortraitLabel: "C051", FrameStyle: "bronze"},
-		{ID: 52, Name: "登攀者カラビナ（カラビナ）", Description: "カラビナにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 28, Attack: 14, Defense: 5, PortraitLabel: "C052", FrameStyle: "bronze"},
-		{ID: 53, Name: "光斥候ヘッドレイ（ヘッドライト）", Description: "ヘッドライトにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 26, Attack: 13, Defense: 5, PortraitLabel: "C053", FrameStyle: "bronze"},
-		{ID: 54, Name: "記録筆ペンナー（筆記具）", Description: "筆記具にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 33, Attack: 18, Defense: 4, PortraitLabel: "C054", FrameStyle: "bronze"},
-		{ID: 55, Name: "修理工レシーバー（ラジオ修理具）", Description: "ラジオ修理具にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 28, Attack: 10, Defense: 4, PortraitLabel: "C055", FrameStyle: "bronze"},
-		{ID: 56, Name: "電池鼠バッテリット（予備電池）", Description: "予備電池にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 25, Attack: 13, Defense: 6, PortraitLabel: "C056", FrameStyle: "bronze"},
-		{ID: 57, Name: "誘導員シグナル（誘導笛）", Description: "誘導笛にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 32, Attack: 18, Defense: 5, PortraitLabel: "C057", FrameStyle: "gold"},
-		{ID: 58, Name: "夜光ベストラ（反射ベスト）", Description: "反射ベストにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 27, Attack: 15, Defense: 5, PortraitLabel: "C058", FrameStyle: "bronze"},
-		{ID: 59, Name: "渡河者ウォーターブーツ（防水靴）", Description: "防水靴にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 25, Attack: 14, Defense: 5, PortraitLabel: "C059", FrameStyle: "bronze"},
-		{ID: 60, Name: "休息守チェア（折りたたみ椅子）", Description: "折りたたみ椅子にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 35, Attack: 16, Defense: 5, PortraitLabel: "C060", FrameStyle: "gold"},
-		{ID: 61, Name: "搬送者ストレッチャー（簡易担架）", Description: "簡易担架にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 27, Attack: 11, Defense: 4, PortraitLabel: "C061", FrameStyle: "bronze"},
-		{ID: 62, Name: "散布機スプレア（消毒スプレー）", Description: "消毒スプレーにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 31, Attack: 14, Defense: 6, PortraitLabel: "C062", FrameStyle: "bronze"},
-		{ID: 63, Name: "昇降士ラダー（ロープ梯子）", Description: "ロープ梯子にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 28, Attack: 17, Defense: 4, PortraitLabel: "C063", FrameStyle: "bronze"},
-		{ID: 64, Name: "旗手ライトバー（誘導灯）", Description: "誘導灯にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 26, Attack: 16, Defense: 5, PortraitLabel: "C064", FrameStyle: "bronze"},
-		{ID: 65, Name: "星詠みディスク（方位盤）", Description: "方位盤にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 24, Attack: 10, Defense: 5, PortraitLabel: "C065", FrameStyle: "bronze"},
-		{ID: 66, Name: "開封刃カッター（カッター）", Description: "カッターにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 31, Attack: 15, Defense: 4, PortraitLabel: "C066", FrameStyle: "bronze"},
-		{ID: 67, Name: "防水筆マーカー（油性マーカー）", Description: "油性マーカーにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 35, Attack: 18, Defense: 6, PortraitLabel: "C067", FrameStyle: "gold"},
-		{ID: 68, Name: "消火機ファイアード（住宅用消火器）", Description: "住宅用消火器にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 38, Attack: 12, Defense: 8, PortraitLabel: "C068", FrameStyle: "bronze"},
-		{ID: 69, Name: "浮遊兜ヘルム（防災ヘルメット）", Description: "防災ヘルメットにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 43, Attack: 14, Defense: 10, PortraitLabel: "C069", FrameStyle: "bronze"},
-		{ID: 70, Name: "防塵医マスク（防塵マスク）", Description: "防塵マスクにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 41, Attack: 11, Defense: 12, PortraitLabel: "C070", FrameStyle: "gold"},
-		{ID: 71, Name: "双甲グローブ（防刃グローブ）", Description: "防刃グローブにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 30, Attack: 9, Defense: 10, PortraitLabel: "C071", FrameStyle: "bronze"},
-		{ID: 72, Name: "鉄鉤バール（救助用バール）", Description: "救助用バールにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 39, Attack: 12, Defense: 9, PortraitLabel: "C072", FrameStyle: "bronze"},
-		{ID: 73, Name: "浮衣ジャケット（ライフジャケット）", Description: "ライフジャケットにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 32, Attack: 11, Defense: 8, PortraitLabel: "C073", FrameStyle: "bronze"},
-		{ID: 74, Name: "銀膜シート（アルミシート）", Description: "アルミシートにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 37, Attack: 13, Defense: 10, PortraitLabel: "C074", FrameStyle: "bronze"},
-		{ID: 75, Name: "耐震盾ウォール（耐震マット）", Description: "耐震マットにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 5, Element: "body", MaxHP: 50, Attack: 12, Defense: 14, PortraitLabel: "C075", FrameStyle: "gold"},
-		{ID: 76, Name: "防火布マントル（防火布）", Description: "防火布にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 39, Attack: 10, Defense: 8, PortraitLabel: "C076", FrameStyle: "bronze"},
-		{ID: 77, Name: "土嚢兵サンドガード（土嚢袋）", Description: "土嚢袋にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 41, Attack: 13, Defense: 11, PortraitLabel: "C077", FrameStyle: "gold"},
-		{ID: 78, Name: "給水巨人タンクス（給水タンク）", Description: "給水タンクにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 38, Attack: 13, Defense: 11, PortraitLabel: "C078", FrameStyle: "bronze"},
-		{ID: 79, Name: "担架獣キャリア（救急担架）", Description: "救急担架にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 31, Attack: 12, Defense: 10, PortraitLabel: "C079", FrameStyle: "bronze"},
-		{ID: 80, Name: "監視者ゴーグル（防護ゴーグル）", Description: "防護ゴーグルにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 44, Attack: 11, Defense: 10, PortraitLabel: "C080", FrameStyle: "gold"},
-		{ID: 81, Name: "踏破兵ニーパッド（膝当て）", Description: "膝当てにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 41, Attack: 11, Defense: 10, PortraitLabel: "C081", FrameStyle: "bronze"},
-		{ID: 82, Name: "防衛兵エルボー（肘当て）", Description: "肘当てにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 38, Attack: 11, Defense: 10, PortraitLabel: "C082", FrameStyle: "bronze"},
-		{ID: 83, Name: "雨水桶レインタンク（雨水タンク）", Description: "雨水タンクにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 35, Attack: 11, Defense: 10, PortraitLabel: "C083", FrameStyle: "bronze"},
-		{ID: 84, Name: "休眠獣ベッドン（簡易ベッド）", Description: "簡易ベッドにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 37, Attack: 14, Defense: 9, PortraitLabel: "C084", FrameStyle: "bronze"},
-		{ID: 85, Name: "毛布獣ブランケット（毛布）", Description: "毛布にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 30, Attack: 8, Defense: 8, PortraitLabel: "C085", FrameStyle: "bronze"},
-		{ID: 86, Name: "炊出し鍋クックル（炊き出し鍋）", Description: "炊き出し鍋にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 35, Attack: 10, Defense: 10, PortraitLabel: "C086", FrameStyle: "bronze"},
-		{ID: 87, Name: "防火扉ゲートン（防火扉）", Description: "防火扉にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 44, Attack: 13, Defense: 13, PortraitLabel: "C087", FrameStyle: "gold"},
-		{ID: 88, Name: "排水砦ポンプス（排水ポンプ）", Description: "排水ポンプにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 37, Attack: 12, Defense: 8, PortraitLabel: "C088", FrameStyle: "bronze"},
-		{ID: 89, Name: "赤光番兵フレア（発煙筒）", Description: "発煙筒にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 34, Attack: 12, Defense: 8, PortraitLabel: "C089", FrameStyle: "bronze"},
-		{ID: 90, Name: "浮輪霊リングス（救命浮輪）", Description: "救命浮輪にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 47, Attack: 11, Defense: 12, PortraitLabel: "C090", FrameStyle: "gold"},
-		{ID: 91, Name: "鉄板橋ブリッジ（踏み板）", Description: "踏み板にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 29, Attack: 9, Defense: 10, PortraitLabel: "C091", FrameStyle: "bronze"},
-		{ID: 92, Name: "断熱箱クーラー（保冷箱）", Description: "保冷箱にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 34, Attack: 11, Defense: 8, PortraitLabel: "C092", FrameStyle: "bronze"},
-		{ID: 93, Name: "塔守ライトン（大型ライト）", Description: "大型ライトにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 39, Attack: 13, Defense: 10, PortraitLabel: "C093", FrameStyle: "bronze"},
-		{ID: 94, Name: "発電巨人ジェネラ（発電機）", Description: "発電機にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 36, Attack: 13, Defense: 10, PortraitLabel: "C094", FrameStyle: "bronze"},
-		{ID: 95, Name: "倉庫門番ストッカー（防災倉庫）", Description: "防災倉庫にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 33, Attack: 8, Defense: 10, PortraitLabel: "C095", FrameStyle: "bronze"},
-		{ID: 96, Name: "砕岩鎚ハンマー（ハンマー）", Description: "ハンマーにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 42, Attack: 11, Defense: 9, PortraitLabel: "C096", FrameStyle: "bronze"},
-		{ID: 97, Name: "骨守スプリント（応急副木）", Description: "応急副木にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 47, Attack: 13, Defense: 11, PortraitLabel: "C097", FrameStyle: "gold"},
-		{ID: 98, Name: "砂塵衣クローク（防塵クローク）", Description: "防塵クロークにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 33, Attack: 12, Defense: 10, PortraitLabel: "C098", FrameStyle: "bronze"},
-		{ID: 99, Name: "耐熱靴アイアンソール（耐熱靴）", Description: "耐熱靴にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 38, Attack: 14, Defense: 12, PortraitLabel: "C099", FrameStyle: "bronze"},
-		{ID: 100, Name: "黒曜壁オブシディアン（防災シェルター）", Description: "防災シェルターにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 5, Element: "body", MaxHP: 47, Attack: 12, Defense: 11, PortraitLabel: "C100", FrameStyle: "gold"},
-	}))
-	repo.SeedBosses([]model.Boss{
-		{ID: 1, Name: "クトゥルフ偶像ゴーレム", Description: "沈んだ巨石神殿から起動したクトゥルフ偶像。石翼と触腕を備え、地属性の重圧で探索隊の耐久を削る。", Element: "earth", MaxHP: 120, Attack: 13, Defense: 5, RewardExp: 45, RewardCoins: 160, PortraitLabel: "CTHU", FrameStyle: "boss"},
-		{ID: 2, Name: "ダゴン眷属リヴァイアサン", Description: "深海の父ダゴンを思わせる魚鱗の旧き眷属。触手のたてがみと青い深淵光で、水属性の浸食を放つ。", Element: "water", MaxHP: 138, Attack: 15, Defense: 4, RewardExp: 58, RewardCoins: 190, PortraitLabel: "DAGN", FrameStyle: "boss"},
-		{ID: 3, Name: "クトゥグア火儀イフリート", Description: "星火の旧きものクトゥグアを模した儀式炎の化身。燃える触腕と赤い星環で、火属性の猛攻を仕掛ける。", Element: "fire", MaxHP: 126, Attack: 18, Defense: 3, RewardExp: 62, RewardCoins: 205, PortraitLabel: "CTHG", FrameStyle: "boss"},
-		{ID: 4, Name: "星の落とし子ガルーダ", Description: "クトゥルフの落とし子を鳥翼の姿へ歪めた飛行異形。翼膜と蛸面を広げ、風属性の連撃で戦線を乱す。", Element: "wind", MaxHP: 112, Attack: 17, Defense: 4, RewardExp: 56, RewardCoins: 185, PortraitLabel: "SPAW", FrameStyle: "boss"},
-		{ID: 5, Name: "千眼翼の旧支配者", Description: "天使の輪郭をまとった旧支配者の顕現。千眼の光輪と白金の翼から、光属性の均整攻撃を降らせる。", Element: "light", MaxHP: 150, Attack: 16, Defense: 6, RewardExp: 72, RewardCoins: 230, PortraitLabel: "EYES", FrameStyle: "boss"},
-		{ID: 6, Name: "ニャルラトホテプの影", Description: "黒いファラオの仮面をかぶる這い寄る混沌の影。紫の夢裂けと触腕で、闇属性の重い一撃を放つ。", Element: "dark", MaxHP: 164, Attack: 19, Defense: 5, RewardExp: 82, RewardCoins: 260, PortraitLabel: "NYAR", FrameStyle: "boss"},
-		{ID: 7, Name: "ショゴス警報塊", Description: "黒い粘液に警報灯と眼球が溶け込んだ不定形の災厄。うねる質量で防御線を圧し潰す。", Element: "earth", MaxHP: 172, Attack: 20, Defense: 7, RewardExp: 88, RewardCoins: 280, PortraitLabel: "SHOG", FrameStyle: "boss"},
-		{ID: 8, Name: "ビヤーキー星騎", Description: "腐食した星間翼を広げる黄昏の騎獣。急降下する風圧で隊列を削り取る。", Element: "wind", MaxHP: 148, Attack: 22, Defense: 5, RewardExp: 92, RewardCoins: 295, PortraitLabel: "BYAK", FrameStyle: "boss"},
-		{ID: 9, Name: "深きもの司祭", Description: "濡れた祭衣と魚鱗の冠をまとう深海の司祭。低い詠唱が水圧となって押し寄せる。", Element: "water", MaxHP: 156, Attack: 21, Defense: 6, RewardExp: 96, RewardCoins: 305, PortraitLabel: "DEEP", FrameStyle: "boss"},
-		{ID: 10, Name: "イスの時渡り", Description: "円錐の躯体に古代記録装置を抱く時空の学者。時間差の光撃で耐久を奪う。", Element: "light", MaxHP: 168, Attack: 20, Defense: 8, RewardExp: 102, RewardCoins: 320, PortraitLabel: "YITH", FrameStyle: "boss"},
-		{ID: 11, Name: "石化面ガタノトーア", Description: "直視した者の意思を固める火山島の偶像獣。重い石化波が探索者を絡め取る。", Element: "earth", MaxHP: 184, Attack: 19, Defense: 9, RewardExp: 108, RewardCoins: 335, PortraitLabel: "GATH", FrameStyle: "boss"},
-		{ID: 12, Name: "ミ＝ゴ外科師", Description: "菌糸の甲殻と金属器具を持つ外宇宙の外科師。鋭い処置で継続的にHPを削る。", Element: "dark", MaxHP: 152, Attack: 23, Defense: 5, RewardExp: 112, RewardCoins: 350, PortraitLabel: "MIGO", FrameStyle: "boss"},
-		{ID: 13, Name: "黄衣の王ハスター", Description: "裂けた黄色の衣と仮面を揺らす王の化身。名を呼ぶだけで闇の舞台が開く。", Element: "dark", MaxHP: 176, Attack: 23, Defense: 6, RewardExp: 118, RewardCoins: 370, PortraitLabel: "HAST", FrameStyle: "boss"},
-		{ID: 14, Name: "蜘蛛神アトラック＝ナチャ", Description: "星々の隙間へ糸を張る巨大蜘蛛神。粘る糸撃で逃げ場を奪う。", Element: "earth", MaxHP: 164, Attack: 24, Defense: 6, RewardExp: 122, RewardCoins: 385, PortraitLabel: "ATLA", FrameStyle: "boss"},
-		{ID: 15, Name: "氷風神イタカ", Description: "白い吹雪の輪郭を持つ凍える巨神。凍風の踏み込みで体力を削り続ける。", Element: "wind", MaxHP: 188, Attack: 21, Defense: 8, RewardExp: 126, RewardCoins: 400, PortraitLabel: "ITHA", FrameStyle: "boss"},
-		{ID: 16, Name: "蛇父イグ", Description: "古代蛇の鱗と黄金眼を持つ父なる蛇神。毒を帯びた地鳴りで防衛を崩す。", Element: "earth", MaxHP: 172, Attack: 24, Defense: 7, RewardExp: 130, RewardCoins: 415, PortraitLabel: "YIGG", FrameStyle: "boss"},
-		{ID: 17, Name: "黒睡蟇ツァトゥグァ", Description: "黒い眠りをまとう巨大な蟇の偶像。鈍重ながら一撃が深く、長期戦を強いる。", Element: "dark", MaxHP: 196, Attack: 22, Defense: 9, RewardExp: 136, RewardCoins: 430, PortraitLabel: "TSAT", FrameStyle: "boss"},
-		{ID: 18, Name: "極圏の古のもの", Description: "氷の遺跡から現れた樽状の古代生命。放射状の器官から冷たい水光を放つ。", Element: "water", MaxHP: 182, Attack: 23, Defense: 8, RewardExp: 140, RewardCoins: 445, PortraitLabel: "ELDR", FrameStyle: "boss"},
-		{ID: 19, Name: "夜鬼司令ナイトゴーント", Description: "顔のない黒翼を持つ夜の軍団長。音もなく接近し、闇の連撃を刻む。", Element: "dark", MaxHP: 158, Attack: 26, Defense: 5, RewardExp: 144, RewardCoins: 460, PortraitLabel: "NGHT", FrameStyle: "boss"},
-		{ID: 20, Name: "星吸いヴァンパイア", Description: "見えない星間捕食者が赤い輪郭だけを見せる。血のような星光でHPを吸い上げる。", Element: "dark", MaxHP: 166, Attack: 27, Defense: 4, RewardExp: 148, RewardCoins: 475, PortraitLabel: "STAR", FrameStyle: "boss"},
-		{ID: 21, Name: "ティンダロスの猟犬", Description: "鋭角の裂け目から跳び出す時間の猟犬。角度を変えた突進が避けにくい。", Element: "wind", MaxHP: 174, Attack: 25, Defense: 6, RewardExp: 152, RewardCoins: 490, PortraitLabel: "HOND", FrameStyle: "boss"},
-		{ID: 22, Name: "精神竜ロイガー", Description: "精神波で形を保つ渦状の竜。光る思念の圧力で戦意を削る。", Element: "light", MaxHP: 190, Attack: 24, Defense: 8, RewardExp: 158, RewardCoins: 505, PortraitLabel: "LLOI", FrameStyle: "boss"},
-		{ID: 23, Name: "湖棘グラーキ", Description: "湖底から棘の水晶を伸ばす旧き異形。水面を割る刺突が重く響く。", Element: "water", MaxHP: 204, Attack: 23, Defense: 10, RewardExp: 164, RewardCoins: 520, PortraitLabel: "GLAK", FrameStyle: "boss"},
-		{ID: 24, Name: "象牙偶像チャウグナー", Description: "象牙の鼻と吸血の牙を持つ石像神。大地を踏み鳴らす衝撃で耐久を試す。", Element: "earth", MaxHP: 212, Attack: 24, Defense: 10, RewardExp: 170, RewardCoins: 540, PortraitLabel: "CHAU", FrameStyle: "boss"},
-		{ID: 25, Name: "凍猿神ラーン＝テゴス", Description: "氷河に封じられていた昆虫猿の神。凍った爪と貪欲な跳躍で追い詰める。", Element: "water", MaxHP: 206, Attack: 26, Defense: 9, RewardExp: 176, RewardCoins: 560, PortraitLabel: "RHAN", FrameStyle: "boss"},
-		{ID: 26, Name: "屍都王モルディギアン", Description: "地下都市を支配する屍衣の王。黒い炎と墓所の瘴気で長期戦を支配する。", Element: "dark", MaxHP: 218, Attack: 25, Defense: 10, RewardExp: 182, RewardCoins: 580, PortraitLabel: "MORD", FrameStyle: "boss"},
-		{ID: 27, Name: "双頭星蟲ズシャー", Description: "双頭の星蟲が火花を散らしながら蠢く。二重の噛撃と熱波で防衛を裂く。", Element: "fire", MaxHP: 198, Attack: 29, Defense: 7, RewardExp: 188, RewardCoins: 600, PortraitLabel: "ZHAR", FrameStyle: "boss"},
-		{ID: 28, Name: "クトゥルフ星司祭", Description: "沈没神殿の奥で祈る星辰の大司祭。深海の祈りが巨大な水圧となる。", Element: "water", MaxHP: 230, Attack: 27, Defense: 11, RewardExp: 196, RewardCoins: 630, PortraitLabel: "PRST", FrameStyle: "boss"},
-		{ID: 29, Name: "アザトースの欠片", Description: "名状しがたい核の破片が火と音をまき散らす。無秩序な熱波が戦場を乱す。", Element: "fire", MaxHP: 240, Attack: 30, Defense: 8, RewardExp: 210, RewardCoins: 670, PortraitLabel: "AZAT", FrameStyle: "boss"},
-		{ID: 30, Name: "ヨグ＝ソトースの門", Description: "無数の球体が重なった全ての門の影。光の裂け目から最大級の圧力を放つ。", Element: "light", MaxHP: 260, Attack: 31, Defense: 12, RewardExp: 230, RewardCoins: 720, PortraitLabel: "YOGS", FrameStyle: "boss"},
+	repo.SeedCards([]model.CharacterCard{
+		{ID: 1, Name: "蓄電核ボルト", SubName: "モバイルバッテリー", Description: "モバイルバッテリーにレリック反応が宿った体属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "body", MaxHP: 100, Defense: 30,
+			Skills: []model.DefenseSkill{{
+				Name:        "充電",
+				Description: "味方の誰かが攻撃を受けた時に、HPを30回復します。必ず発動しますが、効果が低いです。",
+				TriggerRate: 100,
+				EffectType:  "heal",
+				SubElement:  "",
+				Heal:        30,
+				Shield:      0,
+				IsEvade:     false,
+				IsFirst:     false,
+				Target:      "target",
+				IsDamaged:   true,
+			}},
+		},
+		{ID: 16, Name: "夢避けチャーム", SubName: "防災お守り", Description: "防災お守りにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 100, Defense: 30,
+			Skills: []model.DefenseSkill{{
+				Name:        "被害の軽減",
+				Description: "味方の誰かが攻撃を受ける前に、ダメージを30軽減する盾を作ります。盾はカードの防御力よりも前に計算され、0になるまで何度でも防ぎます。複数の盾効果が発生した場合、最も数字の大きいもののみが有効になります。",
+				TriggerRate: 100,
+				EffectType:  "shield",
+				SubElement:  "",
+				Heal:        0,
+				Shield:      30,
+				IsEvade:     false,
+				IsFirst:     true,
+				Target:      "target",
+				IsDamaged:   false,
+			}},
+		},
+		{ID: 6, Name: "地図鱗マップ", SubName: "ハザードマップ", Description: "ハザードマップにレリック反応が宿った技属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "tech", MaxHP: 100, Defense: 30,
+			Skills: []model.DefenseSkill{{
+				Name:        "洪水の事前避難",
+				Description: "味方の誰かが水属性の攻撃を受ける前に、1回だけダメージを無効化する状態にします。",
+				TriggerRate: 100,
+				EffectType:  "evade",
+				SubElement:  "water",
+				Heal:        0,
+				Shield:      0,
+				IsEvade:     true,
+				IsFirst:     true,
+				Target:      "target",
+				IsDamaged:   false,
+			}},
+		},
+		{ID: 7, Name: "避難導師シェルター", SubName: "避難所案内", Description: "避難所案内にレリック反応が宿った技属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "tech", MaxHP: 100, Defense: 30,
+			Skills: []model.DefenseSkill{{
+				Name:        "ランダム軽減",
+				Description: "味方の誰かが攻撃を受ける前に、ダメージを80軽減する盾を作ります。発動率は低いですが、強力な軽減効果を持ちます。",
+				TriggerRate: 30,
+				EffectType:  "shield",
+				SubElement:  "",
+				Heal:        0,
+				Shield:      80,
+				IsEvade:     false,
+				IsFirst:     true,
+				Target:      "target",
+				IsDamaged:   false,
+			}},
+		},
+		{ID: 68, Name: "消火機ファイアード", SubName: "住宅用消火器", Description: "住宅用消火器にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 100, Defense: 30,
+			Skills: []model.DefenseSkill{{
+				Name:        "初期消火",
+				Description: "味方の誰かが火属性の攻撃を受ける前に、1回だけダメージを無効化する状態にします。",
+				TriggerRate: 100,
+				EffectType:  "evade",
+				SubElement:  "fire",
+				Heal:        0,
+				Shield:      0,
+				IsEvade:     true,
+				IsFirst:     true,
+				Target:      "target",
+				IsDamaged:   false,
+			}},
+		},
+		{ID: 33, Name: "家族写真の守り手", SubName: "家族写真", Description: "家族写真にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 130, Defense: 20,
+			Skills: []model.DefenseSkill{{
+				Name:        "全体の軽減",
+				Description: "味方全体のダメージを10軽減する盾を作ります。",
+				TriggerRate: 100,
+				EffectType:  "shield",
+				SubElement:  "",
+				Heal:        0,
+				Shield:      10,
+				IsEvade:     false,
+				IsFirst:     false,
+				Target:      "all",
+				IsDamaged:   false,
+			}},
+		},
+		{ID: 56, Name: "電池鼠バッテリット", SubName: "予備電池", Description: "予備電池にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 150, Defense: 10,
+			Skills: []model.DefenseSkill{{
+				Name:        "電池の交換",
+				Description: "味方単体を復活して50回復します。",
+				TriggerRate: 100,
+				EffectType:  "revive",
+				SubElement:  "",
+				Heal:        50,
+				Shield:      0,
+				IsEvade:     false,
+				IsFirst:     false,
+				Target:      "target",
+				IsDamaged:   false,
+				IsDead:      true,
+			}},
+		},
 	})
-	id1, id2, id3, id4, id5 := int64(1), int64(2), int64(3), int64(4), int64(5)
-	repo.SeedDrops(1, []repository.WeightedDrop{repository.NewDrop(&id1, "item", 45, 5, 10, "きらめく石を見つけた！"), repository.NewDrop(&id2, "item", 30, 4, 12, "古びたコインを拾った！"), repository.NewDrop(nil, "nothing", 20, 3, 5, "何も見つからなかったが経験を積んだ。"), repository.NewDrop(&id3, "rare_chest", 5, 8, 30, "レア宝箱から幻の羽根を手に入れた！")})
-	repo.SeedDrops(2, []repository.WeightedDrop{repository.NewDrop(&id4, "item", 50, 8, 20, "遺跡の欠片を発見した！"), repository.NewDrop(&id2, "item", 20, 6, 15, "古びたコインを見つけた！"), repository.NewDrop(nil, "enemy", 20, 10, 25, "敵をかわしながら奥へ進んだ！"), repository.NewDrop(&id5, "rare_chest", 10, 15, 40, "神秘の宝玉を獲得した！")})
-	repo.SeedDrops(3, []repository.WeightedDrop{repository.NewDrop(&id3, "item", 35, 12, 24, "幻の羽根を見つけた！"), repository.NewDrop(&id4, "item", 30, 10, 18, "遺跡の欠片を回収した！"), repository.NewDrop(nil, "enemy", 25, 14, 32, "森の獣を振り切って進んだ！"), repository.NewDrop(&id5, "rare_chest", 10, 20, 60, "神秘の宝玉が眠る宝箱を発見した！")})
+	// repo.SeedCards(withDefenseSkills([]model.CharacterCard{
+	// {ID: 1, Name: "蓄電核ボルト", SubName: "モバイルバッテリー", Description: "モバイルバッテリーにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "body", MaxHP: 100, Defense: 30},
+	// {ID: 2, Name: "電波梟レディオ（防災ラジオ）", Description: "防災ラジオにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 24, Defense: 5},
+	// {ID: 3, Name: "衛生扉サニア（非常用簡易トイレ）", Description: "非常用簡易トイレにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "body", MaxHP: 32, Defense: 5},
+	// {ID: 4, Name: "補給係レーション（長期保存食）", Description: "長期保存食にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 30, Defense: 6},
+	// {ID: 5, Name: "灯魂ランタン（ランタン）", Description: "ランタンにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 28, Defense: 6},
+	// {ID: 6, Name: "地図鱗マップ（ハザードマップ）", Description: "ハザードマップにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 35, Defense: 5},
+	// {ID: 7, Name: "避難導師シェルター（避難所案内）", Description: "避難所案内にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 32, Defense: 7},
+	// {ID: 8, Name: "応急箱メディカ（救急セット）", Description: "救急セットにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 27, Defense: 7},
+	// {ID: 9, Name: "水瓶精アクアポット（保存水）", Description: "保存水にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 31, Attack: 9, Defense: 5, PortraitLabel: "C009", FrameStyle: "bronze"},
+	// {ID: 10, Name: "心拍灯ビーコン（救難ビーコン）", Description: "救難ビーコンにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 35, Attack: 11, Defense: 7, PortraitLabel: "C010", FrameStyle: "gold"},
+	// {ID: 11, Name: "手回しギア（手回し発電機）", Description: "手回し発電機にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 27, Attack: 9, Defense: 6, PortraitLabel: "C011", FrameStyle: "bronze"},
+	// {ID: 12, Name: "静寂鳥イヤープラグ（耳栓）", Description: "耳栓にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 34, Attack: 8, Defense: 5, PortraitLabel: "C012", FrameStyle: "bronze"},
+	// {ID: 13, Name: "温火カイロ（使い捨てカイロ）", Description: "使い捨てカイロにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 29, Attack: 7, Defense: 5, PortraitLabel: "C013", FrameStyle: "bronze"},
+	// {ID: 14, Name: "安否札メッセンジャー（安否確認カード）", Description: "安否確認カードにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 26, Attack: 9, Defense: 7, PortraitLabel: "C014", FrameStyle: "bronze"},
+	// {ID: 15, Name: "浄水精ピュリファ（携帯浄水器）", Description: "携帯浄水器にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 30, Attack: 11, Defense: 5, PortraitLabel: "C015", FrameStyle: "bronze"},
+	// {ID: 16, Name: "夢避けチャーム（防災お守り）", Description: "防災お守りにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 28, Attack: 7, Defense: 6, PortraitLabel: "C016", FrameStyle: "bronze"},
+	// {ID: 17, Name: "記録者ノートン（防災ノート）", Description: "防災ノートにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 35, Attack: 10, Defense: 8, PortraitLabel: "C017", FrameStyle: "gold"},
+	// {ID: 18, Name: "薬師メディス（常備薬）", Description: "常備薬にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 33, Attack: 10, Defense: 5, PortraitLabel: "C018", FrameStyle: "bronze"},
+	// {ID: 19, Name: "導線スパイダー（緊急連絡網）", Description: "緊急連絡網にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 28, Attack: 9, Defense: 5, PortraitLabel: "C019", FrameStyle: "bronze"},
+	// {ID: 20, Name: "休眠布ブラン（防寒毛布）", Description: "防寒毛布にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 38, Attack: 9, Defense: 8, PortraitLabel: "C020", FrameStyle: "gold"},
+	// {ID: 21, Name: "星見レシーバー（携帯ラジオ）", Description: "携帯ラジオにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 29, Attack: 9, Defense: 5, PortraitLabel: "C021", FrameStyle: "bronze"},
+	// {ID: 22, Name: "灯守キャンドル（非常用キャンドル）", Description: "非常用キャンドルにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 27, Attack: 9, Defense: 6, PortraitLabel: "C022", FrameStyle: "bronze"},
+	// {ID: 23, Name: "糧袋スナックル（携帯食）", Description: "携帯食にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 25, Attack: 9, Defense: 6, PortraitLabel: "C023", FrameStyle: "bronze"},
+	// {ID: 24, Name: "目録司書リストラ（避難名簿）", Description: "避難名簿にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 32, Attack: 8, Defense: 5, PortraitLabel: "C024", FrameStyle: "bronze"},
+	// {ID: 25, Name: "集合標ポインター（集合場所メモ）", Description: "集合場所メモにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 5, Element: "heart", MaxHP: 39, Attack: 11, Defense: 7, PortraitLabel: "C025", FrameStyle: "gold"},
+	// {ID: 26, Name: "予備鏡スペアアイ（予備眼鏡）", Description: "予備眼鏡にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 31, Attack: 9, Defense: 7, PortraitLabel: "C026", FrameStyle: "bronze"},
+	// {ID: 27, Name: "深淵通信ノイズ（緊急ラジオ）", Description: "緊急ラジオにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 38, Attack: 12, Defense: 6, PortraitLabel: "C027", FrameStyle: "gold"},
+	// {ID: 28, Name: "防災アプリの案内霊（防災アプリ）", Description: "防災アプリにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 26, Attack: 7, Defense: 6, PortraitLabel: "C028", FrameStyle: "bronze"},
+	// {ID: 29, Name: "暖炉核ウォーマ（保温材）", Description: "保温材にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 24, Attack: 7, Defense: 6, PortraitLabel: "C029", FrameStyle: "bronze"},
+	// {ID: 30, Name: "慰霊鐘ベルハート（呼び鈴）", Description: "呼び鈴にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 4, Element: "heart", MaxHP: 34, Attack: 11, Defense: 6, PortraitLabel: "C030", FrameStyle: "gold"},
+	// {ID: 31, Name: "水晶瓶ウォーター（飲料水ボトル）", Description: "飲料水ボトルにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 1, Element: "heart", MaxHP: 26, Attack: 9, Defense: 5, PortraitLabel: "C031", FrameStyle: "bronze"},
+	// {ID: 32, Name: "小袋サプリカ（栄養補助食品）", Description: "栄養補助食品にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 30, Attack: 7, Defense: 7, PortraitLabel: "C032", FrameStyle: "bronze"},
+	// {ID: 33, Name: "家族写真の守り手（家族写真）", Description: "家族写真にレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 3, Element: "heart", MaxHP: 34, Attack: 9, Defense: 5, PortraitLabel: "C033", FrameStyle: "bronze"},
+	// {ID: 34, Name: "救難信号ルミナ（救難ライト）", Description: "救難ライトにレリック反応が宿った心属性カード。仲間を支え、探索隊の判断と継続力を高める。", Rarity: 2, Element: "heart", MaxHP: 32, Attack: 9, Defense: 6, PortraitLabel: "C034", FrameStyle: "bronze"},
+	// {ID: 35, Name: "音翼ホイッスル（ホイッスル）", Description: "ホイッスルにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 22, Attack: 10, Defense: 5, PortraitLabel: "C035", FrameStyle: "bronze"},
+	// {ID: 36, Name: "羅針眼コンパス（コンパス）", Description: "コンパスにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 29, Attack: 15, Defense: 4, PortraitLabel: "C036", FrameStyle: "bronze"},
+	// {ID: 37, Name: "装備鞄リュック（防災リュック）", Description: "防災リュックにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 33, Attack: 18, Defense: 6, PortraitLabel: "C037", FrameStyle: "gold"},
+	// {ID: 38, Name: "雨走りレイン（レインウェア）", Description: "レインウェアにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 28, Attack: 15, Defense: 6, PortraitLabel: "C038", FrameStyle: "bronze"},
+	// {ID: 39, Name: "自走靴ブーツ（安全靴）", Description: "安全靴にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 32, Attack: 18, Defense: 4, PortraitLabel: "C039", FrameStyle: "bronze"},
+	// {ID: 40, Name: "支柱機ロッド（家具転倒防止伸縮棒）", Description: "家具転倒防止伸縮棒にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 36, Attack: 16, Defense: 6, PortraitLabel: "C040", FrameStyle: "gold"},
+	// {ID: 41, Name: "刃技士マルチ（多機能ナイフ）", Description: "多機能ナイフにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 28, Attack: 11, Defense: 5, PortraitLabel: "C041", FrameStyle: "bronze"},
+	// {ID: 42, Name: "結束霊タイラップ（結束バンド）", Description: "結束バンドにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 28, Attack: 16, Defense: 4, PortraitLabel: "C042", FrameStyle: "bronze"},
+	// {ID: 43, Name: "防水殻ケースナー（防水ケース）", Description: "防水ケースにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 23, Attack: 13, Defense: 4, PortraitLabel: "C043", FrameStyle: "bronze"},
+	// {ID: 44, Name: "太陽板ヘリオ（ソーラー充電器）", Description: "ソーラー充電器にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 27, Attack: 16, Defense: 6, PortraitLabel: "C044", FrameStyle: "bronze"},
+	// {ID: 45, Name: "結索師ロープン（ロープ）", Description: "ロープにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 31, Attack: 14, Defense: 4, PortraitLabel: "C045", FrameStyle: "bronze"},
+	// {ID: 46, Name: "掘削士ショベル（折りたたみスコップ）", Description: "折りたたみスコップにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 29, Attack: 13, Defense: 5, PortraitLabel: "C046", FrameStyle: "bronze"},
+	// {ID: 47, Name: "作業霊グンテ（軍手）", Description: "軍手にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 36, Attack: 18, Defense: 7, PortraitLabel: "C047", FrameStyle: "gold"},
+	// {ID: 48, Name: "幕使いブルーシェル（ブルーシート）", Description: "ブルーシートにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 34, Attack: 17, Defense: 4, PortraitLabel: "C048", FrameStyle: "bronze"},
+	// {ID: 49, Name: "接着工ダクト（布テープ）", Description: "布テープにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 22, Attack: 14, Defense: 4, PortraitLabel: "C049", FrameStyle: "bronze"},
+	// {ID: 50, Name: "工具箱メカニカ（工具セット）", Description: "工具セットにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 5, Element: "tech", MaxHP: 35, Attack: 18, Defense: 7, PortraitLabel: "C050", FrameStyle: "gold"},
+	// {ID: 51, Name: "設営士テントラ（簡易テント）", Description: "簡易テントにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 30, Attack: 15, Defense: 4, PortraitLabel: "C051", FrameStyle: "bronze"},
+	// {ID: 52, Name: "登攀者カラビナ（カラビナ）", Description: "カラビナにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 28, Attack: 14, Defense: 5, PortraitLabel: "C052", FrameStyle: "bronze"},
+	// {ID: 53, Name: "光斥候ヘッドレイ（ヘッドライト）", Description: "ヘッドライトにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 26, Attack: 13, Defense: 5, PortraitLabel: "C053", FrameStyle: "bronze"},
+	// {ID: 54, Name: "記録筆ペンナー（筆記具）", Description: "筆記具にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 33, Attack: 18, Defense: 4, PortraitLabel: "C054", FrameStyle: "bronze"},
+	// {ID: 55, Name: "修理工レシーバー（ラジオ修理具）", Description: "ラジオ修理具にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 28, Attack: 10, Defense: 4, PortraitLabel: "C055", FrameStyle: "bronze"},
+	// {ID: 56, Name: "電池鼠バッテリット（予備電池）", Description: "予備電池にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 25, Attack: 13, Defense: 6, PortraitLabel: "C056", FrameStyle: "bronze"},
+	// {ID: 57, Name: "誘導員シグナル（誘導笛）", Description: "誘導笛にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 32, Attack: 18, Defense: 5, PortraitLabel: "C057", FrameStyle: "gold"},
+	// {ID: 58, Name: "夜光ベストラ（反射ベスト）", Description: "反射ベストにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 27, Attack: 15, Defense: 5, PortraitLabel: "C058", FrameStyle: "bronze"},
+	// {ID: 59, Name: "渡河者ウォーターブーツ（防水靴）", Description: "防水靴にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 25, Attack: 14, Defense: 5, PortraitLabel: "C059", FrameStyle: "bronze"},
+	// {ID: 60, Name: "休息守チェア（折りたたみ椅子）", Description: "折りたたみ椅子にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 35, Attack: 16, Defense: 5, PortraitLabel: "C060", FrameStyle: "gold"},
+	// {ID: 61, Name: "搬送者ストレッチャー（簡易担架）", Description: "簡易担架にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 27, Attack: 11, Defense: 4, PortraitLabel: "C061", FrameStyle: "bronze"},
+	// {ID: 62, Name: "散布機スプレア（消毒スプレー）", Description: "消毒スプレーにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 31, Attack: 14, Defense: 6, PortraitLabel: "C062", FrameStyle: "bronze"},
+	// {ID: 63, Name: "昇降士ラダー（ロープ梯子）", Description: "ロープ梯子にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 28, Attack: 17, Defense: 4, PortraitLabel: "C063", FrameStyle: "bronze"},
+	// {ID: 64, Name: "旗手ライトバー（誘導灯）", Description: "誘導灯にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 2, Element: "tech", MaxHP: 26, Attack: 16, Defense: 5, PortraitLabel: "C064", FrameStyle: "bronze"},
+	// {ID: 65, Name: "星詠みディスク（方位盤）", Description: "方位盤にレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 1, Element: "tech", MaxHP: 24, Attack: 10, Defense: 5, PortraitLabel: "C065", FrameStyle: "bronze"},
+	// {ID: 66, Name: "開封刃カッター（カッター）", Description: "カッターにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 3, Element: "tech", MaxHP: 31, Attack: 15, Defense: 4, PortraitLabel: "C066", FrameStyle: "bronze"},
+	// {ID: 67, Name: "防水筆マーカー（油性マーカー）", Description: "油性マーカーにレリック反応が宿った技属性カード。素早い判断と道具運用で危機を切り抜ける。", Rarity: 4, Element: "tech", MaxHP: 35, Attack: 18, Defense: 6, PortraitLabel: "C067", FrameStyle: "gold"},
+	// {ID: 68, Name: "消火機ファイアード（住宅用消火器）", Description: "住宅用消火器にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 38, Attack: 12, Defense: 8, PortraitLabel: "C068", FrameStyle: "bronze"},
+	// {ID: 69, Name: "浮遊兜ヘルム（防災ヘルメット）", Description: "防災ヘルメットにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 43, Attack: 14, Defense: 10, PortraitLabel: "C069", FrameStyle: "bronze"},
+	// {ID: 70, Name: "防塵医マスク（防塵マスク）", Description: "防塵マスクにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 41, Attack: 11, Defense: 12, PortraitLabel: "C070", FrameStyle: "gold"},
+	// {ID: 71, Name: "双甲グローブ（防刃グローブ）", Description: "防刃グローブにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 30, Attack: 9, Defense: 10, PortraitLabel: "C071", FrameStyle: "bronze"},
+	// {ID: 72, Name: "鉄鉤バール（救助用バール）", Description: "救助用バールにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 39, Attack: 12, Defense: 9, PortraitLabel: "C072", FrameStyle: "bronze"},
+	// {ID: 73, Name: "浮衣ジャケット（ライフジャケット）", Description: "ライフジャケットにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 32, Attack: 11, Defense: 8, PortraitLabel: "C073", FrameStyle: "bronze"},
+	// {ID: 74, Name: "銀膜シート（アルミシート）", Description: "アルミシートにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 37, Attack: 13, Defense: 10, PortraitLabel: "C074", FrameStyle: "bronze"},
+	// {ID: 75, Name: "耐震盾ウォール（耐震マット）", Description: "耐震マットにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 5, Element: "body", MaxHP: 50, Attack: 12, Defense: 14, PortraitLabel: "C075", FrameStyle: "gold"},
+	// {ID: 76, Name: "防火布マントル（防火布）", Description: "防火布にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 39, Attack: 10, Defense: 8, PortraitLabel: "C076", FrameStyle: "bronze"},
+	// {ID: 77, Name: "土嚢兵サンドガード（土嚢袋）", Description: "土嚢袋にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 41, Attack: 13, Defense: 11, PortraitLabel: "C077", FrameStyle: "gold"},
+	// {ID: 78, Name: "給水巨人タンクス（給水タンク）", Description: "給水タンクにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 38, Attack: 13, Defense: 11, PortraitLabel: "C078", FrameStyle: "bronze"},
+	// {ID: 79, Name: "担架獣キャリア（救急担架）", Description: "救急担架にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 31, Attack: 12, Defense: 10, PortraitLabel: "C079", FrameStyle: "bronze"},
+	// {ID: 80, Name: "監視者ゴーグル（防護ゴーグル）", Description: "防護ゴーグルにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 44, Attack: 11, Defense: 10, PortraitLabel: "C080", FrameStyle: "gold"},
+	// {ID: 81, Name: "踏破兵ニーパッド（膝当て）", Description: "膝当てにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 41, Attack: 11, Defense: 10, PortraitLabel: "C081", FrameStyle: "bronze"},
+	// {ID: 82, Name: "防衛兵エルボー（肘当て）", Description: "肘当てにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 38, Attack: 11, Defense: 10, PortraitLabel: "C082", FrameStyle: "bronze"},
+	// {ID: 83, Name: "雨水桶レインタンク（雨水タンク）", Description: "雨水タンクにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 35, Attack: 11, Defense: 10, PortraitLabel: "C083", FrameStyle: "bronze"},
+	// {ID: 84, Name: "休眠獣ベッドン（簡易ベッド）", Description: "簡易ベッドにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 37, Attack: 14, Defense: 9, PortraitLabel: "C084", FrameStyle: "bronze"},
+	// {ID: 85, Name: "毛布獣ブランケット（毛布）", Description: "毛布にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 30, Attack: 8, Defense: 8, PortraitLabel: "C085", FrameStyle: "bronze"},
+	// {ID: 86, Name: "炊出し鍋クックル（炊き出し鍋）", Description: "炊き出し鍋にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 35, Attack: 10, Defense: 10, PortraitLabel: "C086", FrameStyle: "bronze"},
+	// {ID: 87, Name: "防火扉ゲートン（防火扉）", Description: "防火扉にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 44, Attack: 13, Defense: 13, PortraitLabel: "C087", FrameStyle: "gold"},
+	// {ID: 88, Name: "排水砦ポンプス（排水ポンプ）", Description: "排水ポンプにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 37, Attack: 12, Defense: 8, PortraitLabel: "C088", FrameStyle: "bronze"},
+	// {ID: 89, Name: "赤光番兵フレア（発煙筒）", Description: "発煙筒にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 34, Attack: 12, Defense: 8, PortraitLabel: "C089", FrameStyle: "bronze"},
+	// {ID: 90, Name: "浮輪霊リングス（救命浮輪）", Description: "救命浮輪にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 47, Attack: 11, Defense: 12, PortraitLabel: "C090", FrameStyle: "gold"},
+	// {ID: 91, Name: "鉄板橋ブリッジ（踏み板）", Description: "踏み板にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 29, Attack: 9, Defense: 10, PortraitLabel: "C091", FrameStyle: "bronze"},
+	// {ID: 92, Name: "断熱箱クーラー（保冷箱）", Description: "保冷箱にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 34, Attack: 11, Defense: 8, PortraitLabel: "C092", FrameStyle: "bronze"},
+	// {ID: 93, Name: "塔守ライトン（大型ライト）", Description: "大型ライトにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 39, Attack: 13, Defense: 10, PortraitLabel: "C093", FrameStyle: "bronze"},
+	// {ID: 94, Name: "発電巨人ジェネラ（発電機）", Description: "発電機にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 36, Attack: 13, Defense: 10, PortraitLabel: "C094", FrameStyle: "bronze"},
+	// {ID: 95, Name: "倉庫門番ストッカー（防災倉庫）", Description: "防災倉庫にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 1, Element: "body", MaxHP: 33, Attack: 8, Defense: 10, PortraitLabel: "C095", FrameStyle: "bronze"},
+	// {ID: 96, Name: "砕岩鎚ハンマー（ハンマー）", Description: "ハンマーにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 42, Attack: 11, Defense: 9, PortraitLabel: "C096", FrameStyle: "bronze"},
+	// {ID: 97, Name: "骨守スプリント（応急副木）", Description: "応急副木にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 4, Element: "body", MaxHP: 47, Attack: 13, Defense: 11, PortraitLabel: "C097", FrameStyle: "gold"},
+	// {ID: 98, Name: "砂塵衣クローク（防塵クローク）", Description: "防塵クロークにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 2, Element: "body", MaxHP: 33, Attack: 12, Defense: 10, PortraitLabel: "C098", FrameStyle: "bronze"},
+	// {ID: 99, Name: "耐熱靴アイアンソール（耐熱靴）", Description: "耐熱靴にレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 3, Element: "body", MaxHP: 38, Attack: 14, Defense: 12, PortraitLabel: "C099", FrameStyle: "bronze"},
+	// {ID: 100, Name: "黒曜壁オブシディアン（防災シェルター）", Description: "防災シェルターにレリック反応が宿った体属性カード。前線で被害を受け止め、隊列を守り抜く。", Rarity: 5, Element: "body", MaxHP: 47, Attack: 12, Defense: 11, PortraitLabel: "C100", FrameStyle: "gold"},
+	// }))
+	repo.SeedBosses([]model.Boss{
+		{ID: 1, Name: "防災訓練ゴーレム１", Description: "チュートリアルその１です。", RewardExp: 0, RewardCoins: 0,
+			DropRate: 100, Candidates: []int64{16},
+			AttackMoves: [][]model.BossAttackMove{
+				{{Name: "災害の噂（心属性）", Element: "heart", SubElement: "", Power: 50}},
+				{{Name: "避難警報（技属性）", Element: "tech", SubElement: "", Power: 50}},
+				{{Name: "床上浸水（体属性）", Element: "body", SubElement: "", Power: 50}},
+			},
+		},
+		{ID: 2, Name: "防災訓練ゴーレム２", Description: "チュートリアルその２です。", RewardExp: 0, RewardCoins: 0,
+			DropRate: 100, Candidates: []int64{7},
+			AttackMoves: [][]model.BossAttackMove{
+				{{Name: "避難警報（技属性）", Element: "tech", SubElement: "", Power: 80}},
+				{{Name: "避難警報（技属性）", Element: "tech", SubElement: "", Power: 80}},
+				{{Name: "洪水発生（体属性）", Element: "body", SubElement: "water", Power: 150}},
+				{{Name: "火災発生（体属性）", Element: "body", SubElement: "fire", Power: 150}},
+			},
+		},
+		{ID: 3, Name: "クトゥグア火儀イフリート", Description: "星火の旧きものクトゥグアを模した儀式炎の化身。燃える触腕と赤い星環で、火属性の猛攻を仕掛ける。", RewardExp: 50, RewardCoins: 100,
+			DropRate: 50, Candidates: []int64{68},
+			AttackMoves: [][]model.BossAttackMove{
+				{{Name: "星火触腕", Element: "body", SubElement: "fire", Power: 70, All: true}},
+				{{Name: "クトゥグアの火環", Element: "body", SubElement: "fire", Power: 120}},
+				{{Name: "星火触腕", Element: "body", SubElement: "fire", Power: 70, All: true}},
+				{{Name: "クトゥグアの火環", Element: "body", SubElement: "fire", Power: 120}},
+				{{Name: "焼尽する赤星", Element: "body", SubElement: "fire", Power: 200}},
+			},
+		},
+		{ID: 4, Name: "星の落とし子ガルーダ", Description: "クトゥルフの落とし子を鳥翼の姿へ歪めた飛行異形。翼膜と蛸面を広げ、風属性の連撃で戦線を乱す。", RewardExp: 50, RewardCoins: 100,
+			DropRate: 50, Candidates: []int64{56},
+			AttackMoves: [][]model.BossAttackMove{
+				{{Name: "蛸面旋風", Element: "tech", SubElement: "", Power: 30, All: true}},
+				{{Name: "落とし子の翼撃", Element: "tech", SubElement: "storm", Power: 120}},
+				{{Name: "落とし子の翼撃", Element: "tech", SubElement: "storm", Power: 120}},
+				{{Name: "落とし子の翼撃", Element: "tech", SubElement: "storm", Power: 120}},
+				{{Name: "落とし子の翼撃", Element: "tech", SubElement: "storm", Power: 120}},
+				{{Name: "落とし子の翼撃", Element: "tech", SubElement: "storm", Power: 120}},
+				{{Name: "星風滑翔", Element: "tech", SubElement: "storm", Power: 200}},
+			},
+		},
+		{ID: 5, Name: "千眼翼の旧支配者", Description: "天使の輪郭をまとった旧支配者の顕現。千眼の光輪と白金の翼から、光属性の均整攻撃を降らせる。", RewardExp: 25, RewardCoins: 50,
+			DropRate: 25, Candidates: []int64{33},
+			AttackMoves: [][]model.BossAttackMove{
+				{{Name: "白金翼の審判", Element: "body", SubElement: "holy", Power: 55, All: true}},
+				{{Name: "旧支配者の凝視", Element: "heart", SubElement: "holy", Power: 55, All: true}},
+				{{Name: "千眼光輪", Element: "tech", SubElement: "holy", Power: 55, All: true}},
+			},
+		},
+
+		// {ID: 1, Name: "クトゥルフ偶像ゴーレム", Description: "沈んだ巨石神殿から起動したクトゥルフ偶像。石翼と触腕を備え、地属性の重圧で探索隊の耐久を削る。", RewardExp: 45, RewardCoins: 160,
+		// 	DropRate: 1, Candidates: []int64{1, 2},
+		// 	AttackMoves: [][]model.BossAttackMove{
+		// 		{{Name: "沈石の触腕", Element: "heart", SubElement: "quake", PowerBonus: 10}},
+		// 		{{Name: "偶像圧砕", Element: "heart", SubElement: "tentacle", PowerBonus: 20}},
+		// 		{{Name: "海底神殿の重圧", Element: "heart", SubElement: "abyss", PowerBonus: 200}},
+		// 	},
+		// },
+		// {ID: 2, Name: "ダゴン眷属リヴァイアサン", Description: "深海の父ダゴンを思わせる魚鱗の旧き眷属。触手のたてがみと青い深淵光で、水属性の浸食を放つ。", RewardExp: 58, RewardCoins: 190, DropRate: 50, Candidates: []int64{3, 4, 5, 6},
+		// 	AttackMoves: [][]model.BossAttackMove{
+		// 		{{Name: "深淵潮流", Element: "tech", SubElement: "abyss", PowerBonus: 10}},
+		// 		{{Name: "ダゴンの咆哮", Element: "tech", SubElement: "tentacle", PowerBonus: 15}},
+		// 		{{Name: "鱗波の大津波", Element: "tech", SubElement: "water", PowerBonus: 20}},
+		// 	},
+		// },
+		// {ID: 3, Name: "クトゥグア火儀イフリート", Description: "星火の旧きものクトゥグアを模した儀式炎の化身。燃える触腕と赤い星環で、火属性の猛攻を仕掛ける。", RewardExp: 62, RewardCoins: 205, DropRate: 100, Candidates: []int64{7, 8},
+		// 	AttackMoves: [][]model.BossAttackMove{
+		// 		{{Name: "星火触腕", Element: "body", SubElement: "fire", PowerBonus: 10}},
+		// 		{{Name: "クトゥグアの火環", Element: "body", SubElement: "fire", PowerBonus: 15}},
+		// 		{{Name: "焼尽する赤星", Element: "body", SubElement: "cosmic", PowerBonus: 20}},
+		// 	},
+		// },
+		// {ID: 4, Name: "星の落とし子ガルーダ", Description: "クトゥルフの落とし子を鳥翼の姿へ歪めた飛行異形。翼膜と蛸面を広げ、風属性の連撃で戦線を乱す。", Element: "wind", MaxHP: 112, Attack: 17, Defense: 4, RewardExp: 56, RewardCoins: 185, PortraitLabel: "SPAW", FrameStyle: "boss"},
+		// {ID: 5, Name: "千眼翼の旧支配者", Description: "天使の輪郭をまとった旧支配者の顕現。千眼の光輪と白金の翼から、光属性の均整攻撃を降らせる。", Element: "light", MaxHP: 150, Attack: 16, Defense: 6, RewardExp: 72, RewardCoins: 230, PortraitLabel: "EYES", FrameStyle: "boss"},
+		// {ID: 6, Name: "ニャルラトホテプの影", Description: "黒いファラオの仮面をかぶる這い寄る混沌の影。紫の夢裂けと触腕で、闇属性の重い一撃を放つ。", Element: "dark", MaxHP: 164, Attack: 19, Defense: 5, RewardExp: 82, RewardCoins: 260, PortraitLabel: "NYAR", FrameStyle: "boss"},
+		// {ID: 7, Name: "ショゴス警報塊", Description: "黒い粘液に警報灯と眼球が溶け込んだ不定形の災厄。うねる質量で防御線を圧し潰す。", Element: "earth", MaxHP: 172, Attack: 20, Defense: 7, RewardExp: 88, RewardCoins: 280, PortraitLabel: "SHOG", FrameStyle: "boss"},
+		// {ID: 8, Name: "ビヤーキー星騎", Description: "腐食した星間翼を広げる黄昏の騎獣。急降下する風圧で隊列を削り取る。", Element: "wind", MaxHP: 148, Attack: 22, Defense: 5, RewardExp: 92, RewardCoins: 295, PortraitLabel: "BYAK", FrameStyle: "boss"},
+		// {ID: 9, Name: "深きもの司祭", Description: "濡れた祭衣と魚鱗の冠をまとう深海の司祭。低い詠唱が水圧となって押し寄せる。", Element: "water", MaxHP: 156, Attack: 21, Defense: 6, RewardExp: 96, RewardCoins: 305, PortraitLabel: "DEEP", FrameStyle: "boss"},
+		// {ID: 10, Name: "イスの時渡り", Description: "円錐の躯体に古代記録装置を抱く時空の学者。時間差の光撃で耐久を奪う。", Element: "light", MaxHP: 168, Attack: 20, Defense: 8, RewardExp: 102, RewardCoins: 320, PortraitLabel: "YITH", FrameStyle: "boss"},
+		// {ID: 11, Name: "石化面ガタノトーア", Description: "直視した者の意思を固める火山島の偶像獣。重い石化波が探索者を絡め取る。", Element: "earth", MaxHP: 184, Attack: 19, Defense: 9, RewardExp: 108, RewardCoins: 335, PortraitLabel: "GATH", FrameStyle: "boss"},
+		// {ID: 12, Name: "ミ＝ゴ外科師", Description: "菌糸の甲殻と金属器具を持つ外宇宙の外科師。鋭い処置で継続的にHPを削る。", Element: "dark", MaxHP: 152, Attack: 23, Defense: 5, RewardExp: 112, RewardCoins: 350, PortraitLabel: "MIGO", FrameStyle: "boss"},
+		// {ID: 13, Name: "黄衣の王ハスター", Description: "裂けた黄色の衣と仮面を揺らす王の化身。名を呼ぶだけで闇の舞台が開く。", Element: "dark", MaxHP: 176, Attack: 23, Defense: 6, RewardExp: 118, RewardCoins: 370, PortraitLabel: "HAST", FrameStyle: "boss"},
+		// {ID: 14, Name: "蜘蛛神アトラック＝ナチャ", Description: "星々の隙間へ糸を張る巨大蜘蛛神。粘る糸撃で逃げ場を奪う。", Element: "earth", MaxHP: 164, Attack: 24, Defense: 6, RewardExp: 122, RewardCoins: 385, PortraitLabel: "ATLA", FrameStyle: "boss"},
+		// {ID: 15, Name: "氷風神イタカ", Description: "白い吹雪の輪郭を持つ凍える巨神。凍風の踏み込みで体力を削り続ける。", Element: "wind", MaxHP: 188, Attack: 21, Defense: 8, RewardExp: 126, RewardCoins: 400, PortraitLabel: "ITHA", FrameStyle: "boss"},
+		// {ID: 16, Name: "蛇父イグ", Description: "古代蛇の鱗と黄金眼を持つ父なる蛇神。毒を帯びた地鳴りで防衛を崩す。", Element: "earth", MaxHP: 172, Attack: 24, Defense: 7, RewardExp: 130, RewardCoins: 415, PortraitLabel: "YIGG", FrameStyle: "boss"},
+		// {ID: 17, Name: "黒睡蟇ツァトゥグァ", Description: "黒い眠りをまとう巨大な蟇の偶像。鈍重ながら一撃が深く、長期戦を強いる。", Element: "dark", MaxHP: 196, Attack: 22, Defense: 9, RewardExp: 136, RewardCoins: 430, PortraitLabel: "TSAT", FrameStyle: "boss"},
+		// {ID: 18, Name: "極圏の古のもの", Description: "氷の遺跡から現れた樽状の古代生命。放射状の器官から冷たい水光を放つ。", Element: "water", MaxHP: 182, Attack: 23, Defense: 8, RewardExp: 140, RewardCoins: 445, PortraitLabel: "ELDR", FrameStyle: "boss"},
+		// {ID: 19, Name: "夜鬼司令ナイトゴーント", Description: "顔のない黒翼を持つ夜の軍団長。音もなく接近し、闇の連撃を刻む。", Element: "dark", MaxHP: 158, Attack: 26, Defense: 5, RewardExp: 144, RewardCoins: 460, PortraitLabel: "NGHT", FrameStyle: "boss"},
+		// {ID: 20, Name: "星吸いヴァンパイア", Description: "見えない星間捕食者が赤い輪郭だけを見せる。血のような星光でHPを吸い上げる。", Element: "dark", MaxHP: 166, Attack: 27, Defense: 4, RewardExp: 148, RewardCoins: 475, PortraitLabel: "STAR", FrameStyle: "boss"},
+		// {ID: 21, Name: "ティンダロスの猟犬", Description: "鋭角の裂け目から跳び出す時間の猟犬。角度を変えた突進が避けにくい。", Element: "wind", MaxHP: 174, Attack: 25, Defense: 6, RewardExp: 152, RewardCoins: 490, PortraitLabel: "HOND", FrameStyle: "boss"},
+		// {ID: 22, Name: "精神竜ロイガー", Description: "精神波で形を保つ渦状の竜。光る思念の圧力で戦意を削る。", Element: "light", MaxHP: 190, Attack: 24, Defense: 8, RewardExp: 158, RewardCoins: 505, PortraitLabel: "LLOI", FrameStyle: "boss"},
+		// {ID: 23, Name: "湖棘グラーキ", Description: "湖底から棘の水晶を伸ばす旧き異形。水面を割る刺突が重く響く。", Element: "water", MaxHP: 204, Attack: 23, Defense: 10, RewardExp: 164, RewardCoins: 520, PortraitLabel: "GLAK", FrameStyle: "boss"},
+		// {ID: 24, Name: "象牙偶像チャウグナー", Description: "象牙の鼻と吸血の牙を持つ石像神。大地を踏み鳴らす衝撃で耐久を試す。", Element: "earth", MaxHP: 212, Attack: 24, Defense: 10, RewardExp: 170, RewardCoins: 540, PortraitLabel: "CHAU", FrameStyle: "boss"},
+		// {ID: 25, Name: "凍猿神ラーン＝テゴス", Description: "氷河に封じられていた昆虫猿の神。凍った爪と貪欲な跳躍で追い詰める。", Element: "water", MaxHP: 206, Attack: 26, Defense: 9, RewardExp: 176, RewardCoins: 560, PortraitLabel: "RHAN", FrameStyle: "boss"},
+		// {ID: 26, Name: "屍都王モルディギアン", Description: "地下都市を支配する屍衣の王。黒い炎と墓所の瘴気で長期戦を支配する。", Element: "dark", MaxHP: 218, Attack: 25, Defense: 10, RewardExp: 182, RewardCoins: 580, PortraitLabel: "MORD", FrameStyle: "boss"},
+		// {ID: 27, Name: "双頭星蟲ズシャー", Description: "双頭の星蟲が火花を散らしながら蠢く。二重の噛撃と熱波で防衛を裂く。", Element: "fire", MaxHP: 198, Attack: 29, Defense: 7, RewardExp: 188, RewardCoins: 600, PortraitLabel: "ZHAR", FrameStyle: "boss"},
+		// {ID: 28, Name: "クトゥルフ星司祭", Description: "沈没神殿の奥で祈る星辰の大司祭。深海の祈りが巨大な水圧となる。", Element: "water", MaxHP: 230, Attack: 27, Defense: 11, RewardExp: 196, RewardCoins: 630, PortraitLabel: "PRST", FrameStyle: "boss"},
+		// {ID: 29, Name: "アザトースの欠片", Description: "名状しがたい核の破片が火と音をまき散らす。無秩序な熱波が戦場を乱す。", Element: "fire", MaxHP: 240, Attack: 30, Defense: 8, RewardExp: 210, RewardCoins: 670, PortraitLabel: "AZAT", FrameStyle: "boss"},
+		// {ID: 30, Name: "ヨグ＝ソトースの門", Description: "無数の球体が重なった全ての門の影。光の裂け目から最大級の圧力を放つ。", Element: "light", MaxHP: 260, Attack: 31, Defense: 12, RewardExp: 230, RewardCoins: 720, PortraitLabel: "YOGS", FrameStyle: "boss"},
+	})
 	repo.SeedCheckpoints([]model.Checkpoint{
 		{
 			ID:                "cp-kamisuwa-sta-01",
@@ -635,81 +803,111 @@ func Load(repo *repository.MemoryRepository) {
 	repo.SeedNotices([]model.Notice{{ID: 1, Title: "サービス開始のお知らせ", Body: "RELIC RAID の試作サーバが公開されました。", IsPinned: true, PublishedAt: now.Add(-3 * time.Hour), IsActive: true}, {ID: 2, Title: "AUTO BATTLE 実装", Body: "6枚デッキが自動でボスと戦う専用画面を追加しました。", IsPinned: false, PublishedAt: now.Add(-2 * time.Hour), IsActive: true}, {ID: 3, Title: "属性・強化・ガチャ追加", Body: "属性相性、カード強化、デッキ編成、キャラガチャを追加しました。", IsPinned: false, PublishedAt: now.Add(-1 * time.Hour), IsActive: true}, {ID: 4, Title: "チェックポイント拡張", Body: "QR1〜QR24 の入力で初回・日次・イベント・挑戦権・ガチャ券の報酬を獲得できるチェックポイント機能を拡張しました。", IsPinned: false, PublishedAt: now, IsActive: true}})
 }
 
-func withDefenseSkills(cards []model.CharacterCard) []model.CharacterCard {
-	for i := range cards {
-		label := defenseSkillLabel(cards[i].Name)
-		cards[i].UniqueSkill = uniqueSkillForCard(cards[i], label)
-		cards[i].AdvantageDefenseSkill = model.DefenseSkill{
-			Name:        label + "の特攻防御",
-			Description: "攻撃相性で有利なボスから攻撃を受ける時だけ一定確率で発生。大きくダメージを軽減し、HPを回復します。",
-			TriggerRate: 18 + cards[i].Rarity*2,
-			EffectType:  "advantage",
-		}
-	}
-	return cards
-}
+// func withDefenseSkills(cards []model.CharacterCard) []model.CharacterCard {
+// 	for i := range cards {
+// 		cards[i].Skills = []model.DefenseSkill{uniqueSkillForCard(cards[i])}
+// 	}
+// 	return cards
+// }
 
-func uniqueSkillForCard(card model.CharacterCard, label string) model.DefenseSkill {
-	effectType := skillEffectForCard(card)
-	roleName, roleDescription := skillEffectText(effectType)
-	switch card.Element {
-	case "heart":
-		return model.DefenseSkill{
-			Name:        label + "の" + roleName,
-			Description: "心属性の固有スキル。" + roleDescription,
-			TriggerRate: 30 + card.Rarity*3,
-			EffectType:  effectType,
-		}
-	case "tech":
-		return model.DefenseSkill{
-			Name:        label + "の" + roleName,
-			Description: "技属性の固有スキル。" + roleDescription,
-			TriggerRate: 30 + card.Rarity*3,
-			EffectType:  effectType,
-		}
-	case "body":
-		return model.DefenseSkill{
-			Name:        label + "の" + roleName,
-			Description: "体属性の固有スキル。" + roleDescription,
-			TriggerRate: 30 + card.Rarity*3,
-			EffectType:  effectType,
-		}
-	default:
-		return model.DefenseSkill{
-			Name:        label + "の" + roleName,
-			Description: "カード固有のレリック反応。" + roleDescription,
-			TriggerRate: 30 + card.Rarity*3,
-			EffectType:  effectType,
-		}
-	}
-}
+// func uniqueSkillForCard(card model.CharacterCard) model.DefenseSkill {
+// 	if card.ID%2 == 0 {
+// 		return model.DefenseSkill{
+// 			Name:        "軽減",
+// 			Description: "被ダメージを軽減する盾を作ります",
+// 			TriggerRate: 100,
+// 			EffectType:  "shield",
+// 			Heal:        0,
+// 			Shield:      10,
+// 			IsFirst:     true,
+// 			Target:      "target",
+// 			IsDamaged:   false,
+// 		}
+// 	}
+// 	if card.ID%2 == 1 {
+// 		return model.DefenseSkill{
+// 			Name:        "回復",
+// 			Description: "回復します",
+// 			TriggerRate: 100,
+// 			EffectType:  "heal",
+// 			Heal:        10,
+// 			Shield:      0,
+// 			IsFirst:     false,
+// 			Target:      "target",
+// 			IsDamaged:   true,
+// 		}
+// 	}
 
-func skillEffectForCard(card model.CharacterCard) string {
-	effects := []string{"shield", "heal", "mitigate", "evade", "revive"}
-	if card.ID <= 0 {
-		return "mitigate"
-	}
-	return effects[(card.ID-1)%int64(len(effects))]
-}
+// 	effectType := skillEffectForCard(card)
+// 	effectType = "heal"
+// 	roleName, roleDescription := skillEffectText(effectType)
+// 	skill := model.DefenseSkill{
+// 		Name:        roleName,
+// 		Description: roleDescription,
+// 		TriggerRate: 30 + card.Rarity*3,
+// 		EffectType:  effectType,
+// 	}
+// 	return skill
+// }
 
-func skillEffectText(effectType string) (string, string) {
-	switch effectType {
-	case "shield":
-		return "盾役", "発生しやすい防御として働き、前線で攻撃を受け止めて大きくダメージを軽減する。"
-	case "heal":
-		return "回復補助", "発生しやすい防御として働き、被弾時に被害を抑えながらHPが低い味方を回復する。"
-	case "evade":
-		return "回避", "発生しやすい防御として働き、危険な攻撃を読み切ってダメージを無効化する。"
-	case "revive":
-		return "蘇生", "発生しやすい防御として働き、戦闘不能になる一撃を受けても一度だけ立て直す。"
-	default:
-		return "軽減", "発生しやすい防御として働き、被弾時に安定してダメージを軽減する。"
-	}
-}
+// func skillEffectForCard(card model.CharacterCard) string {
+// 	effects := []string{"mitigate", "evade", "shield", "heal", "revive", "advantage"}
+// 	if card.ID <= 0 {
+// 		return "mitigate"
+// 	}
+// 	return effects[(card.ID-1)%int64(len(effects))]
+// }
 
-func defenseSkillLabel(name string) string {
-	if before, _, ok := strings.Cut(name, "（"); ok {
-		return before
-	}
-	return name
-}
+// func skillEffectText(effectType string) (string, string) {
+// 	switch effectType {
+// 	case "shield":
+// 		return "盾役", "発生しやすい防御として働き、前線で攻撃を受け止めて大きくダメージを軽減する。"
+// 	case "heal":
+// 		return "回復", "回復します"
+// 	case "evade":
+// 		return "回避", "発生しやすい防御として働き、危険な攻撃を読み切ってダメージを無効化する。"
+// 	case "revive":
+// 		return "蘇生", "発生しやすい防御として働き、戦闘不能になる一撃を受けても一度だけ立て直す。"
+// 	case "mitigate":
+// 		return "軽減", "発生しやすい防御として働き、被弾時に安定してダメージを軽減する。"
+// 	case "advantage":
+// 		return "特攻防御", "攻撃相性で有利なボスから攻撃を受ける時だけ一定確率で発生。大きくダメージを軽減し、HPを回復します。"
+// 	default:
+// 		return "エラー", "このスキルは存在しません。"
+// 	}
+// }
+
+// func bossAttackMoves() map[int64][]model.BossAttackMove {
+// 	return map[int64][]model.BossAttackMove{
+// 		1:  {{"沈石の触腕", "quake", 0}, {"偶像圧砕", "tentacle", 1}, {"海底神殿の重圧", "abyss", 2}},
+// 		2:  {{"深淵潮流", "abyss", 0}, {"ダゴンの咆哮", "tentacle", 1}, {"鱗波の大津波", "water", 2}},
+// 		3:  {{"星火触腕", "fire", 1}, {"クトゥグアの火環", "fire", 2}, {"焼尽する赤星", "cosmic", 2}},
+// 		4:  {{"落とし子の翼撃", "storm", 0}, {"蛸面旋風", "tentacle", 1}, {"星風滑翔", "storm", 2}},
+// 		5:  {{"千眼光輪", "holy", 1}, {"白金翼の審判", "holy", 1}, {"旧支配者の凝視", "cosmic", 2}},
+// 		6:  {{"黒いファラオの囁き", "void", 1}, {"夢裂きの触腕", "tentacle", 1}, {"這い寄る混沌", "abyss", 2}},
+// 		7:  {{"不定形圧潰", "tentacle", 0}, {"警報眼の乱反射", "cosmic", 1}, {"ショゴス濁流", "abyss", 2}},
+// 		8:  {{"黄昏急降下", "storm", 0}, {"星騎の鉤爪", "fang", 1}, {"腐翼の乱気流", "storm", 2}},
+// 		9:  {{"深海詠唱", "water", 0}, {"魚鱗の祈祷刃", "spike", 1}, {"司祭の水圧牢", "abyss", 2}},
+// 		10: {{"時間差光撃", "holy", 0}, {"イスの記録光線", "cosmic", 1}, {"時渡りの断章", "void", 2}},
+// 		11: {{"石化凝視", "quake", 0}, {"火山島の仮面", "fire", 1}, {"ガタノトーアの鈍光", "abyss", 2}},
+// 		12: {{"菌糸外科", "venom", 0}, {"ミ＝ゴの摘出針", "spike", 1}, {"脳髄標本の閃き", "cosmic", 2}},
+// 		13: {{"黄衣の幕開け", "void", 1}, {"ハスターの名状舞台", "abyss", 1}, {"王の仮面光", "holy", 2}},
+// 		14: {{"星蜘蛛の粘糸", "spike", 0}, {"アトラックの大橋", "quake", 1}, {"奈落へ編む糸", "void", 2}},
+// 		15: {{"白嵐の踏破", "ice", 0}, {"イタカの凍息", "ice", 1}, {"極北の裂風", "storm", 2}},
+// 		16: {{"蛇父の毒牙", "venom", 0}, {"黄金眼の威圧", "quake", 1}, {"イグの巻き締め", "fang", 2}},
+// 		17: {{"黒睡の呪吐", "void", 0}, {"蟇王の鈍撃", "quake", 1}, {"ツァトゥグァの眠泥", "abyss", 2}},
+// 		18: {{"極圏冷線", "ice", 0}, {"古の五放射器官", "cosmic", 1}, {"氷棘標本", "spike", 2}},
+// 		19: {{"無貌の夜襲", "void", 1}, {"夜鬼の羽音", "storm", 1}, {"ナイトゴーント急襲", "fang", 2}},
+// 		20: {{"不可視の吸血", "void", 1}, {"星血の赤光", "cosmic", 1}, {"透明な捕食爪", "fang", 2}},
+// 		21: {{"鋭角跳躍", "storm", 0}, {"ティンダロスの牙", "fang", 1}, {"時間角の裂傷", "void", 2}},
+// 		22: {{"精神圧波", "cosmic", 0}, {"ロイガーの念竜巻", "storm", 1}, {"光る思念杭", "holy", 2}},
+// 		23: {{"湖底棘柱", "spike", 0}, {"グラーキの水晶波", "water", 1}, {"濁湖の背骨", "abyss", 2}},
+// 		24: {{"象牙吸血", "fang", 0}, {"石像神の踏鳴", "quake", 1}, {"チャウグナーの鼻撃", "tentacle", 2}},
+// 		25: {{"凍爪跳躍", "ice", 0}, {"ラーン＝テゴスの飢牙", "fang", 1}, {"氷河の昆虫脚", "spike", 2}},
+// 		26: {{"屍都の黒炎", "void", 1}, {"モルディギアンの墓霧", "abyss", 1}, {"地下王の葬列", "quake", 2}},
+// 		27: {{"双頭噛砕", "fang", 1}, {"ズシャーの星熱波", "fire", 2}, {"二重螺旋火花", "cosmic", 2}},
+// 		28: {{"星司祭の深祈", "water", 1}, {"沈没神殿の鐘", "abyss", 1}, {"クトゥルフ聖印", "tentacle", 2}},
+// 		29: {{"無秩序核熱", "fire", 2}, {"アザトースの不協音", "cosmic", 2}, {"盲目の星爆", "void", 3}},
+// 		30: {{"門の開放", "cosmic", 2}, {"ヨグの球体連鎖", "holy", 2}, {"全ての時空圧", "void", 3}},
+// 	}
+// }

@@ -1,16 +1,20 @@
 [Unit]
 Description=Relic Raid web service
-After=network.target
+Wants=network-online.target mariadb.service
+After=network-online.target mariadb.service
 
 [Service]
 Type=simple
 User=ubuntu
 Group=ubuntu
-WorkingDirectory=/home/ubuntu/relic-raid
+WorkingDirectory=/home/ubuntu/relic-raid-source
 EnvironmentFile=/home/ubuntu/.relic-raid/production.env
-ExecStart=/home/ubuntu/relic-raid/relic-raid
+Environment=GOCACHE=/home/ubuntu/.cache/relic-raid-go-build
+Environment=GOMODCACHE=/home/ubuntu/.cache/relic-raid-go-mod
+ExecStart=/home/ubuntu/.local/go/bin/go run -mod=readonly ./cmd/server
 Restart=always
 RestartSec=3
+TimeoutStartSec=120
 NoNewPrivileges=true
 PrivateTmp=true
 

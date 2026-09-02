@@ -29,7 +29,7 @@ func (s *AuthService) Register(req model.RegisterRequest) (model.AuthResponse, e
 	if err != nil {
 		return model.AuthResponse{}, err
 	}
-	user, _, err := s.repo.CreateUser(strings.TrimSpace(req.Username), hash)
+	user, _, err := s.repo.CreateUser(strings.TrimSpace(req.Username), hash, req.Tutorial)
 	if err != nil {
 		return model.AuthResponse{}, err
 	}
